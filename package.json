@@ -3,9 +3,6 @@
   "version": "1.1.21",
   "description": "Core MongoDB driver functionality, no bells and whistles and meant for integration not end applications",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/christkv/mongodb-core.git"
@@ -17,13 +14,13 @@
   "dependencies": {
     "bson": "~0.3",
     "mkdirp": "0.5.0",
-    "rimraf": "2.2.6"
+    "rimraf": "2.3.2"
   },
   "devDependencies": {
     "integra": "0.1.8",
     "optimist": "latest",
-    "jsdoc": "3.3.0-alpha8",
-    "semver": "4.1.0",
+    "jsdoc": "3.3.0-beta3",
+    "semver": "4.3.3",
     "gleak": "0.5.0",
     "mongodb-tools": "~1.0"
   },
