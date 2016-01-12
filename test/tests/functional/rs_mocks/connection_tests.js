@@ -366,6 +366,7 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
     var arbiterServer = null;
     var running = true;
     var electionIds = [new ObjectId(), new ObjectId()];
+    var joined = 0;
 
     // Default message fields
     var defaultFields = {
@@ -432,10 +433,9 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
         secondaryOnlyConnectionAllowed: true
     });
 
-    server.on('joined', function(_type) {
-      if(_type == 'arbiter') {
-        test.equal(true, server.__connected);
-
+    server.on('connect', function(e) {
+      // connect can sometimes be fired before all of the servers have joined, so we have to timeout to avoid race conditions
+      setTimeout(function() {
         test.equal(1, server.s.replState.secondaries.length);
         test.equal('localhost:32001', server.s.replState.secondaries[0].name);
 
@@ -449,12 +449,8 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
         server.destroy();
         running = false;
 
-        test.done();        
-      }
-    });
-
-    server.on('connect', function(e) {
-      server.__connected = true;
+        test.done();
+      }, 100);
     });
 
     // Add event listeners

@@ -43,7 +43,7 @@ exports['Simple authentication test for single server'] = {
         , roles: ['dbOwner']
         , digestPassword: false
         , writeConcern: {w:1}
-      }, function(err, r) {
+      }, {_logConnection:true}, function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.ok);
         // Grab the connection
@@ -124,7 +124,7 @@ exports['Simple authentication test for replicaset'] = {
         , roles: ['dbOwner']
         , digestPassword: false
         , writeConcern: {w:'majority'}
-      }, function(err, r) {
+      }, {_logConnection:true}, function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.ok);
         // Grab the connection
@@ -207,7 +207,7 @@ exports['Simple authentication test for mongos'] = {
         , roles: ['dbOwner']
         , digestPassword: false
         , writeConcern: {w:1}
-      }, function(err, r) {
+      }, {_logConnection:true}, function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.ok);
         // Grab the connection

@@ -125,7 +125,8 @@ exports['Should correctly connect to a replicaset and select the correct tagged 
               count: 'test.test'
             , batchSize: 2
           }, {
-            readPreference: new ReadPreference('secondaryPreferred', {loc:'dc'})
+            readPreference: new ReadPreference('secondaryPreferred', {loc:'dc'}),
+            _logConnection : true
           }, function(err, r) {
             test.equal(err, null);
             test.equal(32002, r.connection.port);
@@ -277,7 +278,8 @@ exports['Should correctly connect to a replicaset and select the primary server'
               count: 'test.test'
             , batchSize: 2
           }, {
-            readPreference: new ReadPreference('primaryPreferred')
+            readPreference: new ReadPreference('primaryPreferred'),
+            _logConnection : true
           }, function(err, r) {
             test.equal(err, null);
             test.equal(32000, r.connection.port);
@@ -429,7 +431,8 @@ exports['Should correctly round robin secondary reads'] = {
               count: 'test.test'
             , batchSize: 2
           }, {
-            readPreference: new ReadPreference('secondary')
+            readPreference: new ReadPreference('secondary'),
+            _logConnection : true
           }, function(err, r) {
             test.equal(err, null);
             test.equal(32002, r.connection.port);
@@ -439,7 +442,8 @@ exports['Should correctly round robin secondary reads'] = {
                 count: 'test.test'
               , batchSize: 2
             }, {
-              readPreference: new ReadPreference('secondary')
+              readPreference: new ReadPreference('secondary'),
+              _logConnection : true
             }, function(err, r) {
               test.equal(err, null);
               test.equal(32001, r.connection.port);
@@ -449,7 +453,8 @@ exports['Should correctly round robin secondary reads'] = {
                   count: 'test.test'
                 , batchSize: 2
               }, {
-                readPreference: new ReadPreference('secondary')
+                readPreference: new ReadPreference('secondary'),
+                _logConnection : true
               }, function(err, r) {
                 test.equal(err, null);
                 test.equal(32002, r.connection.port);
@@ -592,7 +597,8 @@ exports['Should correctly fall back to a secondary server if the readPreference 
               count: 'test.test'
             , batchSize: 2
           }, {
-            readPreference: new ReadPreference('primaryPreferred')
+            readPreference: new ReadPreference('primaryPreferred'),
+            _logConnection: true
           }, function(err, r) {
             test.equal(err, null);
             test.equal(32000, r.connection.port);
@@ -605,7 +611,8 @@ exports['Should correctly fall back to a secondary server if the readPreference 
                     count: 'test.test'
                     , batchSize: 2
                 }, {
-                  readPreference: new ReadPreference('primaryPreferred')
+                  readPreference: new ReadPreference('primaryPreferred'),
+                  _logConnection: true
                 }, function(err, r) {
                   test.equal(err, null);
                   test.equal(32001, r.connection.port); // reads from secondary while primary down
@@ -766,7 +773,8 @@ exports['Should correctly fallback to secondaries when primary not available'] =
                 count: 'test.test'
               , batchSize: 2
             }, {
-              readPreference: new ReadPreference('primaryPreferred')
+              readPreference: new ReadPreference('primaryPreferred'),
+              _logConnection: true
             }, function(err, r) {
               test.equal(null, err);
               test.ok(r.connection.port != 32000);
@@ -776,7 +784,8 @@ exports['Should correctly fallback to secondaries when primary not available'] =
                   count: 'test.test'
                 , batchSize: 2
               }, {
-                readPreference: new ReadPreference('secondaryPreferred')
+                readPreference: new ReadPreference('secondaryPreferred'),
+                _logConnection: true
               }, function(err, r) {
                 test.equal(null, err);
                 test.ok(r.connection.port != 32000);

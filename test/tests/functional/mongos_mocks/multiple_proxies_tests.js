@@ -104,15 +104,15 @@ exports['Should correctly load-balance the operations'] = {
 
       // Add event listeners
       server.once('connect', function(_server) {
-        _server.insert('test.test', [{created:new Date()}], function(err, r) {
+        _server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
           test.equal(null, err);
           test.equal(52000, r.connection.port);
 
-          _server.insert('test.test', [{created:new Date()}], function(err, r) {
+          _server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
             test.equal(null, err);
             test.equal(52001, r.connection.port);
 
-            _server.insert('test.test', [{created:new Date()}], function(err, r) {
+            _server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
               test.equal(null, err);
               test.equal(52000, r.connection.port);
 
@@ -233,11 +233,11 @@ exports['Should ignore one of the mongos instances due to being outside the late
 
     // Add event listeners
     server.once('fullsetup', function(_server) {
-      server.insert('test.test', [{created:new Date()}], function(err, r) {
+      server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
         test.equal(null, err);
         test.equal(52000, r.connection.port);
 
-        server.insert('test.test', [{created:new Date()}], function(err, r) {
+        server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
           test.equal(null, err);
           test.equal(52000, r.connection.port);
 
@@ -257,11 +257,11 @@ exports['Should ignore one of the mongos instances due to being outside the late
 
           // Add event listeners
           server2.once('fullsetup', function(_server) {
-            server2.insert('test.test', [{created:new Date()}], function(err, r) {
+            server2.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
               test.equal(null, err);
               test.equal(52001, r.connection.port);
 
-              server2.insert('test.test', [{created:new Date()}], function(err, r) {
+              server2.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
                 test.equal(null, err);
                 test.equal(52000, r.connection.port);
 
