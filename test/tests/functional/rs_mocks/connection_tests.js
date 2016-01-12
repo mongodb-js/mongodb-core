@@ -433,12 +433,9 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
         secondaryOnlyConnectionAllowed: true
     });
 
-    server.on('joined', function(_type) {
-      joined++;
-      
-      if (joined === 2) {
-        test.equal(true, server.__connected);
-
+    server.on('connect', function(e) {
+      // connect can sometimes be fired before all of the servers have joined, so we have to timeout to avoid race conditions
+      setTimeout(function() {
         test.equal(1, server.s.replState.secondaries.length);
         test.equal('localhost:32001', server.s.replState.secondaries[0].name);
 
@@ -453,11 +450,7 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
         running = false;
 
         test.done();
-      }
-    });
-
-    server.on('connect', function(e) {
-      server.__connected = true;
+      }, 10);
     });
 
     // Add event listeners
