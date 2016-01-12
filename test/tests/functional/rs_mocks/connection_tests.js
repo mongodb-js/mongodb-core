@@ -366,6 +366,7 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
     var arbiterServer = null;
     var running = true;
     var electionIds = [new ObjectId(), new ObjectId()];
+    var joined = 0;
 
     // Default message fields
     var defaultFields = {
@@ -433,7 +434,9 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
     });
 
     server.on('joined', function(_type) {
-      if(_type == 'arbiter') {
+      joined++;
+      
+      if (joined === 2) {
         test.equal(true, server.__connected);
 
         test.equal(1, server.s.replState.secondaries.length);
@@ -449,7 +452,7 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
         server.destroy();
         running = false;
 
-        test.done();        
+        test.done();
       }
     });
 
