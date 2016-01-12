@@ -107,7 +107,7 @@ exports['Should correctly failover due to proxy going away causing timeout'] = {
     // Add event listeners
     server.once('fullsetup', function(_server) {
       var intervalId = setInterval(function() {
-        server.insert('test.test', [{created:new Date()}], function(err, r) {
+        server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
           // If we have a successful insert
           // validate that it's the expected proxy
           if(r) {
@@ -231,7 +231,7 @@ exports['Should correctly bring back proxy and use it'] = {
     // Add event listeners
     server.once('fullsetup', function(_server) {
       var intervalId = setInterval(function() {
-        server.insert('test.test', [{created:new Date()}], function(err, r) {
+        server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
           // If we have a successful insert
           // validate that it's the expected proxy
           if(r) {
@@ -246,7 +246,7 @@ exports['Should correctly bring back proxy and use it'] = {
               // Bring back the missing proxy
               if(currentStep == 0) currentStep = currentStep + 1;
               // Perform inserts
-              server.insert('test.test', [{created:new Date()}], function(err, r) {
+              server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
                 if(r) {
                   proxies[r.connection.port] = true
                 }
@@ -393,7 +393,7 @@ exports['Should correctly bring back both proxies and use it'] = {
           // Perform interval inserts waiting for both proxies to come back
           var intervalId2 = setInterval(function() {
             // Perform inserts
-            server.insert('test.test', [{created:new Date()}], function(err, r) {
+            server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
               if(intervalId2 == null) return;
               if(r) {
                 proxies[r.connection.port] = true

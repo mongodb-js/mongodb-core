@@ -104,7 +104,7 @@ exports['Should correctly timeout socket operation and then correctly re-execute
 
         // Run an interval
         var intervalId = setInterval(function() {
-          _server.insert('test.test', [{created:new Date()}], function(err, r) {
+          _server.insert('test.test', [{created:new Date()}], {_logConnection:true}, function(err, r) {
             if(r && !done) {
               done = true;
               clearInterval(intervalId);
