@@ -160,7 +160,7 @@ exports['Should correctly connect to a replicaset where the primary hangs causin
             // if(r) console.log(r.connection.port)
 
             // Did we switch servers
-            if(r && r.connection.port == 32001) {
+            if(r && _server.s.replState.primary.s.serverDetails.port === 32001) {
               test.ok(stopRespondingPrimary);
               test.equal(1, currentIsMasterState);
 
