@@ -450,7 +450,7 @@ exports['Successful connection to replicaset of 0 primary, 1 secondary and 1 arb
         running = false;
 
         test.done();
-      }, 10);
+      }, 100);
     });
 
     // Add event listeners
