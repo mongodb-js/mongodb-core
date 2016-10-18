@@ -104,7 +104,6 @@ exports['Successfully failover to new primary'] = {
           }
         }
       }).catch(function(err) {
-        console.log(err)
         // console.log(err.stack);
       });
 

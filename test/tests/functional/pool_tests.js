@@ -59,13 +59,10 @@ exports['Should correctly write ismaster operation to the server'] = {
     // Add event listeners
     pool.on('connect', function(_pool) {
       var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-      _pool.write(query.toBin(), {
-        requestId: query.requestId
-      }, function(err, result) {
+      _pool.write(query, function(err, result) {
         test.equal(null, err);
         test.equal(true, result.result.ismaster);
         _pool.destroy();
-        // console.log("=================== " + Object.keys(Connection.connections()).length)
         test.equal(0, Object.keys(Connection.connections()).length);
         Connection.disableConnectionAccounting();
         test.done();
@@ -102,13 +99,14 @@ exports['Should correctly grow server pool on concurrent operations'] = {
     var messageHandler = function(err, result) {
       index = index + 1;
 
+      test.equal(null, err);
       test.equal(true, result.result.ismaster);
+
       // Did we receive an answer for all the messages
       if(index == 100) {
         test.equal(5, pool.socketCount());
 
         pool.destroy();
-        // console.log("=================== " + Object.keys(Connection.connections()).length)
         test.equal(0, Object.keys(Connection.connections()).length);
         Connection.disableConnectionAccounting();
         test.done();
@@ -117,58 +115,39 @@ exports['Should correctly grow server pool on concurrent operations'] = {
 
     // Add event listeners
     pool.on('connect', function(_pool) {
-      for(var i = 0; i < 10; i++)
-      process.nextTick(function() {
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+      for(var i = 0; i < 10; i++) {
+        // process.nextTick(function() {
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
 
-        var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        _pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler)
-      })
+          var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
+          _pool.write(query, messageHandler)
+        // })
+      }
     })
 
     // Start connection
@@ -197,13 +176,10 @@ exports['Should correctly write ismaster operation to the server and handle time
     // Add event listeners
     pool.on('connect', function(_pool) {
       var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-      _pool.write(query.toBin(), {
-        requestId: query.requestId
-      }, function() {});
+      _pool.write(query, function() {});
     })
 
     pool.on('timeout', function(_pool) {
-      // console.log("--- timeout")
       pool.destroy();
       test.done();
     });
@@ -259,9 +235,7 @@ exports['Should correctly error out operations if pool is closed in the middle o
     function execute(i) {
       setTimeout(function() {
         var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler);
+        pool.write(query, messageHandler);
         if(i == 249) {
           pool.destroy();
         }
@@ -337,9 +311,7 @@ exports['Should correctly recover from a server outage'] = {
     function execute(i) {
       setTimeout(function() {
         var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler);
+        pool.write(query, messageHandler);
 
         if(i == 250) {
           configuration.manager.restart(true).then(function() {
@@ -425,9 +397,7 @@ exports['Should correctly recover from a longer server outage'] = {
     function execute(i) {
       setTimeout(function() {
         var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-        pool.write(query.toBin(), {
-          requestId: query.requestId
-        }, messageHandler);
+        pool.write(query, messageHandler);
 
         if(i == 250) {
           // console.log("----------------------------------- 0")
@@ -491,7 +461,7 @@ exports['Should correctly reclaim immediateRelease socket'] = {
     pool.on('connect', function(_pool) {
       // console.log("============================== 3")
       var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-      _pool.write(query.toBin(), {immediateRelease: true, requestId: query.requestId}, function() {
+      _pool.write(query, {immediateRelease: true}, function() {
         // console.log("============================== 4")
         index = index + 1;
       });
@@ -554,7 +524,7 @@ exports['Should correctly authenticate using scram-sha-1 using connect auth'] = 
             }, { auth: [method, 'admin', 'root', 'root']}, function(err, r) {
               test.equal(null, err);
 
-              _pool.destroy();
+              _pool.destroy(true);
               // console.log("=================== " + Object.keys(Connection.connections()).length)
               test.equal(0, Object.keys(Connection.connections()).length);
               Connection.disableConnectionAccounting();
@@ -614,7 +584,7 @@ exports['Should correctly authenticate using scram-sha-1 using connect auth and 
               if(index == 100) {
                 test.equal(5, pool.socketCount());
 
-                pool.destroy();
+                pool.destroy(true);
                 // console.log("=================== " + Object.keys(Connection.connections()).length)
                 test.equal(0, Object.keys(Connection.connections()).length);
                 Connection.disableConnectionAccounting();
@@ -627,34 +597,34 @@ exports['Should correctly authenticate using scram-sha-1 using connect auth and 
               for(var i = 0; i < 10; i++)
               process.nextTick(function() {
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
 
                 var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                _pool.write(query.toBin(), {command:true, requestId: query.requestId }, messageHandler)
+                _pool.write(query, {command:true, requestId: query.requestId }, messageHandler)
               });
             });
 
@@ -713,7 +683,7 @@ exports['Should correctly authenticate using scram-sha-1 using auth method'] = {
                 test.equal(5, pool.socketCount());
                 test.equal(false, error);
 
-                pool.destroy();
+                pool.destroy(true);
                 // console.log("=================== " + Object.keys(Connection.connections()).length)
                 test.equal(0, Object.keys(Connection.connections()).length);
                 Connection.disableConnectionAccounting();
@@ -727,7 +697,7 @@ exports['Should correctly authenticate using scram-sha-1 using auth method'] = {
                 for(var i = 0; i < 100; i++) {
                   process.nextTick(function() {
                     var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-                    _pool.write(query.toBin(), {command:true, requestId: query.requestId}, messageHandler)
+                    _pool.write(query, {command:true, requestId: query.requestId}, messageHandler)
                   });
                 }
               });
@@ -735,7 +705,7 @@ exports['Should correctly authenticate using scram-sha-1 using auth method'] = {
               for(var i = 0; i < 100; i++) {
                 process.nextTick(function() {
                   var query = new Query(new bson(), 'system.$cmd', {ismaster:true}, {numberToSkip: 0, numberToReturn: 1});
-                  _pool.write(query.toBin(), {command:true, requestId: query.requestId}, function(e, r) {if(e) error = e;});
+                  _pool.write(query, {command:true, requestId: query.requestId}, function(e, r) {if(e) error = e;});
                 });
               }
             });
@@ -783,17 +753,17 @@ exports['Should correctly authenticate using scram-sha-1 using connect auth then
             // Add event listeners
             pool.on('connect', function(_pool) {
               var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-              _pool.write(query.toBin(), {command:true, requestId: query.requestId}, function(err, r) {
+              _pool.write(query, {command:true, requestId: query.requestId}, function(err, r) {
                 test.equal(null, err);
 
                 // Logout pool
                 _pool.logout('test', function(err) {
                   test.equal(null, err);
 
-                  _pool.write(query.toBin(), {command:true, requestId: query.requestId}, function(err, r) {
+                  _pool.write(query, {command:true, requestId: query.requestId}, function(err, r) {
                     test.ok(err != null);
 
-                    _pool.destroy();
+                    _pool.destroy(true);
                     // console.log("=================== " + Object.keys(Connection.connections()).length)
                     test.equal(0, Object.keys(Connection.connections()).length);
                     Connection.disableConnectionAccounting();
@@ -846,7 +816,7 @@ exports['Should correctly have auth wait for logout to finish'] = {
             // Add event listeners
             pool.on('connect', function(_pool) {
               var query = new Query(new bson(), 'test.$cmd', {insert:'test', documents:[{a:1}]}, {numberToSkip: 0, numberToReturn: 1});
-              _pool.write(query.toBin(), {requestId: query.requestId}, function(err, r) {
+              _pool.write(query, {requestId: query.requestId}, function(err, r) {
                 test.equal(null, err);
 
                 // Logout pool
@@ -857,10 +827,10 @@ exports['Should correctly have auth wait for logout to finish'] = {
                 pool.auth(method, 'test', 'admin', 'admin', function(err, r) {
                   test.equal(null, err);
 
-                  _pool.write(query.toBin(), {requestId: query.requestId}, function(err, r) {
+                  _pool.write(query, {requestId: query.requestId}, function(err, r) {
                     test.equal(null, err);
 
-                    _pool.destroy();
+                    _pool.destroy(true);
                     // console.log("=================== " + Object.keys(Connection.connections()).length)
                     test.equal(0, Object.keys(Connection.connections()).length);
                     Connection.disableConnectionAccounting();
