@@ -104,7 +104,8 @@ exports['Successfully failover to new primary'] = {
           }
         }
       }).catch(function(err) {
-        console.log(err.stack);
+        console.log(err)
+        // console.log(err.stack);
       });
 
       // First secondary state machine
@@ -122,7 +123,7 @@ exports['Successfully failover to new primary'] = {
           }
         }
       }).catch(function(err) {
-        console.log(err.stack);
+        // console.log(err.stack);
       });
 
       // Second secondary state machine
@@ -140,7 +141,7 @@ exports['Successfully failover to new primary'] = {
           }
         }
       }).catch(function(err) {
-        console.log(err.stack);
+        // console.log(err.stack);
       });
     });
 
