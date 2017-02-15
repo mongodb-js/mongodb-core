@@ -902,3 +902,24 @@ exports['Should correctly exit _execute loop when single avialable connection is
     pool.connect();
   }
 }
+
+exports['Should store the cached result of dns lookups'] = {
+  test: function(configuration, test) {
+    var Pool = require('../../../lib/connection/pool')
+      , bson = require('bson');
+
+    // Attempt to connect
+    var pool = new Pool({
+      host: 'localhost', port: 9999, bson: new bson()
+    })
+
+    setTimeout(function() {
+      test.equal('127.0.0.1', pool.options.host);
+      pool.destroy(true);
+      test.done();
+    }, 1000);
+
+    // Start connection
+    pool.connect();
+  }
+}
