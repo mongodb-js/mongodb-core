@@ -79,6 +79,38 @@ exports['Should correctly execute write'] = {
   }
 }
 
+exports['Should have error on executing write with unique constrains'] = {
+  metadata: {
+    requires: {}
+  },
+
+  test: function(configuration, test) {
+    configuration.newTopology(function(err, server) {
+      // Add event listeners
+      server.on('connect', function(_server) {
+        // Execute the write
+        _server.insert(f("%s.inserts", configuration.db), [{
+          _id: 1
+        }, {
+          _id: 1
+        }], {
+          writeConcern: {w:1}, ordered:true
+        }, function(err, results) {
+          test.equal(true, err !== null);
+          test.equal(null, results);
+          // Destroy the connection
+          _server.destroy();
+          // Finish the test
+          test.done();
+        });
+      });
+
+      // Start connection
+      server.connect();
+    });
+  }
+}
+
 exports['Should correctly execute find'] = {
   metadata: {
     requires: {}
