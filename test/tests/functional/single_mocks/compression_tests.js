@@ -25,9 +25,8 @@ exports['Testing mock server'] = {
         while(running) {
           var request = yield server.receive();
 
-          // console.dir(request, {depth: 5})
-          console.log("\n=======\nFUN DOT JAY ESS");
-          console.dir(request.response, {depth:5});
+          test.equal(request.response.documents[0].compression[0], 'snappy');
+          test.done();
           running = false
         }
       });
@@ -44,14 +43,6 @@ exports['Testing mock server'] = {
       compression: { compressors: ['snappy'], zlibCompressionLevel: -1},
     });
 
-
-    client.once('connect', function(_server) {
-      console.log('Connected')
-      test.done()
-    });
-
     client.connect()
-
   }
-
 }
