@@ -226,7 +226,7 @@ try {
   eval("(function *(){})");
 
   // Single server Mock Tests
-  testFiles.push('/test/tests/functional/single_mocks/fun.js');
+  testFiles.push('/test/tests/functional/single_mocks/compression_tests.js');
   testFiles.push('/test/tests/functional/single_mocks/timeout_tests.js');
 
   // Replicaset Mock Tests
