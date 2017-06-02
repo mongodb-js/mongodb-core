@@ -1,4 +1,4 @@
-exports['Testing mock server'] = {
+exports['server should recieve list of client\'s supported compressors in handshake'] = {
   metadata: {
     requires: {
       generators: true,
@@ -24,7 +24,6 @@ exports['Testing mock server'] = {
       co(function*() {
         while(running) {
           var request = yield server.receive();
-
           test.equal(request.response.documents[0].compression[0], 'snappy');
           test.done();
           running = false
