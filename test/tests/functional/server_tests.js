@@ -141,7 +141,7 @@ exports['Should correctly connect server to single instance and execute insert (
       , bson: new bson()
       , compression: { compressors: ['snappy'] }
     })
-
+    
     // Add event listeners
     server.on('connect', function(server) {
       server.insert('integration_tests.inserts', {a:1}, function(err, r) {
@@ -768,7 +768,7 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
         var cursor = server.cursor(ns, {
             find: ns
           , query: {}
-          , limit: 102          
+          , limit: 102
         }, {
           promoteValues: false
         });
