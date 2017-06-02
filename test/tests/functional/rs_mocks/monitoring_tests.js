@@ -339,7 +339,8 @@ exports['Should correctly prune intervalIds array'] = {
     server.on('connect', function(_server) {
       setTimeout(function() {
         console.dir(_server.intervalIds.length)
-        test.ok(_server.intervalIds.length < 5);
+        // Possible to get 5, 1 for each connection, 1 for the topologyMonitor, and 1 for topologyMonitor executeReconnect before it is has been filtered out from the array by pingServer 
+        test.ok(_server.intervalIds.length <= 5); 
 
         // Destroy mock
         primaryServer.destroy();
