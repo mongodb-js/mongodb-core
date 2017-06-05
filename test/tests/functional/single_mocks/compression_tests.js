@@ -513,6 +513,79 @@ exports['should not compress uncompressible commands'] = {
   }
 }
 
+exports['server should respond with compressed message upon connection'] = {
+  metadata: {
+    requires: {
+      generators: true,
+      topology: "single"
+    }
+  },
+
+  test: function(configuration, test) {
+    var Server = configuration.require.Server,
+      ObjectId = configuration.require.BSON.ObjectId,
+      co = require('co'),
+      mockupdb = require('../../../mock');
+
+    // Contain mock server
+    var server = null;
+    var running = true;
+
+    // Extend the object
+    var extend = function(template, fields) {
+      for(var name in template) fields[name] = template[name];
+      return fields;
+    }
+
+    // Prepare the server's response
+    var defaultServerResponse = {
+      "ismaster" : true,
+      "maxBsonObjectSize" : 16777216,
+      "maxMessageSizeBytes" : 48000000,
+      "maxWriteBatchSize" : 1000,
+      "localTime" : new Date(),
+      "maxWireVersion" : 3,
+      "minWireVersion" : 0,
+      "ok" : 1
+    }
+    var serverResponse = [extend(defaultServerResponse, {})];
+
+    // Boot the mock
+    co(function*() {
+      server = yield mockupdb.createServer(37019, 'localhost');
+
+      // Primary state machine
+      co(function*() {
+        while(running) {
+          var request = yield server.receive();
+          test.equal(request.response.documents[0].compression[0], 'snappy');
+          console.log('About to send through request.reply()')
+          request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
+          running = false
+        }
+      });
+
+    });
+
+    // Attempt to connect
+    var client = new Server({
+      host: 'localhost',
+      port: '37019',
+      connectionTimeout: 5000,
+      socketTimeout: 1000,
+      size: 1,
+      compression: { compressors: ['snappy']},
+    });
+
+    client.on('connect', function(server) {
+      client.destroy();
+      test.done();
+    });
+
+    client.connect()
+  }
+}
+
 exports['Should correctly connect server to and get compressed response'] = {
   metadata: { requires: { topology: "single" } },
 
@@ -530,18 +603,8 @@ exports['Should correctly connect server to and get compressed response'] = {
 
     // Add event listeners
     server.on('connect', function(server) {
-      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
-        test.equal(null, err);
-        test.equal(1, r.result.n);
-
-        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
-          test.equal(null, err);
-          test.equal(1, r.result.n);
-
-          server.destroy();
-          test.done();
-        });
-      });
+      server.destroy();
+      test.done();
     });
 
     // Start connection

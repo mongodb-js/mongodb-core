@@ -30,6 +30,19 @@ Request.prototype.reply = function(documents, options) {
   var startingFrom = typeof options.startingFrom == 'number' ? options.startingFrom : 0;
   var numberReturned = documents.length;
 
+  if ("compression" in options && "compressor" in options.compression) {
+    switch (options.compression.compressor) {
+      case "snappy":
+        var compressorId = SNAPPY_ID;
+        break;
+      case "zlib":
+        var compressorId = ZLIB_ID;
+        break;
+      default:
+        var compressorId = 0
+    }
+  }
+
   // Additional response Options
   var killConnectionAfterNBytes = typeof options.killConnectionAfterNBytes == 'number'
     ? options.killConnectionAfterNBytes : null;
@@ -48,7 +61,11 @@ Request.prototype.reply = function(documents, options) {
       requestId: this.response.requestId + 1,
 
       originalOpCode: options.originalOpCode,
+<<<<<<< HEAD
       compressorID: compressorIDs[options.compression.compressor] || 0
+=======
+      compressorId: compressorId
+>>>>>>> Debugging mock
     })
   } else {
     var response = new Response(this.bson, documents, {
@@ -108,20 +125,31 @@ var Response = function(bson, documents, options) {
   this.documents = documents;
 }
 
+<<<<<<< HEAD
 /**
  * @ignore
  * Preparing a compressed response of the OP_COMPRESSED type
  */
+=======
+>>>>>>> Debugging mock
 var CompressedResponse = function(bson, uncompressedResponse, options) {
   this.bson = bson;
   // Header
   this.requestId = options.requestId;
   this.responseTo = options.responseTo;
+<<<<<<< HEAD
   this.opCode = opcodes.OP_COMPRESSED;
 
   // OP_COMPRESSED fields
   this.originalOpCode = opcodes.OP_REPLY;
   this.compressorID = options.compressorID;
+=======
+  this.opCode = 2012;
+
+  // OP_COMPRESSED fields
+  this.originalOpCode = 1;
+  this.compressorId = options.compressorId;
+>>>>>>> Debugging mock
 
   this.uncompressedResponse =  {
     cursorId: uncompressedResponse.cursorId,
@@ -196,7 +224,11 @@ CompressedResponse.prototype.toBin = function() {
   });
 
   var dataToBeCompressedHeader = new Buffer(20);
+<<<<<<< HEAD
   var dataToBeCompressedBody = Buffer.concat(docs);
+=======
+  var dataToBeCompressedBody = new Buffer(uncompressedSize);
+>>>>>>> Debugging mock
 
   // Write response flags
   writeInt32(dataToBeCompressedHeader, 0, this.uncompressedResponse.responseFlags)
@@ -206,6 +238,7 @@ CompressedResponse.prototype.toBin = function() {
 
   var dataToBeCompressed = Buffer.concat([dataToBeCompressedHeader, dataToBeCompressedBody])
 
+<<<<<<< HEAD
   // Compress the data
   switch (this.compressorID) {
     case compressorIDs.snappy:
@@ -216,6 +249,15 @@ CompressedResponse.prototype.toBin = function() {
       break;
     default:
       compressedData = dataToBeCompressed;
+=======
+  switch (this.compressorId) {
+    case 1: // Snappy
+      var compressedData = Snappy.compressSync(dataToBeCompressed);
+      break;
+    case 2: // Zlib
+      break;
+    default:
+>>>>>>> Debugging mock
   }
 
   // Calculate total size
@@ -238,15 +280,31 @@ CompressedResponse.prototype.toBin = function() {
   writeInt32(header, 16, this.originalOpCode);
   // Write uncompressed message size
   writeInt64(header, 20, Long.fromNumber(uncompressedSize));
+<<<<<<< HEAD
   // Write compressorID
   header[24] = this.compressorID & 0xff;
+=======
+  // Write compressorId
+  header[24] = this.compressorId & 0xff;
+>>>>>>> Debugging mock
 
   // Add header to the list of buffers
   buffers.push(header);
   // Add docs to list of buffers
   buffers = buffers.concat(compressedData);
   // Return all the buffers
+<<<<<<< HEAD
   var concatBuffer = Buffer.concat(buffers)
+=======
+  console.log("CompressedResponse.toBin: header")
+  console.log(header.toString('hex'))
+  console.log("CompressedResponse.toBin: compressedData")
+  console.log(compressedData.toString('hex'))
+  var concatBuffer = Buffer.concat(buffers)
+  console.log('concatBuffer:')
+  console.log(concatBuffer.toString('hex'))
+
+>>>>>>> Debugging mock
   return Buffer.concat(buffers);
 }
 
