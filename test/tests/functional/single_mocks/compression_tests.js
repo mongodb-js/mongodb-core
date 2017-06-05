@@ -16,6 +16,25 @@ exports['server should recieve list of client\'s supported compressors in handsh
     var server = null;
     var running = true;
 
+    // Extend the object
+    var extend = function(template, fields) {
+      for(var name in template) fields[name] = template[name];
+      return fields;
+    }
+
+    // Prepare the server's response
+    var defaultServerResponse = {
+      "ismaster" : true,
+      "maxBsonObjectSize" : 16777216,
+      "maxMessageSizeBytes" : 48000000,
+      "maxWriteBatchSize" : 1000,
+      "localTime" : new Date(),
+      "maxWireVersion" : 3,
+      "minWireVersion" : 0,
+      "ok" : 1
+    }
+    var serverResponse = [extend(defaultServerResponse, {})];
+
     // Boot the mock
     co(function*() {
       server = yield mockupdb.createServer(37019, 'localhost');
@@ -25,7 +44,7 @@ exports['server should recieve list of client\'s supported compressors in handsh
         while(running) {
           var request = yield server.receive();
           test.equal(request.response.documents[0].compression[0], 'snappy');
-          test.done();
+          request.reply(serverResponse[0]);
           running = false
         }
       });
@@ -42,6 +61,48 @@ exports['server should recieve list of client\'s supported compressors in handsh
       compression: { compressors: ['snappy'], zlibCompressionLevel: -1},
     });
 
+    client.on('connect', function(server) {
+      client.destroy();
+      test.done();
+    });
+
     client.connect()
+  }
+}
+
+exports['Should correctly connect server to single instance and execute insert'] = {
+  metadata: { requires: { topology: "single" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../../lib/topologies/server')
+      , bson = require('bson');
+
+    // Attempt to connect
+    var server = new Server({
+        host: configuration.host
+      , port: 27014//configuration.port
+      , bson: new bson()
+      , compression: { compressors: ['snappy'], zlibCompressionLevel: -1}
+    })
+
+    // Add event listeners
+    server.on('connect', function(server) {
+      console.log('Connected.')
+      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+        test.equal(null, err);
+        test.equal(1, r.result.n);
+
+        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
+
+          server.destroy();
+          test.done();
+        });
+      });
+    });
+
+    // Start connection
+    server.connect();
   }
 }
