@@ -70,7 +70,7 @@ exports['server should recieve list of client\'s supported compressors in handsh
   }
 }
 
-exports['Should correctly connect server to single instance and execute insert'] = {
+exports['Should correctly connect server to and get compressed response'] = {
   metadata: { requires: { topology: "single" } },
 
   test: function(configuration, test) {
@@ -80,14 +80,48 @@ exports['Should correctly connect server to single instance and execute insert']
     // Attempt to connect
     var server = new Server({
         host: configuration.host
-      , port: 27014//configuration.port
+      , port: 27014 //configuration.port
       , bson: new bson()
       , compression: { compressors: ['snappy'], zlibCompressionLevel: -1}
     })
 
     // Add event listeners
     server.on('connect', function(server) {
-      console.log('Connected.')
+      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+        test.equal(null, err);
+        test.equal(1, r.result.n);
+
+        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
+
+          server.destroy();
+          test.done();
+        });
+      });
+    });
+
+    // Start connection
+    server.connect();
+  }
+}
+
+exports['Should correctly connect server to single instance and execute insert'] = {
+  metadata: { requires: { topology: "single" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../lib/topologies/server')
+      , bson = require('bson');
+
+    // Attempt to connect
+    var server = new Server({
+        host: configuration.host
+      , port: configuration.port
+      , bson: new bson()
+    })
+
+    // Add event listeners
+    server.on('connect', function(server) {
       server.insert('integration_tests.inserts', {a:1}, function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.n);
