@@ -225,7 +225,7 @@ CompressedResponse.prototype.toBin = function() {
       var compressedData = Snappy.compressSync(dataToBeCompressed);
       break;
     case 2: // Zlib
-      var compressedData = zlib.zipSync(dataToBeCompressed)
+      var compressedData = zlib.gzipSync(dataToBeCompressed)
       break;
     default:
       var compressedData = dataToBeCompressed

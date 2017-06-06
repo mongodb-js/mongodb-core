@@ -44,11 +44,13 @@ exports['server should recieve list of client\'s supported compressors in handsh
         while(running) {
           var request = yield server.receive();
           test.equal(request.response.documents[0].compression[0], 'snappy');
+          test.equal(request.response.documents[0].compression[1], 'zlib');
           request.reply(serverResponse[0]);
-          running = false
         }
       });
 
+    }).catch(function(err) {
+      console.log(err)
     });
 
     // Attempt to connect
@@ -58,19 +60,102 @@ exports['server should recieve list of client\'s supported compressors in handsh
       connectionTimeout: 5000,
       socketTimeout: 1000,
       size: 1,
-      compression: { compressors: ['snappy'], zlibCompressionLevel: -1},
+      compression: { compressors: ['snappy', 'zlib'], zlibCompressionLevel: -1},
     });
 
-    client.on('connect', function(server) {
+    client.on('connect', function() {
       client.destroy();
-      test.done();
+      running = false
+      setTimeout(function () {
+        test.done();
+      }, 1000);
     });
 
-    client.connect()
+    setTimeout(function () {
+        client.connect();
+    }, 100);
   }
 }
 
-exports['server should respond with compressed message upon connection'] = {
+exports['should handle receiving OP_COMPRESSED with no compression'] = {
+  metadata: {
+    requires: {
+      generators: true,
+      topology: "single"
+    }
+  },
+
+  test: function(configuration, test) {
+    var Server = configuration.require.Server,
+      ObjectId = configuration.require.BSON.ObjectId,
+      co = require('co'),
+      mockupdb = require('../../../mock');
+
+    // Contain mock server
+    var server = null;
+    var running = true;
+
+    // Extend the object
+    var extend = function(template, fields) {
+      for(var name in template) fields[name] = template[name];
+      return fields;
+    }
+
+    // Prepare the server's response
+    var defaultServerResponse = {
+      "ismaster" : true,
+      "maxBsonObjectSize" : 16777216,
+      "maxMessageSizeBytes" : 48000000,
+      "maxWriteBatchSize" : 1000,
+      "localTime" : new Date(),
+      "maxWireVersion" : 3,
+      "minWireVersion" : 0,
+      "ok" : 1
+    }
+    var serverResponse = [extend(defaultServerResponse, {})];
+
+    // Boot the mock
+    co(function*() {
+      server = yield mockupdb.createServer(37047, 'localhost');
+
+      // Primary state machine
+      co(function*() {
+        while(running) {
+          var request = yield server.receive();
+          test.equal(request.response.documents[0].compression[0], 'snappy');
+          request.reply(serverResponse[0], { compression: { compressor: "no_compression"}});
+          running = false
+        }
+      });
+
+    }).catch(function(err) {
+      console.log(err)
+    });
+
+    // Attempt to connect
+    var client = new Server({
+      host: 'localhost',
+      port: '37047',
+      connectionTimeout: 5000,
+      socketTimeout: 1000,
+      size: 1,
+      compression: { compressors: ['snappy', 'zlib']},
+    });
+
+    client.on('connect', function() {
+      client.destroy();
+      setTimeout(function () {
+        test.done();
+      }, 1000);
+    });
+
+    setTimeout(function () {
+        client.connect();
+    }, 100);
+  }
+}
+
+exports['should handle receiving OP_COMPRESSED with snappy compression'] = {
   metadata: {
     requires: {
       generators: true,
@@ -110,7 +195,7 @@ exports['server should respond with compressed message upon connection'] = {
 
     // Boot the mock
     co(function*() {
-      server = yield mockupdb.createServer(37019, 'localhost');
+      server = yield mockupdb.createServer(37021, 'localhost');
 
       // Primary state machine
       co(function*() {
@@ -122,84 +207,169 @@ exports['server should respond with compressed message upon connection'] = {
         }
       });
 
+    }).catch(function(err) {
+      console.log(err)
     });
 
     // Attempt to connect
     var client = new Server({
       host: 'localhost',
-      port: '37019',
+      port: '37021',
       connectionTimeout: 5000,
       socketTimeout: 1000,
       size: 1,
-      compression: { compressors: ['snappy']},
+      compression: { compressors: ['snappy', 'zlib']},
     });
 
-    client.on('connect', function(server) {
+    client.on('connect', function() {
       client.destroy();
-      test.done();
+      setTimeout(function () {
+        test.done();
+      }, 1000);
     });
 
-    client.connect()
+    setTimeout(function () {
+        client.connect();
+    }, 100);
   }
 }
 
-exports['Should correctly connect server to and get compressed response'] = {
-  metadata: { requires: { topology: "single" } },
+exports['should handle receiving OP_COMPRESSED with zlib compression'] = {
+  metadata: {
+    requires: {
+      generators: true,
+      topology: "single"
+    }
+  },
 
   test: function(configuration, test) {
-    var Server = require('../../../../lib/topologies/server')
-      , bson = require('bson');
+    var Server = configuration.require.Server,
+      ObjectId = configuration.require.BSON.ObjectId,
+      co = require('co'),
+      mockupdb = require('../../../mock');
 
-    // Attempt to connect
-    var server = new Server({
-        host: configuration.host
-      , port: 27014 //configuration.port
-      , bson: new bson()
-      , compression: { compressors: ['snappy'], zlibCompressionLevel: -1}
-    })
+    // Contain mock server
+    var server = null;
+    var running = true;
 
-    // Add event listeners
-    server.on('connect', function(server) {
-      server.destroy();
-      test.done();
-    });
+    // Extend the object
+    var extend = function(template, fields) {
+      for(var name in template) fields[name] = template[name];
+      return fields;
+    }
 
-    // Start connection
-    server.connect();
-  }
-}
+    // Prepare the server's response
+    var defaultServerResponse = {
+      "ismaster" : true,
+      "maxBsonObjectSize" : 16777216,
+      "maxMessageSizeBytes" : 48000000,
+      "maxWriteBatchSize" : 1000,
+      "localTime" : new Date(),
+      "maxWireVersion" : 3,
+      "minWireVersion" : 0,
+      "compression": ["zlib"],
+      "ok" : 1
+    }
+    var serverResponse = [extend(defaultServerResponse, {})];
 
-exports['Should correctly connect server to single instance and execute insert'] = {
-  metadata: { requires: { topology: "single" } },
+    // Boot the mock
+    co(function*() {
+      server = yield mockupdb.createServer(37022, 'localhost');
 
-  test: function(configuration, test) {
-    var Server = require('../../../lib/topologies/server')
-      , bson = require('bson');
-
-    // Attempt to connect
-    var server = new Server({
-        host: configuration.host
-      , port: configuration.port
-      , bson: new bson()
-    })
-
-    // Add event listeners
-    server.on('connect', function(server) {
-      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
-        test.equal(null, err);
-        test.equal(1, r.result.n);
-
-        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
-          test.equal(null, err);
-          test.equal(1, r.result.n);
-
-          server.destroy();
-          test.done();
-        });
+      // Primary state machine
+      co(function*() {
+        while(running) {
+          var request = yield server.receive();
+          test.equal(request.response.documents[0].compression[0], 'snappy');
+          request.reply(serverResponse[0], { compression: { compressor: "zlib"}});
+          running = false
+        }
       });
+
+    }).catch(function(err) {
+      console.log(err)
     });
 
-    // Start connection
-    server.connect();
+    // Attempt to connect
+    var client = new Server({
+      host: 'localhost',
+      port: '37022',
+      connectionTimeout: 5000,
+      socketTimeout: 1000,
+      size: 1,
+      compression: { compressors: ['snappy', 'zlib']},
+    });
+
+    client.on('connect', function() {
+      client.destroy();
+      setTimeout(function () {
+        test.done();
+      }, 1000);
+    });
+
+    setTimeout(function () {
+        client.connect();
+    }, 100);
   }
 }
+
+// exports['Should correctly connect server to and get compressed response'] = {
+//   metadata: { requires: { topology: "single" } },
+
+//   test: function(configuration, test) {
+//     var Server = require('../../../../lib/topologies/server')
+//       , bson = require('bson');
+
+//     // Attempt to connect
+//     var server = new Server({
+//         host: configuration.host
+//       , port: 27014 //configuration.port
+//       , bson: new bson()
+//       , compression: { compressors: ['snappy'], zlibCompressionLevel: -1}
+//     })
+
+//     // Add event listeners
+//     server.on('connect', function(server) {
+//       server.destroy();
+//       test.done();
+//     });
+
+//     // Start connection
+//     server.connect();
+//   }
+// }
+
+// exports['Should correctly connect server to single instance and execute insert'] = {
+//   metadata: { requires: { topology: "single" } },
+
+//   test: function(configuration, test) {
+//     var Server = require('../../../lib/topologies/server')
+//       , bson = require('bson');
+
+//     // Attempt to connect
+//     var server = new Server({
+//         host: configuration.host
+//       , port: configuration.port
+//       , bson: new bson()
+//     })
+
+//     // Add event listeners
+//     server.on('connect', function(server) {
+//       server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+//         test.equal(null, err);
+//         test.equal(1, r.result.n);
+
+//         server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
+//           test.equal(null, err);
+//           test.equal(1, r.result.n);
+
+//           server.destroy();
+//           test.done();
+//         });
+//       });
+//     });
+
+//     // Start connection
+//     server.connect();
+//   }
+// }
