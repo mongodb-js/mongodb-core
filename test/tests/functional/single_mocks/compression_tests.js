@@ -1,3 +1,25 @@
+exports['should error is an invalid compressor is specified'] = {
+  metadata: { requires: { topology: "single" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../../lib/topologies/server')
+      , bson = require('bson');
+
+    // Attempt to connect
+    try {
+      var server = new Server({
+            host: configuration.host
+          , port: configuration.port
+          , bson: new bson()
+          , compression: { compressors: ['notACompressor'] }
+        })
+    } catch(err) {
+      test.equal('compressors must be at least one of snappy or zlib', err.message);
+      test.done();
+    }
+  }
+}
+
 exports['server should recieve list of client\'s supported compressors in handshake'] = {
   metadata: {
     requires: {
@@ -364,40 +386,3 @@ exports['should connect and insert document when server is responding with OP_CO
     }, 100);
   }
 }
-
-/*
-exports['Should correctly connect server to single instance and execute insert'] = {
-  metadata: { requires: { topology: "single" } },
-
-  test: function(configuration, test) {
-    var Server = require('../../../../lib/topologies/server')
-      , bson = require('bson');
-
-    // Attempt to connect
-    var server = new Server({
-        host: configuration.host
-      , port: configuration.port
-      , bson: new bson()
-    })
-
-    // Add event listeners
-    server.on('connect', function(server) {
-      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
-        test.equal(null, err);
-        test.equal(1, r.result.n);
-
-        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
-          test.equal(null, err);
-          test.equal(1, r.result.n);
-
-          server.destroy();
-          test.done();
-        });
-      });
-    });
-
-    // Start connection
-    server.connect();
-  }
-}
-*/
