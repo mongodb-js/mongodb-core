@@ -285,7 +285,6 @@ exports['should connect and insert document when server is responding with OP_CO
             });
           })
         })
-
       })
     });
 
