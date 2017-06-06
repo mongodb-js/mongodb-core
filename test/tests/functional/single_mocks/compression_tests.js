@@ -77,7 +77,7 @@ exports['server should recieve list of client\'s supported compressors in handsh
   }
 }
 
-exports['should handle receiving OP_COMPRESSED with no compression'] = {
+exports['should connect and insert document when server is responding with OP_COMPRESSED with no compression'] = {
   metadata: {
     requires: {
       generators: true,
@@ -123,15 +123,18 @@ exports['should handle receiving OP_COMPRESSED with no compression'] = {
       co(function*() {
         while(running) {
           var request = yield server.receive();
-
           var doc = request.document;
 
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
+            test.equal(request.response.documents[0].compression[1], 'zlib');
+
+            // Acknowledge connection using OP_COMPRESSED with no compression
             request.reply(serverResponse[0], { compression: { compressor: "no_compression"}});
             currentStep++;
           } else if (doc.insert && currentStep == 1) {
-            request.reply({ok:1, n: doc.documents, lastOp: new Date()});
+            // Acknowledge insertion using OP_COMPRESSED with no compression
+            request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "no_compression"}});
           }
         }
       });
@@ -152,10 +155,8 @@ exports['should handle receiving OP_COMPRESSED with no compression'] = {
 
     client.on('connect', function(_server) {
       _server.insert('test.test', [{created:new Date()}], function(err, r) {
-        if (err) {
-          console.log(err)
-        }
-        console.log('Document inserted!')
+        test.equal(null, err);
+        test.equal(1, r.result.n);
 
         client.destroy();
         setTimeout(function () {
@@ -163,7 +164,6 @@ exports['should handle receiving OP_COMPRESSED with no compression'] = {
           test.done();
         }, 1000);
       })
-
     });
 
     setTimeout(function () {
@@ -172,7 +172,7 @@ exports['should handle receiving OP_COMPRESSED with no compression'] = {
   }
 }
 
-exports['should handle receiving OP_COMPRESSED with snappy compression'] = {
+exports['should connect and insert document when server is responding with OP_COMPRESSED with snappy compression'] = {
   metadata: {
     requires: {
       generators: true,
@@ -189,6 +189,7 @@ exports['should handle receiving OP_COMPRESSED with snappy compression'] = {
     // Contain mock server
     var server = null;
     var running = true;
+    var currentStep = 0;
 
     // Extend the object
     var extend = function(template, fields) {
@@ -218,9 +219,19 @@ exports['should handle receiving OP_COMPRESSED with snappy compression'] = {
       co(function*() {
         while(running) {
           var request = yield server.receive();
-          test.equal(request.response.documents[0].compression[0], 'snappy');
-          request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
-          running = false
+          var doc = request.document;
+
+          if (currentStep == 0) {
+            test.equal(request.response.documents[0].compression[0], 'snappy');
+            test.equal(request.response.documents[0].compression[1], 'zlib');
+
+            // Acknowledge connection using OP_COMPRESSED with snappy
+            request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
+            currentStep++;
+          } else if (doc.insert && currentStep == 1) {
+            // Acknowledge insertion using OP_COMPRESSED with snappy
+            request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "snappy"}});
+          }
         }
       });
 
@@ -238,11 +249,17 @@ exports['should handle receiving OP_COMPRESSED with snappy compression'] = {
       compression: { compressors: ['snappy', 'zlib']},
     });
 
-    client.on('connect', function() {
-      client.destroy();
-      setTimeout(function () {
-        test.done();
-      }, 1000);
+    client.on('connect', function(_server) {
+      _server.insert('test.test', [{created:new Date()}], function(err, r) {
+        test.equal(null, err);
+        test.equal(1, r.result.n);
+
+        client.destroy();
+        setTimeout(function () {
+          running = false
+          test.done();
+        }, 1000);
+      })
     });
 
     setTimeout(function () {
@@ -251,7 +268,8 @@ exports['should handle receiving OP_COMPRESSED with snappy compression'] = {
   }
 }
 
-exports['should handle receiving OP_COMPRESSED with zlib compression'] = {
+exports['should connect and insert document when server is responding with OP_COMPRESSED with zlib compression'] = {
+
   metadata: {
     requires: {
       generators: true,
@@ -268,6 +286,7 @@ exports['should handle receiving OP_COMPRESSED with zlib compression'] = {
     // Contain mock server
     var server = null;
     var running = true;
+    var currentStep = 0;
 
     // Extend the object
     var extend = function(template, fields) {
@@ -297,9 +316,19 @@ exports['should handle receiving OP_COMPRESSED with zlib compression'] = {
       co(function*() {
         while(running) {
           var request = yield server.receive();
-          test.equal(request.response.documents[0].compression[0], 'snappy');
-          request.reply(serverResponse[0], { compression: { compressor: "zlib"}});
-          running = false
+          var doc = request.document;
+
+          if (currentStep == 0) {
+            test.equal(request.response.documents[0].compression[0], 'snappy');
+            test.equal(request.response.documents[0].compression[1], 'zlib');
+
+            // Acknowledge connection using OP_COMPRESSED with zlib
+            request.reply(serverResponse[0], { compression: { compressor: "zlib"}});
+            currentStep++;
+          } else if (doc.insert && currentStep == 1) {
+            // Acknowledge insertion using OP_COMPRESSED with zlib
+            request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "zlib"}});
+          }
         }
       });
 
@@ -317,11 +346,17 @@ exports['should handle receiving OP_COMPRESSED with zlib compression'] = {
       compression: { compressors: ['snappy', 'zlib']},
     });
 
-    client.on('connect', function() {
-      client.destroy();
-      setTimeout(function () {
-        test.done();
-      }, 1000);
+    client.on('connect', function(_server) {
+      _server.insert('test.test', [{created:new Date()}], function(err, r) {
+        test.equal(null, err);
+        test.equal(1, r.result.n);
+
+        client.destroy();
+        setTimeout(function () {
+          running = false
+          test.done();
+        }, 1000);
+      })
     });
 
     setTimeout(function () {
@@ -330,63 +365,37 @@ exports['should handle receiving OP_COMPRESSED with zlib compression'] = {
   }
 }
 
-// exports['Should correctly connect server to and get compressed response'] = {
-//   metadata: { requires: { topology: "single" } },
+exports['Should correctly connect server to single instance and execute insert'] = {
+  metadata: { requires: { topology: "single" } },
 
-//   test: function(configuration, test) {
-//     var Server = require('../../../../lib/topologies/server')
-//       , bson = require('bson');
+  test: function(configuration, test) {
+    var Server = require('../../../../lib/topologies/server')
+      , bson = require('bson');
 
-//     // Attempt to connect
-//     var server = new Server({
-//         host: configuration.host
-//       , port: 27014 //configuration.port
-//       , bson: new bson()
-//       , compression: { compressors: ['snappy'], zlibCompressionLevel: -1}
-//     })
+    // Attempt to connect
+    var server = new Server({
+        host: configuration.host
+      , port: configuration.port
+      , bson: new bson()
+    })
 
-//     // Add event listeners
-//     server.on('connect', function(server) {
-//       server.destroy();
-//       test.done();
-//     });
+    // Add event listeners
+    server.on('connect', function(server) {
+      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+        test.equal(null, err);
+        test.equal(1, r.result.n);
 
-//     // Start connection
-//     server.connect();
-//   }
-// }
+        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
 
-// exports['Should correctly connect server to single instance and execute insert'] = {
-//   metadata: { requires: { topology: "single" } },
+          server.destroy();
+          test.done();
+        });
+      });
+    });
 
-//   test: function(configuration, test) {
-//     var Server = require('../../../lib/topologies/server')
-//       , bson = require('bson');
-
-//     // Attempt to connect
-//     var server = new Server({
-//         host: configuration.host
-//       , port: configuration.port
-//       , bson: new bson()
-//     })
-
-//     // Add event listeners
-//     server.on('connect', function(server) {
-//       server.insert('integration_tests.inserts', {a:1}, function(err, r) {
-//         test.equal(null, err);
-//         test.equal(1, r.result.n);
-
-//         server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
-//           test.equal(null, err);
-//           test.equal(1, r.result.n);
-
-//           server.destroy();
-//           test.done();
-//         });
-//       });
-//     });
-
-//     // Start connection
-//     server.connect();
-//   }
-// }
+    // Start connection
+    server.connect();
+  }
+}
