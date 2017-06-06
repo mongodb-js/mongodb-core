@@ -103,6 +103,7 @@ exports['server should respond with compressed message upon connection'] = {
       "localTime" : new Date(),
       "maxWireVersion" : 3,
       "minWireVersion" : 0,
+      "compression": ["snappy"],
       "ok" : 1
     }
     var serverResponse = [extend(defaultServerResponse, {})];
@@ -116,7 +117,6 @@ exports['server should respond with compressed message upon connection'] = {
         while(running) {
           var request = yield server.receive();
           test.equal(request.response.documents[0].compression[0], 'snappy');
-          console.log('About to send through request.reply()')
           request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
           running = false
         }

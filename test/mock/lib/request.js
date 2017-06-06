@@ -1,5 +1,6 @@
 var Long = require('bson').Long,
     Snappy = require('snappy');
+    zlib = require('zlib');
 
 var SNAPPY_ID = 1,
     ZLIB_ID = 2;
@@ -121,6 +122,10 @@ var Response = function(bson, documents, options) {
   this.documents = documents;
 }
 
+/**
+ * @ignore
+ * Preparing a compressed response of the OP_COMPRESSED type 
+ */
 var CompressedResponse = function(bson, uncompressedResponse, options) {
   this.bson = bson;
   // Header
@@ -205,7 +210,7 @@ CompressedResponse.prototype.toBin = function() {
   });
 
   var dataToBeCompressedHeader = new Buffer(20);
-  var dataToBeCompressedBody = new Buffer(uncompressedSize);
+  var dataToBeCompressedBody = Buffer.concat(docs);
 
   // Write response flags
   writeInt32(dataToBeCompressedHeader, 0, this.uncompressedResponse.responseFlags)
@@ -220,8 +225,10 @@ CompressedResponse.prototype.toBin = function() {
       var compressedData = Snappy.compressSync(dataToBeCompressed);
       break;
     case 2: // Zlib
+      var compressedData = zlib.zipSync(dataToBeCompressed)
       break;
     default:
+      var compressedData = dataToBeCompressed
   }
 
   // Calculate total size
@@ -252,14 +259,7 @@ CompressedResponse.prototype.toBin = function() {
   // Add docs to list of buffers
   buffers = buffers.concat(compressedData);
   // Return all the buffers
-  console.log("CompressedResponse.toBin: header")
-  console.log(header.toString('hex'))
-  console.log("CompressedResponse.toBin: compressedData")
-  console.log(compressedData.toString('hex'))
   var concatBuffer = Buffer.concat(buffers)
-  console.log('concatBuffer:')
-  console.log(concatBuffer.toString('hex'))
-
   return Buffer.concat(buffers);
 }
 
