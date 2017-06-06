@@ -450,12 +450,15 @@ exports['should not compress uncompressible commands'] = {
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
             test.equal(request.response.documents[0].compression[1], 'zlib');
+            test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with snappy
             request.reply(serverResponse, { compression: { compressor: "snappy"}});
           } else if (currentStep == 1) {
+            test.equal(server.isCompressed, true);
             // Acknowledge ping using OP_COMPRESSED with snappy
             request.reply({ok:1}, { compression: {compressor: "snappy"}})
           } else if (currentStep >= 2) {
+            test.equal(server.isCompressed, false);
             // Acknowledge further uncompressible commands using OP_COMPRESSED with snappy
             request.reply({ok:1}, { compression: {compressor: "snappy"}})
           }
