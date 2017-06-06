@@ -94,6 +94,7 @@ exports['should handle receiving OP_COMPRESSED with no compression'] = {
     // Contain mock server
     var server = null;
     var running = true;
+    var currentStep = 0;
 
     // Extend the object
     var extend = function(template, fields) {
@@ -122,9 +123,16 @@ exports['should handle receiving OP_COMPRESSED with no compression'] = {
       co(function*() {
         while(running) {
           var request = yield server.receive();
-          test.equal(request.response.documents[0].compression[0], 'snappy');
-          request.reply(serverResponse[0], { compression: { compressor: "no_compression"}});
-          running = false
+
+          var doc = request.document;
+
+          if (currentStep == 0) {
+            test.equal(request.response.documents[0].compression[0], 'snappy');
+            request.reply(serverResponse[0], { compression: { compressor: "no_compression"}});
+            currentStep++;
+          } else if (doc.insert && currentStep == 1) {
+            request.reply({ok:1, n: doc.documents, lastOp: new Date()});
+          }
         }
       });
 
@@ -142,11 +150,20 @@ exports['should handle receiving OP_COMPRESSED with no compression'] = {
       compression: { compressors: ['snappy', 'zlib']},
     });
 
-    client.on('connect', function() {
-      client.destroy();
-      setTimeout(function () {
-        test.done();
-      }, 1000);
+    client.on('connect', function(_server) {
+      _server.insert('test.test', [{created:new Date()}], function(err, r) {
+        if (err) {
+          console.log(err)
+        }
+        console.log('Document inserted!')
+
+        client.destroy();
+        setTimeout(function () {
+          running = false
+          test.done();
+        }, 1000);
+      })
+
     });
 
     setTimeout(function () {
