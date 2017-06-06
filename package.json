@@ -18,7 +18,8 @@
   ],
   "dependencies": {
     "bson": "~1.0.4",
-    "require_optional": "~1.0.0"
+    "require_optional": "~1.0.0",
+    "snappy": "~6.0.0"
   },
   "devDependencies": {
     "co": "^4.5.4",
