@@ -365,6 +365,7 @@ exports['should connect and insert document when server is responding with OP_CO
   }
 }
 
+/*
 exports['Should correctly connect server to single instance and execute insert'] = {
   metadata: { requires: { topology: "single" } },
 
@@ -399,3 +400,4 @@ exports['Should correctly connect server to single instance and execute insert']
     server.connect();
   }
 }
+*/
