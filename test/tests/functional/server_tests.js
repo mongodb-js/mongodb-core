@@ -836,3 +836,25 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
     server.connect();
   }
 }
+
+exports['should error is an invalid compressor is specified'] = {
+  metadata: { requires: { topology: "single" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../lib/topologies/server')
+      , bson = require('bson');
+
+    // Attempt to connect
+    try {
+      var server = new Server({
+            host: configuration.host
+          , port: configuration.port
+          , bson: new bson()
+          , compression: { compressors: ['notACompressor'] }
+        })
+    } catch(err) {
+      test.equal('compressors must be at least one of snappy or zlib', err.message);
+      test.done();
+    }
+  }
+}
