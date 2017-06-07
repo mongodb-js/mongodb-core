@@ -124,6 +124,7 @@ exports['should connect and insert document when server is responding with OP_CO
             // Acknowledge update using OP_COMPRESSED with no compression
             request.reply({ok:1, n: 1}, { compression: { compressor: "no_compression"}});
           } else if (currentStep == 4) {
+            test.equal(server.isCompressed, false);
             request.reply({ok:1}, { compression: {compressor: "no_compression"}})
           }
           currentStep++;
@@ -230,12 +231,15 @@ exports['should connect and insert document when server is responding with OP_CO
             // Acknowledge connection using OP_COMPRESSED with snappy
             request.reply(serverResponse, { compression: { compressor: "snappy"}});
           } else if (currentStep == 1) {
+            test.equal(server.isCompressed, true);
             // Acknowledge insertion using OP_COMPRESSED with snappy
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "snappy"}});
           } else if (currentStep == 2 || currentStep == 3) {
+            test.equal(server.isCompressed, true);
             // Acknowledge update using OP_COMPRESSED with snappy
             request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
           } else if (currentStep == 4) {
+            test.equal(server.isCompressed, true);
             request.reply({ok:1}, { compression: {compressor: "snappy"}})
           }
           currentStep++;
@@ -354,6 +358,7 @@ exports['should connect and insert document when server is responding with OP_CO
             test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
           } else if (currentStep == 4) {
+            test.equal(server.isCompressed, true);
             request.reply({ok:1}, { compression: {compressor: "zlib"}})
           }
           currentStep++;
