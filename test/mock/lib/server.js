@@ -122,14 +122,43 @@ Server.prototype.receive = function() {
 
 var protocol = function(self, message) {
   var index = 0
-  // Get the opCode for the message
+  console.log("protocol")
+  // Get the size for the message
   var size = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
   if(size != message.length) throw new Error('corrupt wire protocol message');
   // Adjust to opcode
   index = 12;
   // Get the opCode for the message
   var type = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
+  console.log(type)
   // Switch on type
+  if(type == 2012) {
+    // Read original opcode
+    var originalOpCode = data[index] | data[index + 1] << 8 | data[index + 2] << 16 | data[index + 3] << 24;
+    index = index + 4;
+
+    // Read uncompressed size
+    var uncompressedSize = data[index] | data[index + 1] << 8 | data[index + 2] << 16 | data[index + 3] << 24;
+    index = index + 4;
+
+    // Read compressor ID
+    var compressorID = data[index];
+    index = index + 1;
+
+    // Read compressed data
+    var compressedData = data.slice(index)
+    switch (compressorID) {
+      case 0:
+        var uncompressedData = compressedData;
+        break;
+      case 1:
+        var uncompressedData = Snappy.uncompressSync(compressedData)
+        break;
+      case 2:
+        var uncompressedData = zlib.unzipSync(compressedData)
+        break;
+    }
+  }
   if(type == 2001) return new Update(self.bson, message);
   if(type == 2002) return new Insert(self.bson, message);
   if(type == 2004) return new Query(self.bson, message);
@@ -141,6 +170,8 @@ var protocol = function(self, message) {
 
 var dataHandler = function(server, self, connection) {
   return function(data) {
+    console.log("dataHandler")
+    console.log(data)
     // Parse until we are done with the data
     while(data.length > 0) {
       // Call the onRead function
