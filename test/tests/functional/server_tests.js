@@ -166,6 +166,40 @@ exports['Should correctly connect server to single instance and execute insert (
   }
 }
 
+exports['Should correctly connect server to single message and send an uncompressed message if an uncompressible command is specified'] = {
+  metadata: { requires: { topology: "single" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../lib/topologies/server')
+      , bson = require('bson')
+      , ReadPreference = configuration.require.ReadPreference;
+
+    // Attempt to connect
+    var server = new Server({
+        host: configuration.host
+      , port: 27014 //configuration.port
+      , bson: new bson()
+      , compression: { compressors: ['snappy', 'zlib'] }
+    })
+
+    // Add event listeners
+    server.on('connect', function(server) {
+      server.command("system.$cmd", {ismaster: true}, {readPreference: new ReadPreference('primary')}, function(err, result) {
+        if (err) {
+          console.log(err)
+        }
+        test.equal(null, err);
+
+        server.destroy();
+        test.done();
+      });
+    });
+
+    // Start connection
+    server.connect();
+  }
+}
+
 exports['Should correctly connect server to single instance and execute bulk insert'] = {
   metadata: { requires: { topology: "single" } },
 
