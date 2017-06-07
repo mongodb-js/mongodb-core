@@ -137,16 +137,17 @@ exports['Should correctly connect server to single instance and execute insert (
     // Attempt to connect
     var server = new Server({
         host: configuration.host
-      , port: configuration.port
+      , port: 27014 //configuration.port
       , bson: new bson()
-      , compression: { compressors: ['snappy'] }
+      , compression: { compressors: ['snappy', 'zlib'] }
     })
-
-    console.dir(server, {depth:5})
 
     // Add event listeners
     server.on('connect', function(server) {
       server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+        if (err) {
+          console.log(err)
+        }
         test.equal(null, err);
         test.equal(1, r.result.n);
 
@@ -770,7 +771,7 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
         var cursor = server.cursor(ns, {
             find: ns
           , query: {}
-          , limit: 102          
+          , limit: 102
         }, {
           promoteValues: false
         });
@@ -786,7 +787,7 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
             test.equal(typeof doc.long, 'object');
             test.equal(doc.long._bsontype, 'Long');
             test.equal(typeof doc.double, 'object');
-            test.equal(doc.double._bsontype, 'Double');          
+            test.equal(doc.double._bsontype, 'Double');
 
             // Call next
             callNext(cursor);
@@ -794,7 +795,7 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
         }
 
         callNext(cursor);
-      });        
+      });
     });
 
     // Start connection
