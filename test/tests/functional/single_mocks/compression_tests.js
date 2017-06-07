@@ -273,6 +273,9 @@ exports['should connect and insert document when server is responding with OP_CO
 
     client.on('connect', function(_server) {
       _server.insert('test.test', [{created:new Date()}], function(err, r) {
+        if (err) {
+          console.log(err)
+        }
         test.equal(null, err);
         test.equal(1, r.result.n);
 
