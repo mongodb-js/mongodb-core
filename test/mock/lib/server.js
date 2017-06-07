@@ -1,6 +1,8 @@
 var net = require('net'),
   Long = require('bson').Long,
   BSON = require('bson'),
+  Snappy = require('snappy'),
+  zlib = require('zlib'),
   Request = require('./request'),
   Query = require('./protocol').Query,
   GetMore = require('./protocol').GetMore,
@@ -130,7 +132,6 @@ var protocol = function(self, message) {
   index = 12;
   // Get the opCode for the message
   var type = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
-
   // Switch on type
   if(type == 2012) {
     var requestID = message.readInt32LE(4)
@@ -174,8 +175,6 @@ var protocol = function(self, message) {
 
 var dataHandler = function(server, self, connection) {
   return function(data) {
-    console.log("dataHandler")
-    console.log(data)
     // Parse until we are done with the data
     while(data.length > 0) {
       // Call the onRead function

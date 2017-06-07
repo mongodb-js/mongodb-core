@@ -352,7 +352,7 @@ exports['should connect and insert document when server is responding with OP_CO
             currentStep++;
           } else if (doc.insert && currentStep == 1) {
             // Acknowledge insertion using OP_COMPRESSED with zlib
-            request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "zlib"}});
+            request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "zlib", zlibCompressionLevel: -1}});
           }
         }
       });
@@ -373,6 +373,7 @@ exports['should connect and insert document when server is responding with OP_CO
 
     client.on('connect', function(_server) {
       _server.insert('test.test', [{created:new Date()}], function(err, r) {
+        if (err) console.log(err)
         test.equal(null, err);
         test.equal(1, r.result.n);
 
