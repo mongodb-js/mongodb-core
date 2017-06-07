@@ -232,6 +232,7 @@ exports['should connect and insert document when server is responding with OP_CO
       "localTime" : new Date(),
       "maxWireVersion" : 3,
       "minWireVersion" : 0,
+      "compression": ['snappy'],
       "ok" : 1
     }
     var serverResponse = [extend(defaultServerResponse, {})];
@@ -254,18 +255,18 @@ exports['should connect and insert document when server is responding with OP_CO
             request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
             currentStep++;
           } else if (currentStep == 1) {
-            test.equal(server.isCompressed, false);
+            test.equal(server.isCompressed, true);
             // Acknowledge insertion using OP_COMPRESSED with snappy
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "snappy"}});
             currentStep++;
           } else if (currentStep == 2) {
             // Acknowledge update using OP_COMPRESSED with snappy
-            test.equal(server.isCompressed, false);
+            test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
             currentStep++;
           } else if (currentStep == 3) {
             // Acknowledge removal using OP_COMPRESSED with snappy
-            test.equal(server.isCompressed, false);
+            test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
           }
         }
@@ -353,6 +354,7 @@ exports['should connect and insert document when server is responding with OP_CO
       "localTime" : new Date(),
       "maxWireVersion" : 3,
       "minWireVersion" : 0,
+      "compression": ['zlib'],
       "ok" : 1
     }
     var serverResponse = [extend(defaultServerResponse, {})];
@@ -375,18 +377,18 @@ exports['should connect and insert document when server is responding with OP_CO
             request.reply(serverResponse[0], { compression: { compressor: "zlib"}});
             currentStep++;
           } else if (currentStep == 1) {
-            test.equal(server.isCompressed, false);
+            test.equal(server.isCompressed, true);
             // Acknowledge insertion using OP_COMPRESSED with zlib
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "zlib"}});
             currentStep++;
           } else if (currentStep == 2) {
             // Acknowledge update using OP_COMPRESSED with zlib
-            test.equal(server.isCompressed, false);
+            test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
             currentStep++;
           } else if (currentStep == 3) {
             // Acknowledge removal using OP_COMPRESSED with zlib
-            test.equal(server.isCompressed, false);
+            test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
           }
         }
