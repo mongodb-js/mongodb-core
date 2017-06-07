@@ -31,7 +31,7 @@ Request.prototype.reply = function(documents, options) {
   var startingFrom = typeof options.startingFrom == 'number' ? options.startingFrom : 0;
   var numberReturned = documents.length;
 
-  if ("compression" in options && "compressor" in options.compression) {
+  if (options.compression && options.compression.compressor) {
     switch (options.compression.compressor) {
       case "snappy":
         var compressorId = SNAPPY_ID;
@@ -124,7 +124,7 @@ var Response = function(bson, documents, options) {
 
 /**
  * @ignore
- * Preparing a compressed response of the OP_COMPRESSED type 
+ * Preparing a compressed response of the OP_COMPRESSED type
  */
 var CompressedResponse = function(bson, uncompressedResponse, options) {
   this.bson = bson;
