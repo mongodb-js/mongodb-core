@@ -177,7 +177,7 @@ exports['Should correctly connect server to single message and send an uncompres
     // Attempt to connect
     var server = new Server({
         host: configuration.host
-      , port: 27014 //configuration.port
+      , port: configuration.port
       , bson: new bson()
       , compression: { compressors: ['snappy', 'zlib'] }
     })
