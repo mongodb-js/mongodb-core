@@ -122,7 +122,7 @@ Server.prototype.receive = function() {
 
 var protocol = function(self, message) {
   var index = 0
-  console.log("protocol")
+
   // Get the size for the message
   var size = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
   if(size != message.length) throw new Error('corrupt wire protocol message');
@@ -130,23 +130,16 @@ var protocol = function(self, message) {
   index = 12;
   // Get the opCode for the message
   var type = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
-  console.log(type)
+
   // Switch on type
   if(type == 2012) {
-    // Read original opcode
-    var originalOpCode = data[index] | data[index + 1] << 8 | data[index + 2] << 16 | data[index + 3] << 24;
-    index = index + 4;
+    var requestID = message.readInt32LE(4)
+    var responseTo = message.readInt32LE(8)
+    var originalOpcode = message.readInt32LE(16)
+    var uncompressedSize = message.readInt32LE(20)
+    var compressorID = message.readUInt8(24)
 
-    // Read uncompressed size
-    var uncompressedSize = data[index] | data[index + 1] << 8 | data[index + 2] << 16 | data[index + 3] << 24;
-    index = index + 4;
-
-    // Read compressor ID
-    var compressorID = data[index];
-    index = index + 1;
-
-    // Read compressed data
-    var compressedData = data.slice(index)
+    var compressedData = message.slice(25)
     switch (compressorID) {
       case 0:
         var uncompressedData = compressedData;
@@ -158,6 +151,17 @@ var protocol = function(self, message) {
         var uncompressedData = zlib.unzipSync(compressedData)
         break;
     }
+
+    // Header
+    var newMsgHeader = Buffer(16);
+    newMsgHeader.writeInt32LE(16 + uncompressedData.length, 0)
+    newMsgHeader.fill(message.slice(4, 8), 4, 8)
+    newMsgHeader.writeInt32LE(0, 8, 12)
+    newMsgHeader.writeInt32LE(originalOpcode, 12, 16)
+
+    // Full uncompressed message
+    var message = Buffer.concat([newMsgHeader, uncompressedData])
+    var type = originalOpcode
   }
   if(type == 2001) return new Update(self.bson, message);
   if(type == 2002) return new Insert(self.bson, message);
