@@ -124,7 +124,7 @@ Server.prototype.receive = function() {
 
 var protocol = function(self, message) {
   var index = 0
-
+  self.isCompressed = false;
   // Get the size for the message
   var size = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
   if(size != message.length) throw new Error('corrupt wire protocol message');
@@ -163,6 +163,9 @@ var protocol = function(self, message) {
     // Full uncompressed message
     var message = Buffer.concat([newMsgHeader, uncompressedData])
     var type = originalOpcode
+
+    // Compressed flag
+    self.isCompressed = true;
   }
   if(type == 2001) return new Update(self.bson, message);
   if(type == 2002) return new Insert(self.bson, message);

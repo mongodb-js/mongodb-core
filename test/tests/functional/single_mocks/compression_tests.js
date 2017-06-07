@@ -1,25 +1,3 @@
-exports['should error is an invalid compressor is specified'] = {
-  metadata: { requires: { topology: "single" } },
-
-  test: function(configuration, test) {
-    var Server = require('../../../../lib/topologies/server')
-      , bson = require('bson');
-
-    // Attempt to connect
-    try {
-      var server = new Server({
-            host: configuration.host
-          , port: configuration.port
-          , bson: new bson()
-          , compression: { compressors: ['notACompressor'] }
-        })
-    } catch(err) {
-      test.equal('compressors must be at least one of snappy or zlib', err.message);
-      test.done();
-    }
-  }
-}
-
 exports['server should recieve list of client\'s supported compressors in handshake'] = {
   metadata: {
     requires: {
@@ -150,13 +128,24 @@ exports['should connect and insert document when server is responding with OP_CO
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
             test.equal(request.response.documents[0].compression[1], 'zlib');
-
+            test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with no compression
             request.reply(serverResponse[0], { compression: { compressor: "no_compression"}});
             currentStep++;
-          } else if (doc.insert && currentStep == 1) {
+          } else if (currentStep == 1) {
+            test.equal(server.isCompressed, false);
             // Acknowledge insertion using OP_COMPRESSED with no compression
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "no_compression"}});
+            currentStep++;
+          } else if (currentStep == 2) {
+            // Acknowledge update using OP_COMPRESSED with no compression
+            test.equal(server.isCompressed, false);
+            request.reply({ok:1, n: 1}, { compression: { compressor: "no_compression"}});
+            currentStep++;
+          } else if (currentStep == 3) {
+            // Acknowledge removal using OP_COMPRESSED with no compression
+            test.equal(server.isCompressed, false);
+            request.reply({ok:1, n: 1}, { compression: { compressor: "no_compression"}});
           }
         }
       });
@@ -175,16 +164,31 @@ exports['should connect and insert document when server is responding with OP_CO
       compression: { compressors: ['snappy', 'zlib']},
     });
 
+    // Connect and try inserting, updating, and removing
+    // All outbound messages from the driver will be uncompressed
+    // Inbound messages from the server should be OP_COMPRESSED with no compression
     client.on('connect', function(_server) {
-      _server.insert('test.test', [{created:new Date()}], function(err, r) {
+      _server.insert('test.test', [{a:1, created:new Date()}], function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.n);
 
-        client.destroy();
-        setTimeout(function () {
-          running = false
-          test.done();
-        }, 1000);
+        _server.update('test.test', {q: {a: 1}, u: {'$set': {b: 1}}}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
+
+          _server.remove('test.test', {q: {a: 1}}, function(err, r) {
+            if (err) console.log(err)
+            test.equal(null, err);
+            test.equal(1, r.result.n);
+    
+            client.destroy();
+            setTimeout(function () {
+              running = false
+              test.done();
+            }, 500);
+          })
+        })
+
       })
     });
 
@@ -228,14 +232,13 @@ exports['should connect and insert document when server is responding with OP_CO
       "localTime" : new Date(),
       "maxWireVersion" : 3,
       "minWireVersion" : 0,
-      "compression": ["snappy"],
       "ok" : 1
     }
     var serverResponse = [extend(defaultServerResponse, {})];
 
     // Boot the mock
     co(function*() {
-      server = yield mockupdb.createServer(37021, 'localhost');
+      server = yield mockupdb.createServer(37048, 'localhost');
 
       // Primary state machine
       co(function*() {
@@ -246,13 +249,24 @@ exports['should connect and insert document when server is responding with OP_CO
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
             test.equal(request.response.documents[0].compression[1], 'zlib');
-
+            test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with snappy
             request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
             currentStep++;
-          } else if (doc.insert && currentStep == 1) {
+          } else if (currentStep == 1) {
+            test.equal(server.isCompressed, false);
             // Acknowledge insertion using OP_COMPRESSED with snappy
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "snappy"}});
+            currentStep++;
+          } else if (currentStep == 2) {
+            // Acknowledge update using OP_COMPRESSED with snappy
+            test.equal(server.isCompressed, false);
+            request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
+            currentStep++;
+          } else if (currentStep == 3) {
+            // Acknowledge removal using OP_COMPRESSED with snappy
+            test.equal(server.isCompressed, false);
+            request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
           }
         }
       });
@@ -264,26 +278,38 @@ exports['should connect and insert document when server is responding with OP_CO
     // Attempt to connect
     var client = new Server({
       host: 'localhost',
-      port: '37021',
+      port: '37048',
       connectionTimeout: 5000,
       socketTimeout: 1000,
       size: 1,
       compression: { compressors: ['snappy', 'zlib']},
     });
 
+    // Connect and try inserting, updating, and removing
+    // All outbound messages from the driver will be uncompressed
+    // Inbound messages from the server should be OP_COMPRESSED with snappy
     client.on('connect', function(_server) {
-      _server.insert('test.test', [{created:new Date()}], function(err, r) {
-        if (err) {
-          console.log(err)
-        }
+      _server.insert('test.test', [{a:1, created:new Date()}], function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.n);
 
-        client.destroy();
-        setTimeout(function () {
-          running = false
-          test.done();
-        }, 1000);
+        _server.update('test.test', {q: {a: 1}, u: {'$set': {b: 1}}}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
+
+          _server.remove('test.test', {q: {a: 1}}, function(err, r) {
+            if (err) console.log(err)
+            test.equal(null, err);
+            test.equal(1, r.result.n);
+    
+            client.destroy();
+            setTimeout(function () {
+              running = false
+              test.done();
+            }, 500);
+          })
+        })
+
       })
     });
 
@@ -294,7 +320,6 @@ exports['should connect and insert document when server is responding with OP_CO
 }
 
 exports['should connect and insert document when server is responding with OP_COMPRESSED with zlib compression'] = {
-
   metadata: {
     requires: {
       generators: true,
@@ -328,14 +353,13 @@ exports['should connect and insert document when server is responding with OP_CO
       "localTime" : new Date(),
       "maxWireVersion" : 3,
       "minWireVersion" : 0,
-      "compression": ["zlib"],
       "ok" : 1
     }
     var serverResponse = [extend(defaultServerResponse, {})];
 
     // Boot the mock
     co(function*() {
-      server = yield mockupdb.createServer(37022, 'localhost');
+      server = yield mockupdb.createServer(37049, 'localhost');
 
       // Primary state machine
       co(function*() {
@@ -346,13 +370,24 @@ exports['should connect and insert document when server is responding with OP_CO
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
             test.equal(request.response.documents[0].compression[1], 'zlib');
-
+            test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with zlib
             request.reply(serverResponse[0], { compression: { compressor: "zlib"}});
             currentStep++;
-          } else if (doc.insert && currentStep == 1) {
+          } else if (currentStep == 1) {
+            test.equal(server.isCompressed, false);
             // Acknowledge insertion using OP_COMPRESSED with zlib
-            request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "zlib", zlibCompressionLevel: -1}});
+            request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "zlib"}});
+            currentStep++;
+          } else if (currentStep == 2) {
+            // Acknowledge update using OP_COMPRESSED with zlib
+            test.equal(server.isCompressed, false);
+            request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
+            currentStep++;
+          } else if (currentStep == 3) {
+            // Acknowledge removal using OP_COMPRESSED with zlib
+            test.equal(server.isCompressed, false);
+            request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
           }
         }
       });
@@ -364,24 +399,38 @@ exports['should connect and insert document when server is responding with OP_CO
     // Attempt to connect
     var client = new Server({
       host: 'localhost',
-      port: '37022',
+      port: '37049',
       connectionTimeout: 5000,
       socketTimeout: 1000,
       size: 1,
       compression: { compressors: ['snappy', 'zlib']},
     });
 
+    // Connect and try inserting, updating, and removing
+    // All outbound messages from the driver will be uncompressed
+    // Inbound messages from the server should be OP_COMPRESSED with zlib
     client.on('connect', function(_server) {
-      _server.insert('test.test', [{created:new Date()}], function(err, r) {
-        if (err) console.log(err)
+      _server.insert('test.test', [{a:1, created:new Date()}], function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.n);
 
-        client.destroy();
-        setTimeout(function () {
-          running = false
-          test.done();
-        }, 1000);
+        _server.update('test.test', {q: {a: 1}, u: {'$set': {b: 1}}}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
+
+          _server.remove('test.test', {q: {a: 1}}, function(err, r) {
+            if (err) console.log(err)
+            test.equal(null, err);
+            test.equal(1, r.result.n);
+    
+            client.destroy();
+            setTimeout(function () {
+              running = false
+              test.done();
+            }, 500);
+          })
+        })
+
       })
     });
 
