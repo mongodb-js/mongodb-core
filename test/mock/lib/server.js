@@ -132,7 +132,8 @@ var protocol = function(self, message) {
   index = 12;
   // Get the opCode for the message
   var type = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
-  // Switch on type
+  
+  // Unpack and decompress if the message is OP_COMPRESSED
   if(type == 2012) {
     var requestID = message.readInt32LE(4)
     var responseTo = message.readInt32LE(8)
@@ -167,6 +168,8 @@ var protocol = function(self, message) {
     // Compressed flag
     self.isCompressed = true;
   }
+
+  // Switch on type
   if(type == 2001) return new Update(self.bson, message);
   if(type == 2002) return new Insert(self.bson, message);
   if(type == 2004) return new Query(self.bson, message);
