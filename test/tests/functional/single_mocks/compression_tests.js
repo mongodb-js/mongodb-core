@@ -146,6 +146,9 @@ exports['should connect and insert document when server is responding with OP_CO
             // Acknowledge removal using OP_COMPRESSED with no compression
             test.equal(server.isCompressed, false);
             request.reply({ok:1, n: 1}, { compression: { compressor: "no_compression"}});
+          } else if (currentStep == 4) {
+            test.equal(server.isCompressed, false);
+            request.reply({ok:1}, { compression: {compressor: "no_compression"}})
           }
         }
       });
@@ -180,12 +183,17 @@ exports['should connect and insert document when server is responding with OP_CO
             if (err) console.log(err)
             test.equal(null, err);
             test.equal(1, r.result.n);
-    
-            client.destroy();
-            setTimeout(function () {
-              running = false
-              test.done();
-            }, 500);
+
+            _server.command('system.$cmd', { ping: 1 }, function(err, result) {
+              test.equal(null, err);
+              test.equal(1, r.result.ok);
+
+              client.destroy();
+              setTimeout(function () {
+                running = false
+                test.done();
+              }, 500);
+            });    
           })
         })
 
@@ -268,6 +276,10 @@ exports['should connect and insert document when server is responding with OP_CO
             // Acknowledge removal using OP_COMPRESSED with snappy
             test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
+            currentStep++;
+          } else if (currentStep == 4) {
+            test.equal(server.isCompressed, true);
+            request.reply({ok:1}, { compression: {compressor: "snappy"}})
           }
         }
       });
@@ -302,12 +314,17 @@ exports['should connect and insert document when server is responding with OP_CO
             if (err) console.log(err)
             test.equal(null, err);
             test.equal(1, r.result.n);
-    
-            client.destroy();
-            setTimeout(function () {
-              running = false
-              test.done();
-            }, 500);
+
+            _server.command('system.$cmd', { ping: 1 }, function(err, result) {
+              test.equal(null, err);
+              test.equal(1, r.result.ok);
+
+              client.destroy();
+              setTimeout(function () {
+                running = false
+                test.done();
+              }, 500);
+            });    
           })
         })
 
@@ -390,6 +407,9 @@ exports['should connect and insert document when server is responding with OP_CO
             // Acknowledge removal using OP_COMPRESSED with zlib
             test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
+          } else if (currentStep == 4) {
+            test.equal(server.isCompressed, true);
+            request.reply({ok:1}, { compression: {compressor: "zlib"}})
           }
         }
       });
@@ -424,12 +444,17 @@ exports['should connect and insert document when server is responding with OP_CO
             if (err) console.log(err)
             test.equal(null, err);
             test.equal(1, r.result.n);
-    
-            client.destroy();
-            setTimeout(function () {
-              running = false
-              test.done();
-            }, 500);
+
+            _server.command('system.$cmd', { ping: 1 }, function(err, result) {
+              test.equal(null, err);
+              test.equal(1, r.result.ok);
+
+              client.destroy();
+              setTimeout(function () {
+                running = false
+                test.done();
+              }, 500);
+            });    
           })
         })
 
