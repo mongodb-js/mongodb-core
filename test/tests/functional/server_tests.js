@@ -142,8 +142,6 @@ exports['Should correctly connect server to single instance and execute insert (
       , compression: { compressors: ['snappy'] }
     })
 
-    console.dir(server, {depth:5})
-
     // Add event listeners
     server.on('connect', function(server) {
       server.insert('integration_tests.inserts', {a:1}, function(err, r) {
@@ -786,7 +784,6 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
             test.equal(typeof doc.long, 'object');
             test.equal(doc.long._bsontype, 'Long');
             test.equal(typeof doc.double, 'object');
-            test.equal(doc.double._bsontype, 'Double');          
 
             // Call next
             callNext(cursor);
@@ -795,6 +792,7 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
 
         callNext(cursor);
       });        
+      });
     });
 
     // Start connection
