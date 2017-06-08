@@ -127,7 +127,7 @@ exports['Should correctly connect server to single instance and execute insert']
   }
 }
 
-exports['Should correctly connect server to single message and send an uncompressed message if an uncompressible command is specified'] = {
+exports['Should correctly connect server to single instance and send an uncompressed message if an uncompressible command is specified'] = {
   metadata: { requires: { topology: "single" } },
 
   test: function(configuration, test) {
