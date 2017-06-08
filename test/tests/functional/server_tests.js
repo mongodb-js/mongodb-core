@@ -859,7 +859,7 @@ exports['should error is an invalid compressor is specified'] = {
   }
 }
 
-exports['Should correctly connect server to single instance and execute insert with compression'] = {
+exports['Should correctly connect server to single instance and execute insert with compression snappy compression (on servers that support it)'] = {
   metadata: { requires: { topology: "single" } },
 
   test: function(configuration, test) {
@@ -876,16 +876,29 @@ exports['Should correctly connect server to single instance and execute insert w
 
     // Add event listeners
     server.on('connect', function(server) {
-      // test.equal(true, r.message.fromCompressed);
+      var maxWireVersion = server.ismaster.maxWireVersion
+      // Check compression has been negotiated
+      if (maxWireVersion >= 5) {
+        test.equal('snappy', server.s.pool.options.agreedCompressor);
+      }
+
       server.insert('integration_tests.inserts', {a:1}, function(err, r) {
         test.equal(null, err);
         test.equal(1, r.result.n);
-        test.equal(true, r.message.fromCompressed);
+        if (maxWireVersion >= 5) {
+          test.equal(true, r.message.fromCompressed);
+        } else {
+          test.equal(false || undefined, r.message.fromCompressed);
+        }
 
-        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
+        server.insert('integration_tests.inserts', {a:2}, {ordered:false}, function(err, r) {
           test.equal(null, err);
           test.equal(1, r.result.n);
-          test.equal(true, r.message.fromCompressed);
+          if (maxWireVersion >= 5) {
+            test.equal(true, r.message.fromCompressed);
+          } else {
+            test.equal(false || undefined, r.message.fromCompressed);
+          }
 
           server.destroy();
           test.done();
