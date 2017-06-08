@@ -330,7 +330,8 @@ if(argv.t == 'functional') {
     , skipStart: startupOptions.skipStartup
     , skipTermination: startupOptions.skipShutdown
     , manager: new ServerManager('mongod', {
-      dbpath: path.join(path.resolve('db'), f("data-%d", 27017))
+      dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
+      networkMessageCompressors: 'snappy'
     })
   }
 

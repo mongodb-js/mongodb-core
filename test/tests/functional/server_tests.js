@@ -858,3 +858,42 @@ exports['should error is an invalid compressor is specified'] = {
     }
   }
 }
+
+exports['Should correctly connect server to single instance and execute insert with compression'] = {
+  metadata: { requires: { topology: "single" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../lib/topologies/server')
+      , bson = require('bson');
+
+    // Attempt to connect
+    var server = new Server({
+        host: configuration.host
+      , port: configuration.port
+      , bson: new bson()
+      , compression: { compressors: ['snappy', 'zlib'] }
+    })
+
+    // Add event listeners
+    server.on('connect', function(server) {
+      // test.equal(true, r.message.fromCompressed);
+      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+        test.equal(null, err);
+        test.equal(1, r.result.n);
+        test.equal(true, r.message.fromCompressed);
+
+        server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
+          test.equal(true, r.message.fromCompressed);
+
+          server.destroy();
+          test.done();
+        });
+      });
+    });
+
+    // Start connection
+    server.connect();
+  }
+}
