@@ -948,12 +948,10 @@ exports['Should correctly connect server specifying compression to single instan
             server.insert('integration_tests.inserts', {a:1}, function(err, r) {
               test.equal(null, err);
               test.equal(1, r.result.n);
-              test.equal(true, r.message.fromCompressed);
 
               server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
                 test.equal(null, err);
                 test.equal(1, r.result.n);
-                test.equal(true, r.message.fromCompressed);
 
                 server.destroy();
                 Connection.disableConnectionAccounting();
