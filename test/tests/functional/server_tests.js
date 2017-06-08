@@ -1,7 +1,9 @@
 "use strict";
 
 var f = require('util').format
-  , Long = require('bson').Long;
+  , Long = require('bson').Long
+  , locateAuthMethod = require('./shared').locateAuthMethod
+  , executeCommand = require('./shared').executeCommand;
 
 exports['Should correctly connect server to single instance'] = {
   metadata: { requires: { topology: "single" } },
@@ -908,5 +910,105 @@ exports['Should correctly connect server to single instance and execute insert w
 
     // Start connection
     server.connect();
+  }
+}
+
+exports['Should correctly connect server specifying compression to single instance with authentication and insert documents'] = {
+  metadata: { requires: { topology: "auth" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../lib/topologies/server')
+      , Connection = require('../../../lib/connection/connection')
+      , bson = require('bson')
+      , Query = require('../../../lib/connection/commands').Query;
+
+
+    Connection.enableConnectionAccounting();
+
+    configuration.manager.restart(true).then(function() {
+      locateAuthMethod(configuration, function(err, method) {
+        test.equal(null, err);
+
+        // Attempt to connect
+        executeCommand(configuration, 'admin', {
+          createUser: 'root',
+          pwd: "root",
+          roles: [ { role: "root", db: "admin" } ],
+          digestPassword: true
+        }, function(err, r) {
+          var server = new Server({
+              host: configuration.host
+            , port: configuration.port
+            , bson: new bson()
+            , compression: { compressors: ['snappy', 'zlib'] }
+          });
+
+          // Add event listeners
+          server.on('connect', function(server) {
+            server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+              test.equal(null, err);
+              test.equal(1, r.result.n);
+              test.equal(true, r.message.fromCompressed);
+
+              server.insert('integration_tests.inserts', {a:1}, {ordered:false}, function(err, r) {
+                test.equal(null, err);
+                test.equal(1, r.result.n);
+                test.equal(true, r.message.fromCompressed);
+
+                server.destroy();
+                Connection.disableConnectionAccounting();
+                test.done();
+              });
+            });
+          });
+
+          server.connect({auth: [method, 'admin', 'root', 'root']});
+        });
+      });
+    });
+  }
+}
+
+exports['Should fail to connect server specifying compression to single instance with incorrect authentication credentials'] = {
+  metadata: { requires: { topology: "auth" } },
+
+  test: function(configuration, test) {
+    var Server = require('../../../lib/topologies/server')
+      , Connection = require('../../../lib/connection/connection')
+      , bson = require('bson')
+      , Query = require('../../../lib/connection/commands').Query;
+
+
+    Connection.enableConnectionAccounting();
+
+    configuration.manager.restart(true).then(function() {
+      locateAuthMethod(configuration, function(err, method) {
+        test.equal(null, err);
+
+        // Attempt to connect
+        executeCommand(configuration, 'admin', {
+          createUser: 'root',
+          pwd: "root",
+          roles: [ { role: "root", db: "admin" } ],
+          digestPassword: true
+        }, function(err, r) {
+          var server = new Server({
+              host: configuration.host
+            , port: configuration.port
+            , bson: new bson()
+            , compression: { compressors: ['snappy', 'zlib'] }
+          });
+
+          // Add event listeners
+          server.on('error', function() {
+            test.equal(0, Object.keys(Connection.connections()).length);
+            Connection.disableConnectionAccounting();
+            test.done();
+          });
+
+          server.connect({auth: [method, 'admin', 'root2', 'root']});
+        });
+      });
+    });
   }
 }
