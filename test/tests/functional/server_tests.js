@@ -791,7 +791,6 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
         }
 
         callNext(cursor);
-      });        
       });
     });
 
