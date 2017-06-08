@@ -1,4 +1,4 @@
-exports['should error is an invalid compressor is specified'] = {
+exports['should error if an invalid compressor is specified'] = {
   metadata: { requires: { topology: "single" } },
 
   test: function(configuration, test) {
