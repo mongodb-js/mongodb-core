@@ -326,8 +326,7 @@ if(argv.t == 'functional') {
     , skipStart: startupOptions.skipStartup
     , skipTermination: startupOptions.skipShutdown
     , manager: new ServerManager('mongod', {
-      dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
-      networkMessageCompressors: 'snappy'
+      dbpath: path.join(path.resolve('db'), f("data-%d", 27017))
     })
   }
 
@@ -416,6 +415,20 @@ if(argv.t == 'functional') {
     }
   }
 
+  if(argv.e == 'compression') {
+    config = {
+        host: 'localhost'
+      , port: 27017
+      , skipStart: startupOptions.skipStartup
+      , skipTermination: startupOptions.skipShutdown
+      , manager: new ServerManager('mongod', {
+        dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
+        auth:null,
+        networkMessageCompressors: 'snappy'
+      })
+    }
+  }
+
   // If we have a test we are filtering by
   if(argv.f) {
     runner.plugin(new FileFilter(argv.f));
@@ -435,6 +448,8 @@ if(argv.t == 'functional') {
 
   // Skip the version download and use local mongod in PATH
   if(argv.l) {
+    console.log(argv.l)
+    console.log('Here!')
     return runner.run(Configuration(config));
   }
 
