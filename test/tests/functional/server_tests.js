@@ -1,9 +1,12 @@
 "use strict";
 
-var f = require('util').format
+let f = require('util').format
   , Long = require('bson').Long
   , locateAuthMethod = require('./shared').locateAuthMethod
-  , executeCommand = require('./shared').executeCommand;
+  , executeCommand = require('./shared').executeCommand
+  , launchMongod = require('./shared').launchMongod;
+
+const WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION = 5
 
 exports['Should correctly connect server to single instance'] = {
   metadata: { requires: { topology: "single" } },
@@ -839,7 +842,7 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
   }
 }
 
-exports['should error is an invalid compressor is specified'] = {
+exports['should error when invalid compressors are specified'] = {
   metadata: { requires: { topology: "single" } },
 
   test: function(configuration, test) {
@@ -852,64 +855,12 @@ exports['should error is an invalid compressor is specified'] = {
             host: configuration.host
           , port: configuration.port
           , bson: new bson()
-          , compression: { compressors: ['notACompressor'] }
+          , compression: { compressors: ['notACompressor', 'alsoNotACompressor', 'snappy'] }
         })
     } catch(err) {
       test.equal('compressors must be at least one of snappy or zlib', err.message);
       test.done();
     }
-  }
-}
-
-exports['Should correctly connect server to single instance and execute insert with compression snappy compression (on servers that support it)'] = {
-  metadata: { requires: { topology: "single" } },
-
-  test: function(configuration, test) {
-    var Server = require('../../../lib/topologies/server')
-      , bson = require('bson');
-
-    // Attempt to connect
-    var server = new Server({
-        host: configuration.host
-      , port: configuration.port
-      , bson: new bson()
-      , compression: { compressors: ['snappy', 'zlib'] }
-    })
-
-    // Add event listeners
-    server.on('connect', function(server) {
-      var maxWireVersion = server.ismaster.maxWireVersion
-      // Check compression has been negotiated
-      if (maxWireVersion >= 5) {
-        test.equal('snappy', server.s.pool.options.agreedCompressor);
-      }
-
-      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
-        test.equal(null, err);
-        test.equal(1, r.result.n);
-        if (maxWireVersion >= 5) {
-          test.equal(true, r.message.fromCompressed);
-        } else {
-          test.equal(false || undefined, r.message.fromCompressed);
-        }
-
-        server.insert('integration_tests.inserts', {a:2}, {ordered:false}, function(err, r) {
-          test.equal(null, err);
-          test.equal(1, r.result.n);
-          if (maxWireVersion >= 5) {
-            test.equal(true, r.message.fromCompressed);
-          } else {
-            test.equal(false || undefined, r.message.fromCompressed);
-          }
-
-          server.destroy();
-          test.done();
-        });
-      });
-    });
-
-    // Start connection
-    server.connect();
   }
 }
 
@@ -1008,5 +959,70 @@ exports['Should fail to connect server specifying compression to single instance
         });
       });
     });
+  }
+}
+
+exports['Should correctly connect server to single instance and execute insert (with snappy compression if supported by the server)'] = {
+  metadata: { requires: { topology: "single" } },
+
+  test: function(configuration, test) {
+
+    // Launch a server that supports snappy compression
+    launchMongod({
+      port: 21407,
+      networkMessageCompressors: 'snappy'
+    }, function (remoteServer, version) {
+
+      var Server = require('../../../lib/topologies/server')
+        , bson = require('bson');
+
+      // Attempt to connect to server
+      var server = new Server({
+          host: configuration.host
+        , port: 21407
+        , bson: new bson()
+        , compression: {
+            compressors: ['snappy', 'zlib']
+          }
+      })
+
+      // Add event listeners
+      server.on('connect', function(server) {
+        var maxWireVersion = server.ismaster.maxWireVersion
+        // Check compression has been negotiated
+        if (maxWireVersion >= WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION) {
+          test.equal('snappy', server.s.pool.options.agreedCompressor);
+        }
+
+        server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+          test.equal(null, err);
+          test.equal(1, r.result.n);
+          if (maxWireVersion >= WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION) {
+            test.equal(true, r.message.fromCompressed);
+          } else {
+            test.equal(true, r.message.fromCompressed == false);
+          }
+
+          server.insert('integration_tests.inserts', {a:2}, {ordered:false}, function(err, r) {
+            test.equal(null, err);
+            test.equal(1, r.result.n);
+            if (maxWireVersion >= WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION) {
+              test.equal(true, r.message.fromCompressed);
+            } else {
+              test.equal(true, r.message.fromCompressed == false);
+            }
+
+            server.destroy();
+            remoteServer.stop();
+            test.done();
+          });
+        });
+      });
+
+      // Start connection
+      server.connect();
+
+    })
+
   }
 }
