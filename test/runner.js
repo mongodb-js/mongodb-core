@@ -452,8 +452,6 @@ if(argv.t == 'functional') {
 
   // Skip the version download and use local mongod in PATH
   if(argv.l) {
-    console.log(argv.l)
-    console.log('Here!')
     return runner.run(Configuration(config));
   }
 
