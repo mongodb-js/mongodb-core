@@ -137,7 +137,7 @@ exports['Should correctly connect server to single instance and execute insert (
     // Attempt to connect
     var server = new Server({
         host: configuration.host
-      , port: configuration.port
+      , port: 27014
       , bson: new bson()
       , compression: { compressors: ['snappy'] }
     })
