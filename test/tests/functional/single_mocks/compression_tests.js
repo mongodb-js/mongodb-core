@@ -8,7 +8,6 @@ exports['server should recieve list of client\'s supported compressors in handsh
 
   test: function(configuration, test) {
     var Server = configuration.require.Server,
-      ObjectId = configuration.require.BSON.ObjectId,
       co = require('co'),
       mockupdb = require('../../../mock');
 
@@ -87,7 +86,6 @@ exports['should connect and insert document when server is responding with OP_CO
 
   test: function(configuration, test) {
     var Server = configuration.require.Server,
-      ObjectId = configuration.require.BSON.ObjectId,
       co = require('co'),
       mockupdb = require('../../../mock');
 
@@ -216,7 +214,6 @@ exports['should connect and insert document when server is responding with OP_CO
 
   test: function(configuration, test) {
     var Server = configuration.require.Server,
-      ObjectId = configuration.require.BSON.ObjectId,
       co = require('co'),
       mockupdb = require('../../../mock');
 
@@ -347,7 +344,6 @@ exports['should connect and insert document when server is responding with OP_CO
 
   test: function(configuration, test) {
     var Server = configuration.require.Server,
-      ObjectId = configuration.require.BSON.ObjectId,
       co = require('co'),
       mockupdb = require('../../../mock');
 
@@ -477,7 +473,6 @@ exports['should not compress uncompressible commands'] = {
 
   test: function(configuration, test) {
     var Server = configuration.require.Server,
-      ObjectId = configuration.require.BSON.ObjectId,
       co = require('co'),
       mockupdb = require('../../../mock');
 
