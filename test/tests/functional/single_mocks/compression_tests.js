@@ -15,14 +15,8 @@ exports['server should recieve list of client\'s supported compressors in handsh
     var server = null;
     var running = true;
 
-    // Extend the object
-    var extend = function(template, fields) {
-      for(var name in template) fields[name] = template[name];
-      return fields;
-    }
-
     // Prepare the server's response
-    var defaultServerResponse = {
+    var serverResponse = {
       "ismaster" : true,
       "maxBsonObjectSize" : 16777216,
       "maxMessageSizeBytes" : 48000000,
@@ -32,7 +26,6 @@ exports['server should recieve list of client\'s supported compressors in handsh
       "minWireVersion" : 0,
       "ok" : 1
     }
-    var serverResponse = [extend(defaultServerResponse, {})];
 
     // Boot the mock
     co(function*() {
@@ -44,7 +37,7 @@ exports['server should recieve list of client\'s supported compressors in handsh
           var request = yield server.receive();
           test.equal(request.response.documents[0].compression[0], 'snappy');
           test.equal(request.response.documents[0].compression[1], 'zlib');
-          request.reply(serverResponse[0]);
+          request.reply(serverResponse);
         }
       });
 
@@ -94,14 +87,8 @@ exports['should connect and insert document when server is responding with OP_CO
     var running = true;
     var currentStep = 0;
 
-    // Extend the object
-    var extend = function(template, fields) {
-      for(var name in template) fields[name] = template[name];
-      return fields;
-    }
-
     // Prepare the server's response
-    var defaultServerResponse = {
+    let serverResponse = {
       "ismaster" : true,
       "maxBsonObjectSize" : 16777216,
       "maxMessageSizeBytes" : 48000000,
@@ -111,7 +98,6 @@ exports['should connect and insert document when server is responding with OP_CO
       "minWireVersion" : 0,
       "ok" : 1
     }
-    var serverResponse = [extend(defaultServerResponse, {})];
 
     // Boot the mock
     co(function*() {
@@ -128,26 +114,20 @@ exports['should connect and insert document when server is responding with OP_CO
             test.equal(request.response.documents[0].compression[1], 'zlib');
             test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with no compression
-            request.reply(serverResponse[0], { compression: { compressor: "no_compression"}});
-            currentStep++;
+            request.reply(serverResponse, { compression: { compressor: "no_compression"}});
           } else if (currentStep == 1) {
             test.equal(server.isCompressed, false);
             // Acknowledge insertion using OP_COMPRESSED with no compression
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "no_compression"}});
-            currentStep++;
-          } else if (currentStep == 2) {
+          } else if (currentStep == 2 || currentStep == 3) {
             // Acknowledge update using OP_COMPRESSED with no compression
-            test.equal(server.isCompressed, false);
-            request.reply({ok:1, n: 1}, { compression: { compressor: "no_compression"}});
-            currentStep++;
-          } else if (currentStep == 3) {
-            // Acknowledge removal using OP_COMPRESSED with no compression
             test.equal(server.isCompressed, false);
             request.reply({ok:1, n: 1}, { compression: { compressor: "no_compression"}});
           } else if (currentStep == 4) {
             test.equal(server.isCompressed, false);
             request.reply({ok:1}, { compression: {compressor: "no_compression"}})
           }
+          currentStep++;
         }
       });
 
@@ -222,14 +202,8 @@ exports['should connect and insert document when server is responding with OP_CO
     var running = true;
     var currentStep = 0;
 
-    // Extend the object
-    var extend = function(template, fields) {
-      for(var name in template) fields[name] = template[name];
-      return fields;
-    }
-
     // Prepare the server's response
-    var defaultServerResponse = {
+    var serverResponse = {
       "ismaster" : true,
       "maxBsonObjectSize" : 16777216,
       "maxMessageSizeBytes" : 48000000,
@@ -240,7 +214,6 @@ exports['should connect and insert document when server is responding with OP_CO
       "compression": ['snappy'],
       "ok" : 1
     }
-    var serverResponse = [extend(defaultServerResponse, {})];
 
     // Boot the mock
     co(function*() {
@@ -257,27 +230,20 @@ exports['should connect and insert document when server is responding with OP_CO
             test.equal(request.response.documents[0].compression[1], 'zlib');
             test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with snappy
-            request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
-            currentStep++;
+            request.reply(serverResponse, { compression: { compressor: "snappy"}});
           } else if (currentStep == 1) {
             test.equal(server.isCompressed, true);
             // Acknowledge insertion using OP_COMPRESSED with snappy
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "snappy"}});
-            currentStep++;
-          } else if (currentStep == 2) {
+          } else if (currentStep == 2 || currentStep == 3) {
             // Acknowledge update using OP_COMPRESSED with snappy
             test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
-            currentStep++;
-          } else if (currentStep == 3) {
-            // Acknowledge removal using OP_COMPRESSED with snappy
-            test.equal(server.isCompressed, true);
-            request.reply({ok:1, n: 1}, { compression: { compressor: "snappy"}});
-            currentStep++;
           } else if (currentStep == 4) {
             test.equal(server.isCompressed, true);
             request.reply({ok:1}, { compression: {compressor: "snappy"}})
           }
+          currentStep++;
         }
       });
 
@@ -352,14 +318,8 @@ exports['should connect and insert document when server is responding with OP_CO
     var running = true;
     var currentStep = 0;
 
-    // Extend the object
-    var extend = function(template, fields) {
-      for(var name in template) fields[name] = template[name];
-      return fields;
-    }
-
     // Prepare the server's response
-    var defaultServerResponse = {
+    var serverResponse = {
       "ismaster" : true,
       "maxBsonObjectSize" : 16777216,
       "maxMessageSizeBytes" : 48000000,
@@ -370,7 +330,6 @@ exports['should connect and insert document when server is responding with OP_CO
       "compression": ['zlib'],
       "ok" : 1
     }
-    var serverResponse = [extend(defaultServerResponse, {})];
 
     // Boot the mock
     co(function*() {
@@ -387,26 +346,20 @@ exports['should connect and insert document when server is responding with OP_CO
             test.equal(request.response.documents[0].compression[1], 'zlib');
             test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with zlib
-            request.reply(serverResponse[0], { compression: { compressor: "zlib"}});
-            currentStep++;
+            request.reply(serverResponse, { compression: { compressor: "zlib"}});
           } else if (currentStep == 1) {
             test.equal(server.isCompressed, true);
             // Acknowledge insertion using OP_COMPRESSED with zlib
             request.reply({ok:1, n: doc.documents.length, lastOp: new Date()}, { compression: { compressor: "zlib"}});
-            currentStep++;
-          } else if (currentStep == 2) {
+          } else if (currentStep == 2 || currentStep == 3) {
             // Acknowledge update using OP_COMPRESSED with zlib
-            test.equal(server.isCompressed, true);
-            request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
-            currentStep++;
-          } else if (currentStep == 3) {
-            // Acknowledge removal using OP_COMPRESSED with zlib
             test.equal(server.isCompressed, true);
             request.reply({ok:1, n: 1}, { compression: { compressor: "zlib"}});
           } else if (currentStep == 4) {
             test.equal(server.isCompressed, true);
             request.reply({ok:1}, { compression: {compressor: "zlib"}})
           }
+          currentStep++;
         }
       });
 
@@ -481,14 +434,8 @@ exports['should not compress uncompressible commands'] = {
     var running = true;
     var currentStep = 0;
 
-    // Extend the object
-    var extend = function(template, fields) {
-      for(var name in template) fields[name] = template[name];
-      return fields;
-    }
-
     // Prepare the server's response
-    var defaultServerResponse = {
+    var serverResponse = {
       "ismaster" : true,
       "maxBsonObjectSize" : 16777216,
       "maxMessageSizeBytes" : 48000000,
@@ -499,7 +446,6 @@ exports['should not compress uncompressible commands'] = {
       "compression": ['snappy'],
       "ok" : 1
     }
-    var serverResponse = [extend(defaultServerResponse, {})];
 
     // Boot the mock
     co(function*() {
@@ -516,18 +462,17 @@ exports['should not compress uncompressible commands'] = {
             test.equal(request.response.documents[0].compression[1], 'zlib');
             test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with snappy
-            request.reply(serverResponse[0], { compression: { compressor: "snappy"}});
-            currentStep++;
+            request.reply(serverResponse, { compression: { compressor: "snappy"}});
           } else if (currentStep == 1) {
             test.equal(server.isCompressed, true);
             // Acknowledge ping using OP_COMPRESSED with snappy
             request.reply({ok:1}, { compression: {compressor: "snappy"}})
-            currentStep++;
           } else if (currentStep >= 2) {
             test.equal(server.isCompressed, false);
             // Acknowledge further uncompressible commands using OP_COMPRESSED with snappy
             request.reply({ok:1}, { compression: {compressor: "snappy"}})
           }
+          currentStep++;
         }
       });
 
