@@ -3,8 +3,7 @@
 let f = require('util').format
   , Long = require('bson').Long
   , locateAuthMethod = require('./shared').locateAuthMethod
-  , executeCommand = require('./shared').executeCommand
-  , launchMongod = require('./shared').launchMongod;
+  , executeCommand = require('./shared').executeCommand;
 
 const WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION = 5
 
@@ -962,67 +961,58 @@ exports['Should fail to connect server specifying compression to single instance
   }
 }
 
-exports['Should correctly connect server to single instance and execute insert (with snappy compression if supported by the server)'] = {
-  metadata: { requires: { topology: "single" } },
+exports['Should correctly connect server to single instance and execute insert with snappy compression if supported by the server'] = {
+  metadata: { requires: { topology: ["single", "snappyCompression"] } },
 
   test: function(configuration, test) {
+    var Server = require('../../../lib/topologies/server')
+      , bson = require('bson');
 
-    // Launch a server that supports snappy compression
-    launchMongod({
-      port: 21407,
-      networkMessageCompressors: 'snappy'
-    }, function (remoteServer, version) {
+    // Attempt to connect to server
+    var server = new Server({
+        host: configuration.host
+      , port: configuration.port
+      , bson: new bson()
+      , compression: {
+          compressors: ['snappy', 'zlib']
+        }
+    })
 
-      var Server = require('../../../lib/topologies/server')
-        , bson = require('bson');
+    // Add event listeners
+    server.on('connect', function(server) {
+      let envShouldSupportCompression = configuration.manager.options.networkMessageCompressors == 'snappy' && server.ismaster.maxWireVersion >= WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION;
 
-      // Attempt to connect to server
-      var server = new Server({
-          host: configuration.host
-        , port: 21407
-        , bson: new bson()
-        , compression: {
-            compressors: ['snappy', 'zlib']
-          }
-      })
+      // Check compression has been negotiated
+      if (envShouldSupportCompression) {
+        test.equal('snappy', server.s.pool.options.agreedCompressor);
+      }
 
-      // Add event listeners
-      server.on('connect', function(server) {
-        var maxWireVersion = server.ismaster.maxWireVersion
-        // Check compression has been negotiated
-        if (maxWireVersion >= WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION) {
-          test.equal('snappy', server.s.pool.options.agreedCompressor);
+      server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+        test.equal(null, err);
+        test.equal(1, r.result.n);
+        if (envShouldSupportCompression) {
+          test.equal(true, r.message.fromCompressed);
+        } else {
+          test.equal(true, r.message.fromCompressed == false);
         }
 
-        server.insert('integration_tests.inserts', {a:1}, function(err, r) {
+        server.insert('integration_tests.inserts', {a:2}, {ordered:false}, function(err, r) {
           test.equal(null, err);
           test.equal(1, r.result.n);
-          if (maxWireVersion >= WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION) {
+          if (envShouldSupportCompression) {
             test.equal(true, r.message.fromCompressed);
           } else {
             test.equal(true, r.message.fromCompressed == false);
           }
 
-          server.insert('integration_tests.inserts', {a:2}, {ordered:false}, function(err, r) {
-            test.equal(null, err);
-            test.equal(1, r.result.n);
-            if (maxWireVersion >= WIRE_PROTOCOL_COMPRESSION_SUPPORT_MIN_VERSION) {
-              test.equal(true, r.message.fromCompressed);
-            } else {
-              test.equal(true, r.message.fromCompressed == false);
-            }
-
-            server.destroy();
-            remoteServer.stop();
-            test.done();
-          });
+          server.destroy();
+          test.done();
         });
       });
+    });
 
-      // Start connection
-      server.connect();
-
-    })
+    // Start connection
+    server.connect();
 
   }
 }
