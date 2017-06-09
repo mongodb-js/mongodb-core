@@ -330,6 +330,13 @@ if(argv.t == 'functional') {
     })
   }
 
+  if (argv.e == 'snappyCompression') {
+    config.manager = new ServerManager('mongod', {
+      dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
+      networkMessageCompressors: 'snappy'
+    })
+  }
+
   if(argv.e == 'replicaset') {
     config = {
         host: 'localhost', port: 31000, setName: 'rs'
@@ -411,20 +418,6 @@ if(argv.t == 'functional') {
       , manager: new ServerManager('mongod', {
         dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
         auth:null
-      })
-    }
-  }
-
-  if(argv.e == 'compression') {
-    config = {
-        host: 'localhost'
-      , port: 27017
-      , skipStart: startupOptions.skipStartup
-      , skipTermination: startupOptions.skipShutdown
-      , manager: new ServerManager('mongod', {
-        dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
-        auth:null,
-        networkMessageCompressors: 'snappy'
       })
     }
   }
