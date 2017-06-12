@@ -2,9 +2,6 @@ var Long = require('bson').Long,
     Snappy = require('snappy');
     zlib = require('zlib');
 
-var SNAPPY_ID = 1,
-    ZLIB_ID = 2;
-
 /*
  * Request class
  */
@@ -31,17 +28,9 @@ Request.prototype.reply = function(documents, options) {
   var startingFrom = typeof options.startingFrom == 'number' ? options.startingFrom : 0;
   var numberReturned = documents.length;
 
+  // Determine the compressor's ID
   if (options.compression && options.compression.compressor) {
-    switch (options.compression.compressor) {
-      case "snappy":
-        var compressorId = SNAPPY_ID;
-        break;
-      case "zlib":
-        var compressorId = ZLIB_ID;
-        break;
-      default:
-        var compressorId = 0
-    }
+    var compressorId = ['snappy', 'zlib'].indexOf(options.compression.compressor) + 1;
   }
 
   // Additional response Options
@@ -220,16 +209,15 @@ CompressedResponse.prototype.toBin = function() {
 
   var dataToBeCompressed = Buffer.concat([dataToBeCompressedHeader, dataToBeCompressedBody])
 
-  switch (this.compressorId) {
-    case 1: // Snappy
-      var compressedData = Snappy.compressSync(dataToBeCompressed);
-      break;
-    case 2: // Zlib
-      var compressedData = zlib.gzipSync(dataToBeCompressed)
-      break;
-    default:
-      var compressedData = dataToBeCompressed
-  }
+  // Compress the data
+  var compressorFunctions = [
+    function (data) {
+      return data;
+    },
+    Snappy.compressSync,
+    zlib.deflateSync
+  ]
+  compressedData = compressorFunctions[this.compressorId](dataToBeCompressed)
 
   // Calculate total size
   var totalSize = 4 + 4 + 4 + 4         // Header size
