@@ -29,7 +29,7 @@ exports['server should recieve list of client\'s supported compressors in handsh
 
     // Boot the mock
     co(function*() {
-      server = yield mockupdb.createServer(37019, 'localhost');
+      server = yield mockupdb.createServer(37046, 'localhost');
 
       // Primary state machine
       co(function*() {
@@ -48,7 +48,7 @@ exports['server should recieve list of client\'s supported compressors in handsh
     // Attempt to connect
     var client = new Server({
       host: 'localhost',
-      port: '37019',
+      port: '37046',
       connectionTimeout: 5000,
       socketTimeout: 1000,
       size: 1,
