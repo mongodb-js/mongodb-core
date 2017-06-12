@@ -128,7 +128,7 @@ exports['Should correctly connect server to single instance and execute insert']
 }
 
 exports['Should correctly connect server to single instance and execute insert (now with compression)'] = {
-  metadata: { requires: { topology: "single" } },
+  metadata: { requires: { topology: ["single", "snappyCompression"] } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
