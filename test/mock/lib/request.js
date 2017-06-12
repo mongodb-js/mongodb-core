@@ -1,5 +1,5 @@
 var Long = require('bson').Long,
-    Snappy = require('snappy');
+    Snappy = require('snappy'),
     zlib = require('zlib');
 
 var SNAPPY_ID = 1,
