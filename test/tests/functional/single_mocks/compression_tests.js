@@ -1,3 +1,5 @@
+"use strict";
+
 exports['server should recieve list of client\'s supported compressors in handshake'] = {
   metadata: {
     requires: {
