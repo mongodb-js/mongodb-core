@@ -1,6 +1,7 @@
 var Long = require('bson').Long,
-    Snappy = require('snappy');
-    zlib = require('zlib');
+    Snappy = require('snappy'),
+    zlib = require('zlib'),
+    OP_COMPRESSED = require('../../../lib/connection/commands').OP_COMPRESSED;
 
 /*
  * Request class
