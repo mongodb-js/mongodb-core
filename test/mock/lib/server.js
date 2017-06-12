@@ -150,7 +150,7 @@ var protocol = function(self, message) {
         var uncompressedData = Snappy.uncompressSync(compressedData)
         break;
       case 2:
-        var uncompressedData = zlib.unzipSync(compressedData)
+        var uncompressedData = zlib.inflateSync(compressedData)
         break;
     }
 
