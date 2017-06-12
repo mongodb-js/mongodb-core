@@ -18,7 +18,6 @@
   ],
   "dependencies": {
     "bson": "~1.0.4",
-    "require-optional": "^0.4.0",
     "require_optional": "^1.0.0"
   },
   "devDependencies": {
@@ -39,7 +38,7 @@
   },
   "peerOptionalDependencies": {
     "kerberos": "~0.0",
-    "snappy": "6.0.0",
+    "snappy": "^6.0.0",
     "bson-ext": "1.0.5"
   },
   "author": "Christian Kvalheim",
