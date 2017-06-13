@@ -117,7 +117,7 @@ var CompressedResponse = function(bson, uncompressedResponse, options) {
   // Header
   this.requestId = options.requestId;
   this.responseTo = options.responseTo;
-  this.opCode = 2012;
+  this.opCode = OP_COMPRESSED;
 
   // OP_COMPRESSED fields
   this.originalOpCode = 1;

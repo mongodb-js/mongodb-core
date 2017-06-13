@@ -127,7 +127,7 @@ exports['Should correctly connect server to single instance and execute insert']
   }
 }
 
-exports['Should correctly connect server to single instance and execute insert (now with compression)'] = {
+exports['Should correctly connect server to single instance and execute insert (with compression if supported by the server)'] = {
   metadata: { requires: { topology: ["single"] } },
 
   test: function(configuration, test) {
