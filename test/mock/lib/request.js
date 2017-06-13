@@ -1,7 +1,8 @@
 var Long = require('bson').Long,
     Snappy = require('./../../../lib/connection/utils').retrieveSnappy(),
     zlib = require('zlib'),
-    OP_COMPRESSED = require('../../../lib/connection/commands').OP_COMPRESSED;
+    OP_COMPRESSED = require('../../../lib/connection/commands').OP_COMPRESSED,
+    compressorIDs = require('../../../lib/connection/utils').compressorIDs;
 
 /*
  * Request class
@@ -211,14 +212,16 @@ CompressedResponse.prototype.toBin = function() {
   var dataToBeCompressed = Buffer.concat([dataToBeCompressedHeader, dataToBeCompressedBody])
 
   // Compress the data
-  var compressorFunctions = [
-    function (data) {
-      return data;
-    },
-    Snappy.compressSync,
-    zlib.deflateSync
-  ]
-  compressedData = compressorFunctions[this.compressorId](dataToBeCompressed)
+  switch (this.compressorId) {
+    case compressorIDs.snappy:
+      compressedData = Snappy.compressSync(dataToBeCompressed);
+      break;
+    case compressorIDs.zlib:
+      compressedData = zlib.deflateSync(dataToBeCompressed);
+      break;
+    default:
+      compressedData = dataToBeCompressed;
+  }
 
   // Calculate total size
   var totalSize = 4 + 4 + 4 + 4         // Header size
