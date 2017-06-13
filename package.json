@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "bson": "~1.0.4",
-    "require_optional": "^1.0.0"
+    "require_optional": "github:christkv/require_optional#master"
   },
   "devDependencies": {
     "co": "^4.5.4",
