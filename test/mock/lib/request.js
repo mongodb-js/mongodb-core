@@ -30,11 +30,6 @@ Request.prototype.reply = function(documents, options) {
   var startingFrom = typeof options.startingFrom == 'number' ? options.startingFrom : 0;
   var numberReturned = documents.length;
 
-  // Determine the compressor's ID
-  if (options.compression && options.compression.compressor) {
-    var compressorId = ['snappy', 'zlib'].indexOf(options.compression.compressor) + 1;
-  }
-
   // Additional response Options
   var killConnectionAfterNBytes = typeof options.killConnectionAfterNBytes == 'number'
     ? options.killConnectionAfterNBytes : null;
@@ -53,7 +48,7 @@ Request.prototype.reply = function(documents, options) {
       requestId: this.response.requestId + 1,
 
       originalOpCode: options.originalOpCode,
-      compressorId: compressorId
+      compressorID: compressorIDs[options.compression.compressor] || 0
     })
   } else {
     var response = new Response(this.bson, documents, {
@@ -126,7 +121,7 @@ var CompressedResponse = function(bson, uncompressedResponse, options) {
 
   // OP_COMPRESSED fields
   this.originalOpCode = 1;
-  this.compressorId = options.compressorId;
+  this.compressorID = options.compressorID;
 
   this.uncompressedResponse =  {
     cursorId: uncompressedResponse.cursorId,
@@ -212,7 +207,7 @@ CompressedResponse.prototype.toBin = function() {
   var dataToBeCompressed = Buffer.concat([dataToBeCompressedHeader, dataToBeCompressedBody])
 
   // Compress the data
-  switch (this.compressorId) {
+  switch (this.compressorID) {
     case compressorIDs.snappy:
       compressedData = Snappy.compressSync(dataToBeCompressed);
       break;
@@ -243,8 +238,8 @@ CompressedResponse.prototype.toBin = function() {
   writeInt32(header, 16, this.originalOpCode);
   // Write uncompressed message size
   writeInt64(header, 20, Long.fromNumber(uncompressedSize));
-  // Write compressorId
-  header[24] = this.compressorId & 0xff;
+  // Write compressorID
+  header[24] = this.compressorID & 0xff;
 
   // Add header to the list of buffers
   buffers.push(header);
