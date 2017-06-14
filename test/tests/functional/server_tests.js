@@ -825,7 +825,7 @@ exports['Should error when invalid compressors are specified'] = {
 }
 
 exports['Should correctly connect server specifying compression to single instance with authentication and insert documents'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: ["auth", "snappyCompression"] } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
@@ -879,7 +879,7 @@ exports['Should correctly connect server specifying compression to single instan
 }
 
 exports['Should fail to connect server specifying compression to single instance with incorrect authentication credentials'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: ["auth", "snappyCompression"] } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
