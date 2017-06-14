@@ -1,15 +1,13 @@
-os: linux
+sudo: required
+dist: trusty
 language: node_js
+
 node_js:
-  - "0.10"
-  - "0.12"
   - "4"
   - "6"
-  - "7"
-sudo: true
-#after_success: npm run coverage
+  - "8"
+
 env:
-  - MONGODB_VERSION=2.4.x
   - MONGODB_VERSION=2.6.x
   - MONGODB_VERSION=3.0.x
   - MONGODB_VERSION=3.2.x
