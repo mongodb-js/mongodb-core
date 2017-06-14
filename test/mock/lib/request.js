@@ -33,10 +33,10 @@ Request.prototype.reply = function(documents, options) {
   if ("compression" in options && "compressor" in options.compression) {
     switch (options.compression.compressor) {
       case "snappy":
-        var compressorId = SNAPPY_ID;
+        var compressorId = compressorIDs.snappy;
         break;
       case "zlib":
-        var compressorId = ZLIB_ID;
+        var compressorId = compressorIDs.zlib;
         break;
       default:
         var compressorId = 0

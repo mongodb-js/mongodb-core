@@ -141,7 +141,7 @@ exports['Should correctly connect server to single instance and execute insert (
     // Attempt to connect
     var server = new Server({
         host: configuration.host
-      , port: 27014 //configuration.port
+      , port: configuration.port
       , bson: new bson()
       , compression: { compressors: ['snappy', 'zlib'] }
     })
@@ -841,7 +841,7 @@ exports['Should correctly promoteValues when calling getMore on queries'] = {
   }
 }
 
-exports['should error when invalid compressors are specified'] = {
+exports['Should error when invalid compressors are specified'] = {
   metadata: { requires: { topology: "single" } },
 
   test: function(configuration, test) {
@@ -993,7 +993,7 @@ exports['Should correctly connect server to single instance and execute insert w
         if (envShouldSupportCompression) {
           test.equal(true, r.message.fromCompressed);
         } else {
-          test.equal(true, r.message.fromCompressed == false);
+          test.equal(true, r.message.fromCompressed == false || r.message.fromCompressed == undefined);
         }
 
         server.insert('integration_tests.inserts', {a:2}, {ordered:false}, function(err, r) {
@@ -1002,7 +1002,7 @@ exports['Should correctly connect server to single instance and execute insert w
           if (envShouldSupportCompression) {
             test.equal(true, r.message.fromCompressed);
           } else {
-            test.equal(true, r.message.fromCompressed == false);
+            test.equal(true, r.message.fromCompressed == false || r.message.fromCompressed == undefined);
           }
 
           server.destroy();
