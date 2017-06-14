@@ -444,19 +444,6 @@ if(argv.t == 'functional') {
     return runner.run(Configuration(config));
   }
 
-  // Use the specified version of mongod
-  if(argv.v) {
-    var version = argv.v
-    m.use({
-      version: version
-    }, function(err, data) {
-      if(err) return console.error(err) && process.exit(1);
-      console.log('Running tests against MongoDB version `%s`', data._values.version);
-      runner.run(Configuration(config));
-    })
-    return
-  }
-
   // Kill any running MongoDB processes and
   // `install $MONGODB_VERSION` || `use existing installation` || `install stable`
   m(function(err){
