@@ -115,6 +115,7 @@ exports['should connect and insert document when server is responding with OP_CO
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
             test.equal(request.response.documents[0].compression[1], 'zlib');
+            test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with no compression
             request.reply(serverResponse, { compression: { compressor: "no_compression"}});
           } else if (currentStep == 1) {
@@ -230,6 +231,7 @@ exports['should connect and insert document when server is responding with OP_CO
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
             test.equal(request.response.documents[0].compression[1], 'zlib');
+            test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with snappy
             request.reply(serverResponse, { compression: { compressor: "snappy"}});
           } else if (currentStep == 1) {
@@ -344,6 +346,7 @@ exports['should connect and insert document when server is responding with OP_CO
           if (currentStep == 0) {
             test.equal(request.response.documents[0].compression[0], 'snappy');
             test.equal(request.response.documents[0].compression[1], 'zlib');
+            test.equal(server.isCompressed, false);
             // Acknowledge connection using OP_COMPRESSED with zlib
             request.reply(serverResponse, { compression: { compressor: "zlib"}});
           } else if (currentStep == 1) {
