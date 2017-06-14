@@ -106,10 +106,11 @@ var Response = function(bson, documents, options) {
   // Store documents
   this.documents = documents;
 }
+
 /**
-- * @ignore
-- * Preparing a compressed response of the OP_COMPRESSED type
-- */
+* @ignore
+* Preparing a compressed response of the OP_COMPRESSED type
+*/
 var CompressedResponse = function(bson, uncompressedResponse, options) {
   this.bson = bson;
 
