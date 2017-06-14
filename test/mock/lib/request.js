@@ -1,7 +1,7 @@
 var Long = require('bson').Long,
     Snappy = require('./../../../lib/connection/utils').retrieveSnappy(),
     zlib = require('zlib'),
-    OP_COMPRESSED = require('../../../lib/connection/commands').OP_COMPRESSED,
+    opcodes = require('../../../lib/wireprotocol/shared').opcodes,
     compressorIDs = require('../../../lib/connection/utils').compressorIDs;
 
 /*
@@ -117,10 +117,10 @@ var CompressedResponse = function(bson, uncompressedResponse, options) {
   // Header
   this.requestId = options.requestId;
   this.responseTo = options.responseTo;
-  this.opCode = OP_COMPRESSED;
+  this.opCode = opcodes.OP_COMPRESSED;
 
   // OP_COMPRESSED fields
-  this.originalOpCode = 1;
+  this.originalOpCode = opcodes.OP_REPLY;
   this.compressorID = options.compressorID;
 
   this.uncompressedResponse =  {
