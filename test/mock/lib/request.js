@@ -30,19 +30,6 @@ Request.prototype.reply = function(documents, options) {
   var startingFrom = typeof options.startingFrom == 'number' ? options.startingFrom : 0;
   var numberReturned = documents.length;
 
-  if ("compression" in options && "compressor" in options.compression) {
-    switch (options.compression.compressor) {
-      case "snappy":
-        var compressorId = compressorIDs.snappy;
-        break;
-      case "zlib":
-        var compressorId = compressorIDs.zlib;
-        break;
-      default:
-        var compressorId = 0
-    }
-  }
-
   // Additional response Options
   var killConnectionAfterNBytes = typeof options.killConnectionAfterNBytes == 'number'
     ? options.killConnectionAfterNBytes : null;
@@ -119,7 +106,10 @@ var Response = function(bson, documents, options) {
   // Store documents
   this.documents = documents;
 }
-
+/**
+- * @ignore
+- * Preparing a compressed response of the OP_COMPRESSED type
+- */
 var CompressedResponse = function(bson, uncompressedResponse, options) {
   this.bson = bson;
 
