@@ -1504,7 +1504,10 @@ exports['Should only read from secondaries when read preference secondaryPreferr
                 secondSecondaryServer.destroy();
                 server.destroy();
                 running = false; 
-                test.done();               
+
+                setTimeout(function() {
+                  test.done();
+                }, 500);
               }
             });
           }
