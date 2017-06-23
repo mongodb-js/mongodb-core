@@ -1444,7 +1444,7 @@ exports['Should only read from secondaries when read preference secondaryPreferr
       });
 
       // Second secondary state machine
-      co(function*() {2
+      co(function*() {
         while(running) {
           var request = yield secondSecondaryServer.receive();
           var doc = request.document;
@@ -1512,56 +1512,6 @@ exports['Should only read from secondaries when read preference secondaryPreferr
             });
           }
         }, 1000);
-
-        // // Set up a write
-        // function schedule() {
-        //   // Perform a find
-        //   _server.command('test.test', {
-        //       count: 'test.test'
-        //     , batchSize: 2
-        //   }, {
-        //     readPreference: new ReadPreference('primaryPreferred')
-        //   }, function(err, r) {
-        //     // Let all sockets properly close
-        //     process.nextTick(function() {
-        //       // Test primaryPreferred
-        //       _server.command('test.test', {
-        //           count: 'test.test'
-        //         , batchSize: 2
-        //       }, {
-        //         readPreference: new ReadPreference('primaryPreferred')
-        //       }, function(err, r) {
-        //         test.equal(null, err);
-        //         test.ok(r.connection.port != 32000);
-
-        //         // Test secondaryPreferred
-        //         _server.command('test.test', {
-        //             count: 'test.test'
-        //           , batchSize: 2
-        //         }, {
-        //           readPreference: new ReadPreference('secondaryPreferred')
-        //         }, function(err, r) {
-        //           test.equal(null, err);
-        //           test.ok(r.connection.port != 32000);
-        //           primaryServer.destroy();
-        //           firstSecondaryServer.destroy();
-        //           secondSecondaryServer.destroy();
-        //           server.destroy();
-        //           running = false;
-
-        //           setTimeout(function() {
-        //             test.equal(0, Object.keys(Connection.connections()).length);
-        //             Connection.disableConnectionAccounting();
-        //             test.done();
-        //           }, 1000);
-        //         });
-        //       });
-        //     });
-        //   });
-        // }
-
-        // // Schedule an insert
-        // schedule();
       });
 
       // Gives proxies a chance to boot up
