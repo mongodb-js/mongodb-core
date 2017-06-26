@@ -2,7 +2,7 @@ var Long = require('bson').Long,
     Snappy = require('./../../../lib/connection/utils').retrieveSnappy(),
     zlib = require('zlib'),
     opcodes = require('../../../lib/wireprotocol/shared').opcodes,
-    compressorIDs = require('../../../lib/connection/utils').compressorIDs;
+    compressorIDs = require('../../../lib/wireprotocol/compression').compressorIDs;
 
 /*
  * Request class
