@@ -50,12 +50,12 @@ exports['Should correctly emit sdam monitoring events for single server'] = {
 
     // Boot the mock
     co(function*() {
-      server = yield mockupdb.createServer(37018, 'localhost');
+      __server = yield mockupdb.createServer(37018, 'localhost');
 
       // Primary state machine
       co(function*() {
         while(running) {
-          var request = yield server.receive();
+          var request = yield __server.receive();
 
           // Get the document
           var doc = request.document;
@@ -159,6 +159,8 @@ exports['Should correctly emit sdam monitoring events for single server'] = {
             ]
           }
         }, flags[5]);
+        running = false;
+        __server.destroy();
         test.done();
       }, 100);
     });
