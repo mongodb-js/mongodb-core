@@ -15,3 +15,6 @@ env:
   - MONGODB_VERSION=3.2.x
   - MONGODB_VERSION=3.4.x
   - MONGODB_VERSION=3.6.x
+cache:
+  directories:
+    - "node_modules"
