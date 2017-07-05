@@ -334,6 +334,13 @@ if(argv.t == 'functional') {
     })
   }
 
+  if (argv.e == 'snappyCompression') {
+    config.manager = new ServerManager('mongod', {
+      dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
+      networkMessageCompressors: 'snappy'
+    })
+  }
+
   if(argv.e == 'replicaset') {
     config = {
         host: 'localhost', port: 31000, setName: 'rs'

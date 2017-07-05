@@ -2,7 +2,7 @@ var Long = require('bson').Long,
     Snappy = require('./../../../lib/connection/utils').retrieveSnappy(),
     zlib = require('zlib'),
     opcodes = require('../../../lib/wireprotocol/shared').opcodes,
-    compressorIDs = require('../../../lib/connection/utils').compressorIDs;
+    compressorIDs = require('../../../lib/wireprotocol/compression').compressorIDs;
 
 /*
  * Request class
@@ -46,7 +46,6 @@ Request.prototype.reply = function(documents, options) {
       // Header field
       responseTo: this.response.requestId,
       requestId: this.response.requestId + 1,
-
       originalOpCode: options.originalOpCode,
       compressorID: compressorIDs[options.compression.compressor] || 0
     })
@@ -109,11 +108,12 @@ var Response = function(bson, documents, options) {
 }
 
 /**
- * @ignore
- * Preparing a compressed response of the OP_COMPRESSED type
- */
+* @ignore
+* Preparing a compressed response of the OP_COMPRESSED type
+*/
 var CompressedResponse = function(bson, uncompressedResponse, options) {
   this.bson = bson;
+
   // Header
   this.requestId = options.requestId;
   this.responseTo = options.responseTo;
