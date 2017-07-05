@@ -1,6 +1,11 @@
 var net = require('net'),
   Long = require('bson').Long,
   BSON = require('bson'),
+  Snappy = require('snappy'),
+  zlib = require('zlib'),
+  MESSAGE_HEADER_SIZE = require('../../../lib/wireprotocol/shared').MESSAGE_HEADER_SIZE,
+  opcodes = require('../../../lib/wireprotocol/shared').opcodes,
+  compressorIDs = require('../../../lib/wireprotocol/compression').compressorIDs,
   Request = require('./request'),
   Query = require('./protocol').Query,
   GetMore = require('./protocol').GetMore,
@@ -122,20 +127,61 @@ Server.prototype.receive = function() {
 
 var protocol = function(self, message) {
   var index = 0
-  // Get the opCode for the message
+  self.isCompressed = false;
+  // Get the size for the message
   var size = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
   if(size != message.length) throw new Error('corrupt wire protocol message');
   // Adjust to opcode
   index = 12;
   // Get the opCode for the message
   var type = message[index++] | message[index++] << 8 | message[index++] << 16 | message[index++] << 24;
+
+  // Unpack and decompress if the message is OP_COMPRESSED
+  if(type == opcodes.OP_COMPRESSED) {
+    var requestID = message.readInt32LE(4)
+    var responseTo = message.readInt32LE(8)
+    var originalOpcode = message.readInt32LE(16)
+    var uncompressedSize = message.readInt32LE(20)
+    var compressorID = message.readUInt8(24)
+
+    var compressedData = message.slice(25)
+    switch (compressorID) {
+      case compressorIDs.snappy:
+        var uncompressedData = Snappy.uncompressSync(compressedData)
+        break;
+      case compressorIDs.zlib:
+        var uncompressedData = zlib.inflateSync(compressedData)
+        break;
+      default:
+        var uncompressedData = compressedData;
+    }
+
+    if (uncompressedData.length !== uncompressedSize) {
+      throw new Error('corrupt wire protocol message: uncompressed message is not the correct size')
+    }
+
+    // Reconstruct the msgHeader of the uncompressed opcode
+    var newMsgHeader = Buffer(MESSAGE_HEADER_SIZE);
+    newMsgHeader.writeInt32LE(MESSAGE_HEADER_SIZE + uncompressedData.length, 0)
+    newMsgHeader.writeInt32LE(requestID, 4)
+    newMsgHeader.writeInt32LE(responseTo, 8)
+    newMsgHeader.writeInt32LE(originalOpcode, 12)
+
+    // Full uncompressed message
+    var message = Buffer.concat([newMsgHeader, uncompressedData])
+    var type = originalOpcode
+
+    // Compressed flag
+    self.isCompressed = true;
+  }
+
   // Switch on type
-  if(type == 2001) return new Update(self.bson, message);
-  if(type == 2002) return new Insert(self.bson, message);
-  if(type == 2004) return new Query(self.bson, message);
-  if(type == 2005) return new GetMore(self.bson, message);
-  if(type == 2006) return new Delete(self.bson, message);
-  if(type == 2007) return new KillCursor(self.bson, message);
+  if(type == opcodes.OP_UPDATE) return new Update(self.bson, message);
+  if(type == opcodes.OP_INSERT) return new Insert(self.bson, message);
+  if(type == opcodes.OP_QUERY) return new Query(self.bson, message);
+  if(type == opcodes.OP_GETMORE) return new GetMore(self.bson, message);
+  if(type == opcodes.OP_DELETE) return new Delete(self.bson, message);
+  if(type == opcodes.OP_KILL_CURSORS) return new KillCursor(self.bson, message);
   throw new Error('unknown wire protocol message type');
 }
 
