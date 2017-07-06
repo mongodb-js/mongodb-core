@@ -74,7 +74,7 @@ var setUp = function(configuration, options, callback) {
 }
 
 exports['Should fail to authenticat emitting an error due to it being the initial connect'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var ReplSet = require('../../../lib/topologies/replset')
@@ -139,7 +139,7 @@ exports['Should fail to authenticat emitting an error due to it being the initia
 }
 
 exports['Should correctly authenticate server using scram-sha-1 using connect auth'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var ReplSet = require('../../../lib/topologies/replset')
@@ -206,7 +206,7 @@ exports['Should correctly authenticate server using scram-sha-1 using connect au
 }
 
 exports['Should correctly authenticate using auth method instead of connect'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var ReplSet = require('../../../lib/topologies/replset')
@@ -276,7 +276,7 @@ exports['Should correctly authenticate using auth method instead of connect'] = 
 }
 
 exports['Should correctly authenticate using auth method instead of connect and logout user'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var ReplSet = require('../../../lib/topologies/replset')

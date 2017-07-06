@@ -5,7 +5,7 @@ var f = require('util').format,
   executeCommand = require('./shared').executeCommand;
 
 exports['Should fail to authenticate server using scram-sha-1 using connect auth'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
@@ -48,7 +48,7 @@ exports['Should fail to authenticate server using scram-sha-1 using connect auth
 }
 
 exports['Should correctly authenticate server using scram-sha-1 using connect auth'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
@@ -98,7 +98,7 @@ exports['Should correctly authenticate server using scram-sha-1 using connect au
 }
 
 exports['Should correctly authenticate server using scram-sha-1 using connect auth and maintain auth on new connections'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
@@ -176,7 +176,7 @@ exports['Should correctly authenticate server using scram-sha-1 using connect au
 }
 
 exports['Should correctly authenticate server using scram-sha-1 using auth method'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
@@ -261,7 +261,7 @@ exports['Should correctly authenticate server using scram-sha-1 using auth metho
 }
 
 exports['Should correctly authenticate server using scram-sha-1 using connect auth then logout'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
@@ -325,7 +325,7 @@ exports['Should correctly authenticate server using scram-sha-1 using connect au
 }
 
 exports['Should correctly have server auth wait for logout to finish'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Server = require('../../../lib/topologies/server')
