@@ -20,18 +20,18 @@ Sharded.prototype.start = function(callback) {
     // Add one shard
     self.topology.addShard([{
       options: {
-        bind_ip: 'localhost', port: 31000, dbpath: f('%s/../db/31000', __dirname)
+        bind_ip: 'localhost', port: 31000, dbpath: f('%s/../db/31000', __dirname), shardsvr: null
       }
     }, {
       options: {
-        bind_ip: 'localhost', port: 31001, dbpath: f('%s/../db/31001', __dirname)
+        bind_ip: 'localhost', port: 31001, dbpath: f('%s/../db/31001', __dirname), shardsvr: null
       }
     }, {
       // Type of node
       arbiter: true,
       // mongod process options
       options: {
-        bind_ip: 'localhost', port: 31002, dbpath: f('%s/../db/31002', __dirname)
+        bind_ip: 'localhost', port: 31002, dbpath: f('%s/../db/31002', __dirname), shardsvr: null
       }
     }], {
       replSet: 'rs1'
@@ -39,18 +39,18 @@ Sharded.prototype.start = function(callback) {
       // Add one shard
       self.topology.addShard([{
         options: {
-          bind_ip: 'localhost', port: 31010, dbpath: f('%s/../db/31010', __dirname)
+          bind_ip: 'localhost', port: 31010, dbpath: f('%s/../db/31010', __dirname), shardsvr: null
         }
       }, {
         options: {
-          bind_ip: 'localhost', port: 31011, dbpath: f('%s/../db/31011', __dirname)
+          bind_ip: 'localhost', port: 31011, dbpath: f('%s/../db/31011', __dirname), shardsvr: null
         }
       }, {
         // Type of node
         arbiter: true,
         // mongod process options
         options: {
-          bind_ip: 'localhost', port: 31012, dbpath: f('%s/../db/31012', __dirname)
+          bind_ip: 'localhost', port: 31012, dbpath: f('%s/../db/31012', __dirname), shardsvr: null
         }
       }], {
         replSet: 'rs2'
