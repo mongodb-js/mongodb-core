@@ -13,6 +13,7 @@ try {
 
 module.exports = {
     MongoError: require('./lib/error')
+  , MongoNetworkError: require('./lib/network_error')
   , Connection: require('./lib/connection/connection')
   , Server: require('./lib/topologies/server')
   , ReplSet: require('./lib/topologies/replset')
