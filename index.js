@@ -12,7 +12,8 @@ try {
 } catch(err) {}
 
 module.exports = {
-    MongoError: require('./lib/error')
+    MongoError: require('./lib/error').MongoError
+  , MongoNetworkError: require('./lib/error').MongoNetworkError
   , Connection: require('./lib/connection/connection')
   , Server: require('./lib/topologies/server')
   , ReplSet: require('./lib/topologies/replset')
