@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node test/runner.js -t functional",
+    "mocha_test": "node node_modules/mongodb-test-runner/lib/runner.js -f test/mocha_tests",
     "coverage": "node_modules/.bin/nyc node test/runner.js -t functional -l && node_modules/.bin/nyc report --reporter=text-lcov | node_modules/.bin/coveralls",
     "lint": "eslint lib"
   },
