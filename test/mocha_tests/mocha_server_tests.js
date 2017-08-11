@@ -287,12 +287,13 @@ describe('Server tests', function() {
 
   it('should correctly recover with multiple restarts', {
     metadata: {
-      requires: { topology: ['single'] },
-      ignore: { travis: true }
+      requires: { topology: ['single'] }
     },
 
     // The actual test we wish to run
     test: function(done) {
+      this.timeout(0);
+
       var self = this;
       var testDone = false;
 
@@ -349,7 +350,7 @@ describe('Server tests', function() {
 
       var restartServer = function() {
         if (count === 0) {
-          done = true;
+          testDone = true;
           return;
         }
 
