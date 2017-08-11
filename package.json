@@ -4,8 +4,7 @@
   "description": "Core MongoDB driver functionality, no bells and whistles and meant for integration not end applications",
   "main": "index.js",
   "scripts": {
-    "test": "node test/runner.js -t functional",
-    "mocha_test": "node node_modules/mongodb-test-runner/lib/runner.js -f test/tests/functional",
+    "test": "mongodb-test-runner -f test/tests/functional",
     "coverage": "node_modules/.bin/nyc node test/runner.js -t functional -l && node_modules/.bin/nyc report --reporter=text-lcov | node_modules/.bin/coveralls",
     "lint": "eslint lib"
   },
@@ -29,7 +28,7 @@
     "integra": "0.1.8",
     "jsdoc": "3.3.0-alpha8",
     "mkdirp": "0.5.0",
-    "mongodb-test-runner": "^1.1.2",
+    "mongodb-test-runner": "^1.1.4",
     "mongodb-topology-manager": "1.0.x",
     "mongodb-version-manager": "christkv/mongodb-version-manager#master",
     "nyc": "^5.5.0",
