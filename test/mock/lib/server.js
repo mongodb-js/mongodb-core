@@ -33,7 +33,7 @@ var Server = function(port, host, options) {
   this.host = host;
   this.port = port;
   // Create a server socket
-  this.socket = net.createServer();
+  this.server = net.createServer();
   // Responses
   this.messages = [];
   // state
@@ -48,7 +48,7 @@ inherits(Server, EventEmitter);
 
 Server.prototype.destroy = function() {
   this.state = 'destroyed';
-  this.socket.close();
+  this.server.close();
 
   this.sockets.forEach(function(x) {
     x.destroy();
@@ -60,12 +60,12 @@ Server.prototype.start = function() {
 
   // Return start promise
   return new Promise(function(resolve, reject) {
-    self.socket.on('error', function(err) {
-      console.log('!!!!!!!!!!!!!!!!!!!! error reject');
+    self.server.on('error', function(err) {
+      console.log("!!!!!!!!!!!!!!!!!!!! error reject")
       reject(err);
     });
 
-    self.socket.on('connection', function(c) {
+    self.server.on('connection', function(c) {
       self.connections = self.connections + 1;
       self.sockets.push(c);
 
@@ -98,7 +98,7 @@ Server.prototype.start = function() {
       });
     });
 
-    self.socket.listen(self.port, self.host, function() {
+    self.server.listen(self.port, self.host, function() {
       resolve(self);
     });
 
