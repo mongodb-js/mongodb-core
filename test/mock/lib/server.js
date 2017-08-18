@@ -47,11 +47,21 @@ var Server = function(port, host, options) {
 inherits(Server, EventEmitter);
 
 Server.prototype.destroy = function() {
-  this.state = 'destroyed';
-  this.server.close();
+  var self = this;
+  if (self.state === 'destroyed') {
+    return Promise.resolve();
+  }
 
-  this.sockets.forEach(function(x) {
-    x.destroy();
+  return new Promise(function(resolve, reject) {
+    self.sockets.forEach(function(x) {
+      x.destroy();
+    });
+
+    self.server.close(function(err) {
+      if (err) return reject(err);
+      self.state = 'destroyed';
+      resolve();
+    });
   });
 };
 
@@ -61,7 +71,7 @@ Server.prototype.start = function() {
   // Return start promise
   return new Promise(function(resolve, reject) {
     self.server.on('error', function(err) {
-      console.log("!!!!!!!!!!!!!!!!!!!! error reject")
+      console.log('!!!!!!!!!!!!!!!!!!!! error reject');
       reject(err);
     });
 
@@ -104,7 +114,11 @@ Server.prototype.start = function() {
 
     self.on('message', function(message, connection) {
       var request = new Request(self, connection, message);
-      self.messages.push(request);
+      if (self.messageHandler) {
+        self.messageHandler(request);
+      } else {
+        self.messages.push(request);
+      }
     });
 
     self.state = 'running';
@@ -131,6 +145,10 @@ Server.prototype.receive = function() {
 
     waiting();
   });
+};
+
+Server.prototype.setMessageHandler = function(messageHandler) {
+  this.messageHandler = messageHandler;
 };
 
 var protocol = function(self, message) {
