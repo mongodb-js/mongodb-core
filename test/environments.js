@@ -4,7 +4,7 @@ var f = require('util').format;
 var path = require('path');
 var ServerManager = require('mongodb-topology-manager').Server,
   ReplSetManager = require('mongodb-topology-manager').ReplSet,
-  ShardingManager = require('./test_topologies.js').Sharded;
+  ShardingManager = require('mongodb-topology-manager').Sharded;
 
 var replicaSetEnvironment = function() {
   return {
@@ -67,6 +67,118 @@ var replicaSetEnvironment = function() {
 };
 
 var shardedEnvironment = function() {
+  var shardingManager = new ShardingManager({
+    mongod: 'mongod',
+    mongos: 'mongos'
+  });
+
+  shardingManager.addShard(
+    [
+      {
+        options: {
+          bind_ip: 'localhost',
+          port: 31000,
+          dbpath: f('%s/../db/31000', __dirname)
+        }
+      },
+      {
+        options: {
+          bind_ip: 'localhost',
+          port: 31001,
+          dbpath: f('%s/../db/31001', __dirname)
+        }
+      },
+      {
+        arbiter: true,
+        options: {
+          bind_ip: 'localhost',
+          port: 31002,
+          dbpath: f('%s/../db/31002', __dirname)
+        }
+      }
+    ],
+    {
+      replSet: 'rs1'
+    }
+  );
+
+  shardingManager.addShard(
+    [
+      {
+        options: {
+          bind_ip: 'localhost',
+          port: 31010,
+          dbpath: f('%s/../db/31010', __dirname)
+        }
+      },
+      {
+        options: {
+          bind_ip: 'localhost',
+          port: 31011,
+          dbpath: f('%s/../db/31011', __dirname)
+        }
+      },
+      {
+        arbiter: true,
+        options: {
+          bind_ip: 'localhost',
+          port: 31012,
+          dbpath: f('%s/../db/31012', __dirname)
+        }
+      }
+    ],
+    {
+      replSet: 'rs2'
+    }
+  );
+
+  shardingManager.addConfigurationServers(
+    [
+      {
+        options: {
+          bind_ip: 'localhost',
+          port: 35000,
+          dbpath: f('%s/../db/35000', __dirname)
+        }
+      },
+      {
+        options: {
+          bind_ip: 'localhost',
+          port: 35001,
+          dbpath: f('%s/../db/35001', __dirname)
+        }
+      },
+      {
+        options: {
+          bind_ip: 'localhost',
+          port: 35002,
+          dbpath: f('%s/../db/35002', __dirname)
+        }
+      }
+    ],
+    {
+      replSet: 'rs3'
+    }
+  );
+
+  shardingManager.addProxies(
+    [
+      {
+        bind_ip: 'localhost',
+        port: 51000,
+        configdb: 'localhost:35000,localhost:35001,localhost:35002'
+      },
+      {
+        bind_ip: 'localhost',
+        port: 51001,
+        configdb: 'localhost:35000,localhost:35001,localhost:35002'
+      }
+    ],
+    {
+      binary: 'mongos'
+    }
+  );
+
   return {
     host: 'localhost',
     port: 51000,
