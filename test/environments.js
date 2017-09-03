@@ -2,9 +2,11 @@
 
 var f = require('util').format;
 var path = require('path');
-var ServerManager = require('mongodb-topology-manager').Server,
-  ReplSetManager = require('mongodb-topology-manager').ReplSet,
-  ShardingManager = require('mongodb-topology-manager').Sharded;
+
+var topologyManagers = require('mongodb-test-runner').topologyManagers,
+  ServerManager = topologyManagers.Server,
+  ReplSetManager = topologyManagers.ReplSet,
+  ShardingManager = topologyManagers.Sharded;
 
 var replicaSetEnvironment = function() {
   return {
