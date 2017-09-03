@@ -1,8 +1,8 @@
 var Long = require('bson').Long,
-    Snappy = require('./../../../lib/connection/utils').retrieveSnappy(),
-    zlib = require('zlib'),
-    opcodes = require('../../../lib/wireprotocol/shared').opcodes,
-    compressorIDs = require('../../../lib/wireprotocol/compression').compressorIDs;
+  Snappy = require('./../../../lib/connection/utils').retrieveSnappy(),
+  zlib = require('zlib'),
+  opcodes = require('../../../lib/wireprotocol/shared').opcodes,
+  compressorIDs = require('../../../lib/wireprotocol/compression').compressorIDs;
 
 /*
  * Request class
@@ -12,13 +12,11 @@ var Request = function(server, connection, response) {
   this.connection = connection;
   this.response = response;
   this.bson = server.bson;
-}
+};
 
 Request.prototype.receive = function() {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
+  return Promise.resolve();
+};
 
 Request.prototype.reply = function(documents, options) {
   options = options || {};
@@ -31,26 +29,31 @@ Request.prototype.reply = function(documents, options) {
   var numberReturned = documents.length;
 
   // Additional response Options
-  var killConnectionAfterNBytes = typeof options.killConnectionAfterNBytes == 'number'
-    ? options.killConnectionAfterNBytes : null;
+  var killConnectionAfterNBytes =
+    typeof options.killConnectionAfterNBytes == 'number' ? options.killConnectionAfterNBytes : null;
 
   // Create the Response document
+  var response;
   if (options.compression) {
-    var response = new CompressedResponse(this.bson, {
-      cursorId: cursorId,
-      responseFlags: responseFlags,
-      startingFrom: startingFrom,
-      numberReturned: numberReturned,
-      documents: documents
-    }, {
-      // Header field
-      responseTo: this.response.requestId,
-      requestId: this.response.requestId + 1,
-      originalOpCode: options.originalOpCode,
-      compressorID: compressorIDs[options.compression.compressor] || 0
-    })
+    response = new CompressedResponse(
+      this.bson,
+      {
+        cursorId: cursorId,
+        responseFlags: responseFlags,
+        startingFrom: startingFrom,
+        numberReturned: numberReturned,
+        documents: documents
+      },
+      {
+        // Header field
+        responseTo: this.response.requestId,
+        requestId: this.response.requestId + 1,
+        originalOpCode: options.originalOpCode,
+        compressorID: compressorIDs[options.compression.compressor] || 0
+      }
+    );
   } else {
-    var response = new Response(this.bson, documents, {
+    response = new Response(this.bson, documents, {
       // Header field
       responseTo: this.response.requestId,
       requestId: this.response.requestId + 1,
@@ -67,16 +70,16 @@ Request.prototype.reply = function(documents, options) {
   var buffer = response.toBin();
 
   // Do we kill connection after n bytes
-  if(killConnectionAfterNBytes == null) {
+  if (killConnectionAfterNBytes == null) {
     this.connection.write(buffer);
   } else {
     // Fail to send whole reply
-    if(killConnectionAfterNBytes <= buffer.length) {
+    if (killConnectionAfterNBytes <= buffer.length) {
       this.connection.write(buffer.slice(0, killConnectionAfterNBytes));
       this.connection.destroy();
     }
   }
-}
+};
 
 Object.defineProperty(Request.prototype, 'type', {
   get: function() {
@@ -98,14 +101,14 @@ var Response = function(bson, documents, options) {
   this.opCode = 1;
 
   // Message fields
-  this.cursorId = options.cursorId,
-  this.responseFlags = options.responseFlags,
-  this.startingFrom = options.startingFrom,
-  this.numberReturned = options.numberReturned
+  (this.cursorId = options.cursorId),
+    (this.responseFlags = options.responseFlags),
+    (this.startingFrom = options.startingFrom),
+    (this.numberReturned = options.numberReturned);
 
   // Store documents
   this.documents = documents;
-}
+};
 
 /**
 * @ignore
@@ -123,14 +126,14 @@ var CompressedResponse = function(bson, uncompressedResponse, options) {
   this.originalOpCode = opcodes.OP_REPLY;
   this.compressorID = options.compressorID;
 
-  this.uncompressedResponse =  {
+  this.uncompressedResponse = {
     cursorId: uncompressedResponse.cursorId,
     responseFlags: uncompressedResponse.responseFlags,
     startingFrom: uncompressedResponse.startingFrom,
     numberReturned: uncompressedResponse.numberReturned,
     documents: uncompressedResponse.documents
-  }
-}
+  };
+};
 
 Response.prototype.toBin = function() {
   var self = this;
@@ -148,9 +151,16 @@ Response.prototype.toBin = function() {
   });
 
   // Calculate total size
-  var totalSize = 4 + 4 + 4 + 4 // Header size
-    + 4 + 8 + 4 + 4             // OP_REPLY Header size
-    + docsSize;                 // OP_REPLY Documents
+  var totalSize =
+    4 +
+    4 +
+    4 +
+    4 + // Header size
+    4 +
+    8 +
+    4 +
+    4 + // OP_REPLY Header size
+    docsSize; // OP_REPLY Documents
 
   // Header and op_reply fields
   var header = new Buffer(4 + 4 + 4 + 4 + 4 + 8 + 4 + 4);
@@ -178,7 +188,7 @@ Response.prototype.toBin = function() {
   buffers = buffers.concat(docs);
   // Return all the buffers
   return Buffer.concat(buffers);
-}
+};
 
 CompressedResponse.prototype.toBin = function() {
   var self = this;
@@ -199,14 +209,15 @@ CompressedResponse.prototype.toBin = function() {
   var dataToBeCompressedBody = Buffer.concat(docs);
 
   // Write response flags
-  writeInt32(dataToBeCompressedHeader, 0, this.uncompressedResponse.responseFlags)
-  writeInt64(dataToBeCompressedHeader, 4, this.uncompressedResponse.cursorId)
-  writeInt32(dataToBeCompressedHeader, 12, this.uncompressedResponse.startingFrom)
-  writeInt32(dataToBeCompressedHeader, 16, this.uncompressedResponse.numberReturned)
+  writeInt32(dataToBeCompressedHeader, 0, this.uncompressedResponse.responseFlags);
+  writeInt64(dataToBeCompressedHeader, 4, this.uncompressedResponse.cursorId);
+  writeInt32(dataToBeCompressedHeader, 12, this.uncompressedResponse.startingFrom);
+  writeInt32(dataToBeCompressedHeader, 16, this.uncompressedResponse.numberReturned);
 
-  var dataToBeCompressed = Buffer.concat([dataToBeCompressedHeader, dataToBeCompressedBody])
+  var dataToBeCompressed = Buffer.concat([dataToBeCompressedHeader, dataToBeCompressedBody]);
 
   // Compress the data
+  var compressedData;
   switch (this.compressorID) {
     case compressorIDs.snappy:
       compressedData = Snappy.compressSync(dataToBeCompressed);
@@ -219,9 +230,15 @@ CompressedResponse.prototype.toBin = function() {
   }
 
   // Calculate total size
-  var totalSize = 4 + 4 + 4 + 4         // Header size
-    + 4 + 4 + 1                         // OP_COMPRESSED fields
-    + compressedData.length;            // OP_REPLY fields
+  var totalSize =
+    4 +
+    4 +
+    4 +
+    4 + // Header size
+    4 +
+    4 +
+    1 + // OP_COMPRESSED fields
+    compressedData.length; // OP_REPLY fields
 
   // Header and op_reply fields
   var header = new Buffer(totalSize - compressedData.length);
@@ -245,10 +262,9 @@ CompressedResponse.prototype.toBin = function() {
   buffers.push(header);
   // Add docs to list of buffers
   buffers = buffers.concat(compressedData);
-  // Return all the buffers
-  var concatBuffer = Buffer.concat(buffers)
+
   return Buffer.concat(buffers);
-}
+};
 
 var writeInt32 = function(buffer, index, value) {
   buffer[index] = value & 0xff;
@@ -256,7 +272,7 @@ var writeInt32 = function(buffer, index, value) {
   buffer[index + 2] = (value >> 16) & 0xff;
   buffer[index + 3] = (value >> 24) & 0xff;
   return;
-}
+};
 
 var writeInt64 = function(buffer, index, value) {
   var lowBits = value.getLowBits();
@@ -272,6 +288,6 @@ var writeInt64 = function(buffer, index, value) {
   buffer[index + 6] = (highBits >> 16) & 0xff;
   buffer[index + 7] = (highBits >> 24) & 0xff;
   return;
-}
+};
 
 module.exports = Request;

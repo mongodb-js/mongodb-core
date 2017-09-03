@@ -1,9 +1,10 @@
-"use strict";
+'use strict';
 
-var mongodb = require('../../.')
-  , Server = mongodb.Server;
+var expect = require('chai').expect,
+  mongodb = require('../../.'),
+  Server = mongodb.Server;
 
-var simple_100_document_toArray = function(connection_string) {
+var simple_100_document_toArray = function() {
   return function() {
     return {
       server: null,
@@ -12,17 +13,17 @@ var simple_100_document_toArray = function(connection_string) {
       setup: function(callback) {
         var self = this;
 
-        var server = new Server({host: 'localhost', port: 27017});
+        var server = new Server({ host: 'localhost', port: 27017 });
         server.on('connect', function(server) {
           self.server = server;
 
           // Drop collection
-          server.command('test.$cmd', {drop: 'test'}, function(err) {
-
+          server.command('test.$cmd', { drop: 'test' }, function(err) {
+            expect(err).to.not.exist;
             // Create 100 documents
             var docs = [];
-            for(var i = 0; i < 100; i++) docs.push({a:1, b:'hello world', c:1});
-            server.insert('test.test', docs, {w:1}, callback);
+            for (var i = 0; i < 100; i++) docs.push({ a: 1, b: 'hello world', c: 1 });
+            server.insert('test.test', docs, { w: 1 }, callback);
           });
         });
 
@@ -31,7 +32,7 @@ var simple_100_document_toArray = function(connection_string) {
 
       // Setup function, called once after test are run
       teardown: function(callback) {
-        if(this.server != null) this.server.destroy();
+        if (this.server != null) this.server.destroy();
         callback();
       },
 
@@ -40,20 +41,21 @@ var simple_100_document_toArray = function(connection_string) {
         // console.log("--------- 0")
         // Execute find
         var cursor = this.server.cursor('test.test', {
-            find: 'test.test'
-          , query: {}
+          find: 'test.test',
+          query: {}
         });
         // console.log("--------- 1")
         cursor.next(function(doc) {
-        // console.log("--------- 2")
+          expect(doc).to.exist;
+          // console.log("--------- 2")
           callback();
         });
       }
-    }
-  }
-}
+    };
+  };
+};
 
-var simple_2_document_limit_toArray = function(connection_string) {
+var simple_2_document_limit_toArray = function() {
   return function() {
     return {
       server: null,
@@ -62,17 +64,18 @@ var simple_2_document_limit_toArray = function(connection_string) {
       setup: function(callback) {
         var self = this;
 
-        var server = new Server({host: 'localhost', port: 27017});
+        var server = new Server({ host: 'localhost', port: 27017 });
         server.on('connect', function(server) {
           self.server = server;
 
           // Drop collection
-          server.command('test.$cmd', {drop: 'test'}, function(err) {
+          server.command('test.$cmd', { drop: 'test' }, function(err) {
+            expect(err).to.not.exist;
 
             // Create 100 documents
             var docs = [];
-            for(var i = 0; i < 1000; i++) docs.push({a:1, b:'hello world', c:1});
-            server.insert('test.test', docs, {w:1}, callback);
+            for (var i = 0; i < 1000; i++) docs.push({ a: 1, b: 'hello world', c: 1 });
+            server.insert('test.test', docs, { w: 1 }, callback);
           });
         });
 
@@ -81,7 +84,7 @@ var simple_2_document_limit_toArray = function(connection_string) {
 
       // Setup function, called once after test are run
       teardown: function(callback) {
-        if(this.server != null) this.server.destroy();
+        if (this.server != null) this.server.destroy();
         callback();
       },
 
@@ -90,21 +93,23 @@ var simple_2_document_limit_toArray = function(connection_string) {
         // console.log("--------- 0")
         // Execute find
         var cursor = this.server.cursor('test.test', {
-            find: 'test.test'
-          , query: {}
-          , limit: 2
+          find: 'test.test',
+          query: {},
+          limit: 2
         });
         // console.log("--------- 1")
         cursor.next(function(doc) {
+          expect(doc).to.exist;
           cursor.next(function(doc) {
-        // console.log("--------- 2")
+            expect(doc).to.exist;
+            // console.log("--------- 2")
             callback();
           });
         });
       }
-    }
-  }
-}
+    };
+  };
+};
 
-// exports.simple_100_document_toArray = simple_100_document_toArray;
+exports.simple_100_document_toArray = simple_100_document_toArray;
 exports.simple_2_document_limit_toArray = simple_2_document_limit_toArray;
