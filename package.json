@@ -22,25 +22,18 @@
     "require_optional": "^1.0.1"
   },
   "devDependencies": {
-    "chai": "^4.1.1",
-    "co": "^4.5.4",
-    "coveralls": "^2.11.6",
-    "es6-promise": "^3.0.2",
-    "eslint": "^4.6.0",
+    "chai": "^4.1.2",
+    "co": "^4.6.0",
+    "eslint": "^4.6.1",
     "eslint-plugin-prettier": "^2.2.0",
-    "gleak": "0.5.0",
-    "jsdoc": "3.3.0-alpha8",
-    "mkdirp": "0.5.0",
+    "jsdoc": "3.5.4",
     "mongodb-test-runner": "mbroadst/mongodb-test-runner#master",
-    "nyc": "^5.5.0",
-    "optimist": "latest",
     "prettier": "^1.6.1",
-    "rimraf": "2.2.6",
-    "snappy": "^6.0.0"
+    "snappy": "^6.0.1"
   },
   "peerOptionalDependencies": {
-    "kerberos": "~0.0",
-    "snappy": "^6.0.0",
+    "kerberos": "^0.0.23",
+    "snappy": "^6.0.1",
     "bson-ext": "1.0.5"
   },
   "author": "Christian Kvalheim",
