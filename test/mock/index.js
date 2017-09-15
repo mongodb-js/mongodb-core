@@ -1,6 +1,11 @@
 var Server = require('./lib/server');
 
 const cleanup = (servers, spy, callback) => {
+  if (typeof spy === 'function') {
+    callback = spy;
+    spy = undefined;
+  }
+
   if (!Array.isArray(servers)) {
     throw new Error('First argument must be an array of mock servers');
   }
