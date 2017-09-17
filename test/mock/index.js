@@ -38,6 +38,18 @@ const cleanup = (spy, callback) => {
   }
 };
 
+// Default message fields
+const DEFAULT_ISMASTER = {
+  ismaster: true,
+  maxBsonObjectSize: 16777216,
+  maxMessageSizeBytes: 48000000,
+  maxWriteBatchSize: 1000,
+  localTime: new Date(),
+  maxWireVersion: 5,
+  minWireVersion: 0,
+  ok: 1
+};
+
 /*
  * Main module
  */
@@ -49,5 +61,6 @@ module.exports = {
     return mockServer.start();
   },
 
-  cleanup: cleanup
+  cleanup: cleanup,
+  DEFAULT_ISMASTER: DEFAULT_ISMASTER
 };
