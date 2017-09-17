@@ -1,3 +1,5 @@
+'use strict';
+
 var Long = require('bson').Long,
   Snappy = require('./../../../lib/connection/utils').retrieveSnappy(),
   zlib = require('zlib'),
@@ -24,13 +26,15 @@ Request.prototype.reply = function(documents, options) {
 
   // Unpack any variables we need
   var cursorId = options.cursorId || Long.ZERO;
-  var responseFlags = typeof options.responseFlags == 'number' ? options.responseFlags : 0;
-  var startingFrom = typeof options.startingFrom == 'number' ? options.startingFrom : 0;
+  var responseFlags = typeof options.responseFlags === 'number' ? options.responseFlags : 0;
+  var startingFrom = typeof options.startingFrom === 'number' ? options.startingFrom : 0;
   var numberReturned = documents.length;
 
   // Additional response Options
   var killConnectionAfterNBytes =
-    typeof options.killConnectionAfterNBytes == 'number' ? options.killConnectionAfterNBytes : null;
+    typeof options.killConnectionAfterNBytes === 'number'
+      ? options.killConnectionAfterNBytes
+      : null;
 
   // Create the Response document
   var response;

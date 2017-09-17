@@ -1,3 +1,5 @@
+'use strict';
+
 var BSON = require('bson');
 var require_optional = require('require_optional');
 

@@ -1,3 +1,5 @@
+'use strict';
+
 // console.log(argv._);
 var argv = require('optimist').usage('Usage: $0 -n [name]').argv;
 
@@ -34,7 +36,7 @@ console.log('= running benchmarks                                  =');
 console.log('=======================================================');
 
 var run_tests = function(_tests) {
-  if (_tests.length == 0) process.exit(0);
+  if (_tests.length === 0) process.exit(0);
 
   // Get a test file
   var testFile = _tests.shift();

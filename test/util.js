@@ -1,10 +1,12 @@
+'use strict';
+
 var fs = require('fs');
 
 var read_all_tests = function(directory) {
   return fs
     .readdirSync(directory)
     .filter(function(element) {
-      return element.indexOf('.js') != -1;
+      return element.indexOf('.js') !== -1;
     })
     .map(function(element) {
       return directory + '/' + element;
@@ -23,7 +25,7 @@ var run_test = function(
 ) {
   var final_results = {};
   // Set the options
-  if (typeof options == 'function') {
+  if (typeof options === 'function') {
     callback = options;
     options = {};
   }
@@ -59,7 +61,7 @@ var run_test = function(
 };
 
 var run_file_tests = function(module, keys, options, callback) {
-  if (keys.length == 0) return callback();
+  if (keys.length === 0) return callback();
 
   // Get the next key
   var _key = keys.shift();
@@ -68,7 +70,7 @@ var run_file_tests = function(module, keys, options, callback) {
   var test_name = options.test_name;
 
   // Skip the test if we have test_name specified
-  if (test_name != null && test_name != _key) {
+  if (test_name != null && test_name !== _key) {
     return run_file_tests(module, keys, options, callback);
   }
 
@@ -157,7 +159,7 @@ var execute_test_batches = function(
 ) {
   var number_left_to_run = number_left_to_run_batch;
 
-  if (number_of_batches == -1) return callback(null, results);
+  if (number_of_batches === -1) return callback(null, results);
 
   for (var i = 0; i < number_left_to_run_batch; i++) {
     new function() {
@@ -173,7 +175,7 @@ var execute_test_batches = function(
         // Adjust the number of tests to run
         number_left_to_run = number_left_to_run - 1;
         // Callback
-        if (number_left_to_run == 0) {
+        if (number_left_to_run === 0) {
           process.nextTick(function() {
             execute_test_batches(
               func_name,
@@ -191,7 +193,7 @@ var execute_test_batches = function(
 };
 
 var exceute_test_serially = function(func_name, test, number_of_times, results, callback) {
-  if (number_of_times == 0) return callback(null, results);
+  if (number_of_times === 0) return callback(null, results);
 
   // Set start function
   var start = new Date();
@@ -254,7 +256,7 @@ var RunningStats = function() {
     enumerable: true,
     get: function() {
       var bottom = this.mean + this.standardDeviation;
-      if (bottom == 0) return 0;
+      if (bottom === 0) return 0;
       return 2 * this.mean * this.standardDeviation / bottom;
     }
   });
@@ -268,7 +270,7 @@ RunningStats.prototype.push = function(x) {
   this.m_n = this.m_n + 1;
 
   // See Knuth TAOCP vol 2, 3rd edition, page 232
-  if (this.m_n == 1) {
+  if (this.m_n === 1) {
     this.m_oldM = this.m_newM = x;
     this.m_oldS = 0.0;
   } else {
