@@ -23,6 +23,7 @@ module.exports = {
   Logger: require('./lib/connection/logger'),
   Cursor: require('./lib/cursor'),
   ReadPreference: require('./lib/topologies/read_preference'),
+  Sessions: require('./lib/sessions'),
   BSON: BSON,
   // Raw operations
   Query: require('./lib/connection/commands').Query,
@@ -33,3 +34,4 @@ module.exports = {
   GSSAPI: require('./lib/auth/gssapi'),
   ScramSHA1: require('./lib/auth/scram')
 };
+
