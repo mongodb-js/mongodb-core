@@ -1,3 +1,15 @@
+2.1.16 2017-10-11
+-----------------
+* avoid waiting for reconnect if reconnect disabled in Server topology
+* avoid waiting for reconnect if reconnect disabled in Cursor
+* NODE-990 cache the ScramSHA1 salted passwords up to 200 entries
+* NODE-1153 ensure that errors are propagated on force destroy
+* NODE-1153 ensure inUse and connecting queues are cleared on reauth
+
+2.1.15 2017-08-08
+-----------------
+* Emit SDAM events on close and reconnect
+
 2.1.14 2017-07-07
 -----------------
 * NODE-1073 updates scram.js hi() algorithm to utilize crypto.pbkdf2Sync()
