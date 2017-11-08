@@ -52,6 +52,11 @@ const DEFAULT_ISMASTER = {
   ok: 1
 };
 
+const DEFAULT_ISMASTER_36 = Object.assign({}, DEFAULT_ISMASTER, {
+  maxWireVersion: 6,
+  logicalSessionTimeoutMinutes: 10
+});
+
 /*
  * Main module
  */
@@ -67,5 +72,6 @@ module.exports = {
   },
 
   cleanup: cleanup,
-  DEFAULT_ISMASTER: DEFAULT_ISMASTER
+  DEFAULT_ISMASTER: DEFAULT_ISMASTER,
+  DEFAULT_ISMASTER_36: DEFAULT_ISMASTER_36
 };
