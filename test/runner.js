@@ -198,7 +198,6 @@ var runner = new Runner({
 
 var testFiles = [
   // Functional tests
-  '/test/tests/functional/pool_tests.js',
   '/test/tests/functional/server_tests.js',
   '/test/tests/functional/cursor_tests.js',
   '/test/tests/functional/extend_cursor_tests.js',
@@ -210,6 +209,8 @@ var testFiles = [
   '/test/tests/functional/basic_single_server_auth_tests.js',
   '/test/tests/functional/basic_replset_server_auth_tests.js',
   '/test/tests/functional/replset_tests.js',
+  // Replicaset monitoring tests
+  '/test/tests/functional/monitoring_tests.js',
   // Replicaset SDAM tests
   '/test/tests/functional/replset_state_tests.js',
   // Replicaset Server selection tests
@@ -224,6 +225,9 @@ var testFiles = [
 // Check if we support es6 generators
 try {
   eval("(function *(){})");
+
+  // Functional tests
+  testFiles.push('/test/tests/functional/pool_tests.js');
 
   // Single server Mock Tests
   testFiles.push('/test/tests/functional/single_mocks/timeout_tests.js');
