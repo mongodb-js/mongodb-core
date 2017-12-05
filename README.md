@@ -61,17 +61,20 @@ Create a **package.json** using your favorite text editor and fill it in.
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/christkv/myfirstproject.git"
+    "url": "git://github.com/danielsan/mongodb-core-node-example.git"
   },
   "dependencies": {
-    "mongodb-core": "~1.0"
+    "mongodb-core": "^2.0.3"
   },
   "author": "Christian Kvalheim",
+  "contributors": [
+    {"name":"Daniel Santana", "url": "https://github.com/danielsan"}
+  ],
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/christkv/myfirstproject/issues"
+    "url": "https://github.com/danielsan/mongodb-core-node-example/issues"
   },
-  "homepage": "https://github.com/christkv/myfirstproject"
+  "homepage": "https://github.com/danielsan/mongodb-core-node-example"
 }
 ```
 
@@ -100,43 +103,47 @@ Let's create a new **app.js** file that we will use to show the basic CRUD opera
 First let's add code to connect to the server. Notice that there is no concept of a database here and we use the topology directly to perform the connection.
 
 ```js
-var Server = require('mongodb-core').Server
-  , assert = require('assert');
-
-// Set up server connection
-var server = new Server({
+const Server = require('mongodb-core').Server
+     , assert = require('assert');
+ 
+// Set up server connection 
+const server = new Server({
     host: 'localhost'
   , port: 27017
   , reconnect: true
   , reconnectInterval: 50
 });
-
-// Add event listeners
+ 
+// Add event listeners 
 server.on('connect', function(_server) {
-  console.log('connected');
-  test.done();
+  console.log('connected!', 'disconnecting in 2 seconds');
+  setTimeout(function(){
+    console.log('disconnecting now')
+    _server.destroy();
+  }, 2000);
 });
-
+ 
 server.on('close', function() {
   console.log('closed');
 });
-
+ 
 server.on('reconnect', function() {
   console.log('reconnect');
 });
-
-// Start connection
+ 
+// Start connection 
 server.connect();
 ```
 
 To connect to a replicaset we would use the `ReplSet` class and for a set of Mongos proxies we use the `Mongos` class. Each topology class offer the same CRUD operations and you operate on the topology directly. Let's look at an example exercising all the different available CRUD operations.
 
 ```js
-var Server = require('mongodb-core').Server
-  , assert = require('assert');
+const
+  Server = require('mongodb-core').Server,
+  assert = require('assert');
 
 // Set up server connection
-var server = new Server({
+const server = new Server({
     host: 'localhost'
   , port: 27017
   , reconnect: true
@@ -144,59 +151,66 @@ var server = new Server({
 });
 
 // Add event listeners
-server.on('connect', function(_server) {
+server.on('connect', function serverOnConnect(_server) {
   console.log('connected');
 
   // Execute the ismaster command
-  _server.command('system.$cmd', {ismaster: true}, function(err, result) {
+  const syscmd   = 'system.$cmd';
+  const ismaster = {ismaster: true};
 
-    // Perform a document insert
-    _server.insert('myproject.inserts1', [{a:1}, {a:2}], {
-      writeConcern: {w:1}, ordered:true
-    }, function(err, results) {
-      assert.equal(null, err);
-      assert.equal(2, results.result.n);      
+  console.log('trying to check if it is master', {syscmd});
+  _server.command(syscmd, ismaster, (err, result) => {
+    // ismastersyscnt insert
+    var docs = [{a:1}, {a:2}];
+    const options = {writeConcern: {w:1}, ordered:true};
+    const dbName  = 'myproject';
+    const coll    = 'inserts1';
+    const ns      = dbName + '.' + coll; // namespace
+
+    console.log('trying to insert docs into', {ns});
+    _server.insert(ns, docs, options, (err, results) => {
+      // console.log('insert results', {err, result: results.result && results.result.n});
+      assert(err === null, 'ERROR happened: ' + err);
+      assert(results.result.n === 2, 'ERROR: results.result.n != 2 | ' + results.result.n);
 
       // Perform a document update
-      _server.update('myproject.inserts1', [{
-        q: {a: 1}, u: {'$set': {b:1}}
-      }], {
-        writeConcern: {w:1}, ordered:true
-      }, function(err, results) {
-        assert.equal(null, err);
-        assert.equal(1, results.result.n);
+      docs = [{q: {a: 1}, u: {'$set': {b:1}} }];
+      console.log('trying to update a doc in', {ns});
+      _server.update(ns, docs, options, (err, results) => {
+        // console.log('update results', {err, result: results.result && results.result.n});
+        assert(err === null, 'ERROR happened: ' + err);
+        assert(results.result.n === 1, 'ERROR: results.result.n != 2 | ' + results.result.n);
 
         // Remove a document
-        _server.remove('myproject.inserts1', [{
-          q: {a: 1}, limit: 1
-        }], {
-          writeConcern: {w:1}, ordered:true
-        }, function(err, results) {
-          assert.equal(null, err);
-          assert.equal(1, results.result.n);
+        docs = [{q: {a: 1}, limit: 1}];
+        console.log('trying to remove doc from', {ns});
+        _server.remove(ns, docs, options, (err, results) => {
+          // console.log('remove results', {err, result: results.result && results.result.n});
+          assert(err === null, 'ERROR happened: ' + err);
+          assert(results.result.n === 1, 'ERROR: results.result.n != 2 | ' + results.result.n);
 
           // Get a document
-          var cursor = _server.cursor('integration_tests.inserts_example4', {
-              find: 'integration_tests.example4'
-            , query: {a:1}
-          });
+          const cursor = _server.cursor(ns, {find: ns, query: {a: 2}});
 
           // Get the first document
-          cursor.next(function(err, doc) {
-            assert.equal(null, err);
-            assert.equal(2, doc.a);
+          console.log('querying a doc in', {ns});
+          cursor.next((err, doc) => {
+            // console.log('cursor.next', doc);
+            assert(err === null, 'ERROR happened: ' + err);
+            assert(doc.a === 2, 'ERROR: doc.a != 2 | ' + doc.a);
 
             // Execute the ismaster command
-            _server.command("system.$cmd"
-              , {ismaster: true}, function(err, result) {
-                assert.equal(null, err)
-                _server.destroy();              
+            _server.command(syscmd, ismaster, (err, result) => {
+              assert(err === null, 'ismaster failed: ' + err);
+              console.log('disconnecting');
+              // _server.disconnect();
+              // _server.close();
+              _server.destroy();
             });
           });
+        });
       });
     });
-
-    test.done();
   });
 });
 
