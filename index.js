@@ -34,4 +34,3 @@ module.exports = {
   GSSAPI: require('./lib/auth/gssapi'),
   ScramSHA1: require('./lib/auth/scram')
 };
-
