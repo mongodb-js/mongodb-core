@@ -20,7 +20,7 @@ canonifyurls = false
     pre = "<i class='fa fa-github'></i>"
     weight = 90
     identifier = "githubLink"
-    url = "https://github.com/christkv/mongodb-core"
+    url = "https://github.com/mongodb-js/mongodb-core"
 
 [[menu.main]]
     name = ""
