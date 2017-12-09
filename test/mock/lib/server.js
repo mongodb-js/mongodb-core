@@ -135,7 +135,11 @@ Server.prototype.start = function() {
     self.on('message', function(message, connection) {
       var request = new Request(self, connection, message);
       if (self.messageHandler) {
-        self.messageHandler(request);
+        try {
+          self.messageHandler(request);
+        } catch (err) {
+          console.log(err.stack);
+        }
       } else {
         self.messages.push(request);
       }
