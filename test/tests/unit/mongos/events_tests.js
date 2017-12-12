@@ -7,7 +7,7 @@ const MongosFixture = require('../common').MongosFixture;
 
 const test = new MongosFixture();
 
-describe.only('EventEmitters (Mongos)', function() {
+describe('EventEmitters (Mongos)', function() {
   afterEach(() => mock.cleanup());
   beforeEach(() => {
     return mock.createServer().then(mockServer => {
