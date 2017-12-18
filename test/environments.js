@@ -1,232 +1,171 @@
 'use strict';
 
-var f = require('util').format;
-var path = require('path');
+const f = require('util').format;
+const path = require('path');
 
-var topologyManagers = require('mongodb-test-runner').topologyManagers,
-  ServerManager = topologyManagers.Server,
-  ReplSetManager = topologyManagers.ReplSet,
-  ShardingManager = topologyManagers.Sharded;
+const EnvironmentBase = require('mongodb-test-runner').EnvironmentBase;
+const topologyManagers = require('mongodb-test-runner').topologyManagers;
+const ServerManager = topologyManagers.Server;
+const ReplSetManager = topologyManagers.ReplSet;
+const ShardingManager = topologyManagers.Sharded;
 
-var replicaSetEnvironment = function() {
-  return {
-    host: 'localhost',
-    port: 31000,
-    setName: 'rs',
-    topology: function(self, _mongo) {
+class ReplicaSetEnvironment extends EnvironmentBase {
+  constructor() {
+    super();
+
+    this.host = 'localhost';
+    this.port = 31000;
+    this.setName = 'rs';
+    this.topology = (self, _mongo) => {
       return new _mongo.ReplSet([{ host: 'localhost', port: 31000 }], { setName: 'rs' });
-    },
-    manager: new ReplSetManager(
+    };
+
+    const genReplsetConfig = (port, options) => {
+      return Object.assign(
+        {
+          options: {
+            bind_ip: 'localhost',
+            port: port,
+            dbpath: `${__dirname}/../db/${port}`
+          }
+        },
+        options
+      );
+    };
+
+    this.manager = new ReplSetManager(
       'mongod',
       [
-        {
-          tags: { loc: 'ny' },
-          options: {
-            bind_ip: 'localhost',
-            port: 31000,
-            dbpath: f('%s/../db/31000', __dirname)
-          }
-        },
-        {
-          tags: { loc: 'sf' },
-          options: {
-            bind_ip: 'localhost',
-            port: 31001,
-            dbpath: f('%s/../db/31001', __dirname)
-          }
-        },
-        {
-          tags: { loc: 'sf ' },
-          priority: 0,
-          options: {
-            bind_ip: 'localhost',
-            port: 31002,
-            dbpath: f('%s/../db/31002', __dirname)
-          }
-        },
-        {
-          tags: { loc: 'sf' },
-          options: {
-            bind_ip: 'localhost',
-            port: 31003,
-            dbpath: f('%s/../db/31003', __dirname)
-          }
-        },
-        {
-          arbiter: true,
-          options: {
-            bind_ip: 'localhost',
-            port: 31004,
-            dbpath: f('%s/../db/31004', __dirname)
-          }
-        }
+        genReplsetConfig(31000, { tags: { loc: 'ny' } }),
+        genReplsetConfig(31000, { tags: { loc: 'sf' } }),
+        genReplsetConfig(31002, { tags: { loc: 'sf' } }),
+        genReplsetConfig(31003, { tags: { loc: 'sf' } }),
+        genReplsetConfig(31000, { tags: { loc: 'sf' } }),
+        genReplsetConfig(31000, { arbiter: true })
       ],
       {
         replSet: 'rs'
       }
-    )
-  };
-};
+    );
+  }
+}
 
-var shardedEnvironment = function() {
-  var shardingManager = new ShardingManager({
-    mongod: 'mongod',
-    mongos: 'mongos'
-  });
+class ShardedEnvironment extends EnvironmentBase {
+  constructor() {
+    super();
 
-  shardingManager.addShard(
-    [
-      {
-        options: {
-          bind_ip: 'localhost',
-          port: 31000,
-          dbpath: f('%s/../db/31000', __dirname)
-        }
-      },
-      {
-        options: {
-          bind_ip: 'localhost',
-          port: 31001,
-          dbpath: f('%s/../db/31001', __dirname)
-        }
-      },
-      {
-        arbiter: true,
-        options: {
-          bind_ip: 'localhost',
-          port: 31002,
-          dbpath: f('%s/../db/31002', __dirname)
-        }
-      }
-    ],
-    {
-      replSet: 'rs1'
-    }
-  );
-
-  shardingManager.addShard(
-    [
-      {
-        options: {
-          bind_ip: 'localhost',
-          port: 31010,
-          dbpath: f('%s/../db/31010', __dirname)
-        }
-      },
-      {
-        options: {
-          bind_ip: 'localhost',
-          port: 31011,
-          dbpath: f('%s/../db/31011', __dirname)
-        }
-      },
-      {
-        arbiter: true,
-        options: {
-          bind_ip: 'localhost',
-          port: 31012,
-          dbpath: f('%s/../db/31012', __dirname)
-        }
-      }
-    ],
-    {
-      replSet: 'rs2'
-    }
-  );
-
-  shardingManager.addConfigurationServers(
-    [
-      {
-        options: {
-          bind_ip: 'localhost',
-          port: 35000,
-          dbpath: f('%s/../db/35000', __dirname)
-        }
-      },
-      {
-        options: {
-          bind_ip: 'localhost',
-          port: 35001,
-          dbpath: f('%s/../db/35001', __dirname)
-        }
-      },
-      {
-        options: {
-          bind_ip: 'localhost',
-          port: 35002,
-          dbpath: f('%s/../db/35002', __dirname)
-        }
-      }
-    ],
-    {
-      replSet: 'rs3'
-    }
-  );
-
-  shardingManager.addProxies(
-    [
-      {
-        bind_ip: 'localhost',
-        port: 51000,
-        configdb: 'localhost:35000,localhost:35001,localhost:35002'
-      },
-      {
-        bind_ip: 'localhost',
-        port: 51001,
-        configdb: 'localhost:35000,localhost:35001,localhost:35002'
-      }
-    ],
-    {
-      binary: 'mongos'
-    }
-  );
-
-  return {
-    host: 'localhost',
-    port: 51000,
-    topology: function(self, _mongo) {
+    this.host = 'localhost';
+    this.port = 51000;
+    this.topology = (self, _mongo) => {
       return new _mongo.Mongos([{ host: 'localhost', port: 51000 }]);
-    },
-    manager: new ShardingManager()
-  };
-};
+    };
 
-var authEnvironment = function() {
-  return {
-    host: 'localhost',
-    port: 27017,
-    manager: new ServerManager('mongod', {
+    this.manager = new ShardingManager({
+      mongod: 'mongod',
+      mongos: 'mongos'
+    });
+  }
+
+  setup(callback) {
+    const genMongosConfig = (port, options) => {
+      return Object.assign(
+        {
+          options: {
+            bind_ip: 'localhost',
+            port: port,
+            dbpath: `${__dirname}/../db/${port}`,
+            shardsvr: null
+          }
+        },
+        options
+      );
+    };
+
+    const shardingManager = this.manager;
+    const setupPromise = Promise.all([
+      shardingManager.addShard(
+        [genMongosConfig(31000), genMongosConfig(31001), genMongosConfig(31002, { arbiter: true })],
+        {
+          replSet: 'rs1'
+        }
+      ),
+      shardingManager.addShard(
+        [genMongosConfig(31010), genMongosConfig(31011), genMongosConfig(31012, { arbiter: true })],
+        {
+          replSet: 'rs2'
+        }
+      ),
+      shardingManager.addConfigurationServers(
+        [genMongosConfig(35000), genMongosConfig(35001), genMongosConfig(35002)],
+        {
+          replSet: 'rs3'
+        }
+      ),
+      shardingManager.addProxies(
+        [
+          {
+            bind_ip: 'localhost',
+            port: 51000,
+            configdb: 'localhost:35000,localhost:35001,localhost:35002'
+          },
+          {
+            bind_ip: 'localhost',
+            port: 51001,
+            configdb: 'localhost:35000,localhost:35001,localhost:35002'
+          }
+        ],
+        {
+          binary: 'mongos'
+        }
+      )
+    ]);
+
+    setupPromise.then(() => callback()).catch(err => callback(err));
+  }
+}
+
+class AuthEnvironment extends EnvironmentBase {
+  constructor() {
+    super();
+
+    this.host = 'localhost';
+    this.port = 27017;
+    this.manager = new ServerManager('mongod', {
       dbpath: path.join(path.resolve('db'), f('data-%d', 27017)),
       auth: null
-    })
-  };
-};
+    });
+  }
+}
 
-var singleEnvironment = function() {
-  return {
-    host: 'localhost',
-    port: 27017,
-    manager: new ServerManager('mongod', {
+class SingleEnvironment extends EnvironmentBase {
+  constructor() {
+    super();
+
+    this.host = 'localhost';
+    this.port = 27017;
+    this.manager = new ServerManager('mongod', {
       dbpath: path.join(path.resolve('db'), f('data-%d', 27017))
-    })
-  };
-};
+    });
+  }
+}
 
-var snappyEnvironment = function() {
-  return {
-    host: 'localhost',
-    port: 27017,
-    manager: new ServerManager('mongod', {
+class SnappyEnvironment extends EnvironmentBase {
+  constructor() {
+    super();
+
+    this.host = 'localhost';
+    this.port = 27017;
+    this.manager = new ServerManager('mongod', {
       dbpath: path.join(path.resolve('db'), f('data-%d', 27017)),
       networkMessageCompressors: 'snappy'
-    })
-  };
-};
+    });
+  }
+}
 
 module.exports = {
-  single: singleEnvironment,
-  replicaset: replicaSetEnvironment,
-  sharded: shardedEnvironment,
-  auth: authEnvironment,
-  snappy: snappyEnvironment
+  single: SingleEnvironment,
+  replicaset: ReplicaSetEnvironment,
+  sharded: ShardedEnvironment,
+  auth: AuthEnvironment,
+  snappy: SnappyEnvironment
 };
