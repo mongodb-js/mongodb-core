@@ -50,6 +50,33 @@ class ReplicaSetEnvironment extends EnvironmentBase {
   }
 }
 
+const genMongosConfig = (port, options) => {
+  return Object.assign(
+    {
+      options: {
+        bind_ip: 'localhost',
+        port: port,
+        dbpath: `${__dirname}/../db/${port}`,
+        shardsvr: null
+      }
+    },
+    options
+  );
+};
+
+const genConfigServerConfig = (port, options) => {
+  return Object.assign(
+    {
+      options: {
+        bind_ip: 'localhost',
+        port: port,
+        dbpath: `${__dirname}/../db/${port}`
+      }
+    },
+    options
+  );
+};
+
 class ShardedEnvironment extends EnvironmentBase {
   constructor() {
     super();
@@ -67,22 +94,8 @@ class ShardedEnvironment extends EnvironmentBase {
   }
 
   setup(callback) {
-    const genMongosConfig = (port, options) => {
-      return Object.assign(
-        {
-          options: {
-            bind_ip: 'localhost',
-            port: port,
-            dbpath: `${__dirname}/../db/${port}`,
-            shardsvr: null
-          }
-        },
-        options
-      );
-    };
-
     const shardingManager = this.manager;
-    const setupPromise = Promise.all([
+    const shardPromise = Promise.all([
       shardingManager.addShard(
         [genMongosConfig(31000), genMongosConfig(31001), genMongosConfig(31002, { arbiter: true })],
         {
@@ -94,33 +107,43 @@ class ShardedEnvironment extends EnvironmentBase {
         {
           replSet: 'rs2'
         }
-      ),
-      shardingManager.addConfigurationServers(
-        [genMongosConfig(35000), genMongosConfig(35001), genMongosConfig(35002)],
-        {
-          replSet: 'rs3'
-        }
-      ),
-      shardingManager.addProxies(
-        [
-          {
-            bind_ip: 'localhost',
-            port: 51000,
-            configdb: 'localhost:35000,localhost:35001,localhost:35002'
-          },
-          {
-            bind_ip: 'localhost',
-            port: 51001,
-            configdb: 'localhost:35000,localhost:35001,localhost:35002'
-          }
-        ],
-        {
-          binary: 'mongos'
-        }
       )
     ]);
 
-    setupPromise.then(() => callback()).catch(err => callback(err));
+    shardPromise
+      .then(() =>
+        shardingManager.addConfigurationServers(
+          [
+            genConfigServerConfig(35000),
+            genConfigServerConfig(35001),
+            genConfigServerConfig(35002)
+          ],
+          {
+            replSet: 'rs3'
+          }
+        )
+      )
+      .then(() =>
+        shardingManager.addProxies(
+          [
+            {
+              bind_ip: 'localhost',
+              port: 51000,
+              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+            },
+            {
+              bind_ip: 'localhost',
+              port: 51001,
+              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+            }
+          ],
+          {
+            binary: 'mongos'
+          }
+        )
+      )
+      .then(() => callback())
+      .catch(err => callback(err));
   }
 }
 
