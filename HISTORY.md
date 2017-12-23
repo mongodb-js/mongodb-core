@@ -1,3 +1,24 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/christkv/mongodb-core/compare/v3.0.0-rc0...v3.0.0) (2017-12-23)
+
+
+### Bug Fixes
+
+* **connection:** ensure connection cleanup before fallback retry ([de62615](https://github.com/christkv/mongodb-core/commit/de62615))
+* **mock-server:** expose potential errors in message handlers ([65dcca4](https://github.com/christkv/mongodb-core/commit/65dcca4))
+* **mongos:** remove listener on destroy event ([243e942](https://github.com/christkv/mongodb-core/commit/243e942)), closes [#257](https://github.com/christkv/mongodb-core/issues/257)
+* **sdam:** more explicit wire protocol error message ([6d6d19a](https://github.com/christkv/mongodb-core/commit/6d6d19a))
+* **secondaries:** fixes connection with secondary readPreference ([#258](https://github.com/christkv/mongodb-core/issues/258)) ([0060ad7](https://github.com/christkv/mongodb-core/commit/0060ad7))
+* **sessions:** ensure that we ignore session details from arbiters ([de0105c](https://github.com/christkv/mongodb-core/commit/de0105c))
+* **sharded-tests:** add `shardsvr` cmdline opt, wait for async fns ([867b080](https://github.com/christkv/mongodb-core/commit/867b080))
+
+
+### Features
+
+* **connection:** attempt both ipv6 and ipv4 when no family entered ([#260](https://github.com/christkv/mongodb-core/issues/260)) ([107bae5](https://github.com/christkv/mongodb-core/commit/107bae5))
+
+
+
 <a name="3.0.0-rc0"></a>
 # 3.0.0-rc0 (2017-12-05)
 
