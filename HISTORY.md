@@ -1,3 +1,13 @@
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/mongodb-js/mongodb-core/compare/v3.0.0...v3.0.1) (2017-12-24)
+
+
+### Bug Fixes
+
+* **connection:** correct erroneous use of `this` in helper method ([06b9388](https://github.com/mongodb-js/mongodb-core/commit/06b9388))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/christkv/mongodb-core/compare/v3.0.0-rc0...v3.0.0) (2017-12-23)
 
