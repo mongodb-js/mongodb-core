@@ -1,185 +1,197 @@
 'use strict';
 
-var net = require('net'),
-  BSON = require('bson'),
-  Snappy = require('snappy'),
-  zlib = require('zlib'),
-  MESSAGE_HEADER_SIZE = require('../../../lib/wireprotocol/shared').MESSAGE_HEADER_SIZE,
-  opcodes = require('../../../lib/wireprotocol/shared').opcodes,
-  compressorIDs = require('../../../lib/wireprotocol/compression').compressorIDs,
-  Request = require('./request'),
-  Query = require('./protocol').Query,
-  GetMore = require('./protocol').GetMore,
-  KillCursor = require('./protocol').KillCursor,
-  Insert = require('./protocol').Insert,
-  Update = require('./protocol').Update,
-  Delete = require('./protocol').Delete,
-  EventEmitter = require('events').EventEmitter,
-  inherits = require('util').inherits;
+const net = require('net');
+const BSON = require('bson');
+const Snappy = require('snappy');
+const zlib = require('zlib');
+const MESSAGE_HEADER_SIZE = require('../../../lib/wireprotocol/shared').MESSAGE_HEADER_SIZE;
+const opcodes = require('../../../lib/wireprotocol/shared').opcodes;
+const compressorIDs = require('../../../lib/wireprotocol/compression').compressorIDs;
+const Request = require('./request');
+const Query = require('./protocol').Query;
+const GetMore = require('./protocol').GetMore;
+const KillCursor = require('./protocol').KillCursor;
+const Insert = require('./protocol').Insert;
+const Update = require('./protocol').Update;
+const Delete = require('./protocol').Delete;
+const EventEmitter = require('events').EventEmitter;
 
 /*
  * Server class
  */
-var Server = function(port, host, options) {
-  EventEmitter.call(this);
+class Server extends EventEmitter {
+  constructor(port, host, options) {
+    super();
 
-  // Special handlers
-  options = options || {};
+    // Special handlers
+    options = options || {};
 
-  // Do we have an onRead function
-  this.onRead = typeof options.onRead === 'function' ? options.onRead : null;
+    // Do we have an onRead function
+    this.onRead = typeof options.onRead === 'function' ? options.onRead : null;
 
-  // Create a bson instance
-  this.bson = new BSON();
+    // Create a bson instance
+    this.bson = new BSON();
 
-  // Save the settings
-  this.host = host;
-  this.port = port;
+    // Save the settings
+    this.host = host;
+    this.port = port;
 
-  // Create a server socket
-  this.server = net.createServer();
+    // Create a server socket
+    this.server = net.createServer();
 
-  // Responses
-  this.messages = [];
+    // Responses
+    this.messages = [];
 
-  // state
-  this.state = 'stopped';
+    // state
+    this.state = 'stopped';
 
-  // Number of connections
-  this.connections = 0;
+    // Number of connections
+    this.connections = 0;
 
-  // sockets
-  this.sockets = [];
-};
-
-inherits(Server, EventEmitter);
-
-Server.prototype.uri = function() {
-  return `${this.host}:${this.port}`;
-};
-
-Server.prototype.address = function() {
-  return { host: this.host, port: this.port };
-};
-
-Server.prototype.destroy = function() {
-  var self = this;
-  if (self.state === 'destroyed') {
-    return Promise.resolve();
+    // sockets
+    this.sockets = [];
   }
 
-  return new Promise(function(resolve, reject) {
-    self.sockets.forEach(function(x) {
-      x.destroy();
-    });
+  /**
+   *
+   */
+  uri() {
+    return `${this.host}:${this.port}`;
+  }
 
-    self.server.close(function(err) {
-      if (err) return reject(err);
-      self.state = 'destroyed';
-      resolve();
-    });
-  });
-};
+  /**
+   *
+   */
+  address() {
+    return { host: this.host, port: this.port };
+  }
 
-Server.prototype.start = function() {
-  var self = this;
+  /**
+   *
+   */
+  destroy() {
+    const self = this;
+    if (self.state === 'destroyed') {
+      return Promise.resolve();
+    }
 
-  // Return start promise
-  return new Promise(function(resolve, reject) {
-    self.server.on('error', function(err) {
-      console.log('!!!!!!!!!!!!!!!!!!!! error reject');
-      reject(err);
-    });
-
-    self.server.on('connection', function(c) {
-      self.connections = self.connections + 1;
-      self.sockets.push(c);
-
-      c.on('error', function(e) {
-        console.warn('connection error: ', e);
-      });
-
-      c.on(
-        'data',
-        dataHandler(
-          self,
-          {
-            buffer: new Buffer(0),
-            stubBuffer: new Buffer(0),
-            sizeOfMessage: 0,
-            bytesRead: 0,
-            maxBsonMessageSize: 1024 * 1024 * 48
-          },
-          c
-        )
-      );
-
-      c.on('close', function() {
-        self.connections = self.connections - 1;
-        var index = self.sockets.indexOf(c);
-
-        if (index !== -1) {
-          self.sockets.splice(index, 1);
-        }
+    return new Promise((resolve, reject) => {
+      self.sockets.forEach(socket => socket.destroy());
+      self.server.close(err => {
+        if (err) return reject(err);
+        self.state = 'destroyed';
+        resolve();
       });
     });
+  }
 
-    self.server.listen(self.port, self.host, function() {
-      // update address information if necessary
-      self.host = self.server.address().address;
-      self.port = self.server.address().port;
+  /**
+   *
+   */
+  start() {
+    const self = this;
+    return new Promise((resolve, reject) => {
+      self.server.on('error', err => {
+        console.log('!!!!!!!!!!!!!!!!!!!! error reject');
+        reject(err);
+      });
 
-      resolve(self);
-    });
+      self.server.on('connection', c => {
+        self.connections = self.connections + 1;
+        self.sockets.push(c);
 
-    self.on('message', function(message, connection) {
-      var request = new Request(self, connection, message);
-      if (self.messageHandler) {
-        try {
-          self.messageHandler(request);
-        } catch (err) {
-          console.log(err.stack);
+        c.on('error', e => {
+          console.warn('connection error: ', e);
+        });
+
+        c.on(
+          'data',
+          dataHandler(
+            self,
+            {
+              buffer: new Buffer(0),
+              stubBuffer: new Buffer(0),
+              sizeOfMessage: 0,
+              bytesRead: 0,
+              maxBsonMessageSize: 1024 * 1024 * 48
+            },
+            c
+          )
+        );
+
+        c.on('close', () => {
+          self.connections = self.connections - 1;
+          const index = self.sockets.indexOf(c);
+
+          if (index !== -1) {
+            self.sockets.splice(index, 1);
+          }
+        });
+      });
+
+      self.server.listen(self.port, self.host, () => {
+        // update address information if necessary
+        self.host = self.server.address().address;
+        self.port = self.server.address().port;
+
+        resolve(self);
+      });
+
+      self.on('message', function(message, connection) {
+        const request = new Request(self, connection, message);
+        if (self.messageHandler) {
+          try {
+            self.messageHandler(request);
+          } catch (err) {
+            console.log(err.stack);
+          }
+        } else {
+          self.messages.push(request);
         }
-      } else {
-        self.messages.push(request);
-      }
+      });
+
+      self.state = 'running';
     });
+  }
 
-    self.state = 'running';
-  });
-};
+  /**
+   *
+   */
+  receive() {
+    const self = this;
+    return new Promise((resolve, reject) => {
+      const waiting = () => {
+        if (self.state === 'destroyed') {
+          return reject(new Error('mock server is in destroyed state'));
+        }
 
-Server.prototype.receive = function() {
-  var self = this;
+        // If we have a message return it
+        if (self.messages.length > 0) {
+          const message = self.messages.shift();
+          return resolve(message);
+        }
 
-  return new Promise(function(resolve, reject) {
-    var waiting = function() {
-      if (self.state === 'destroyed') {
-        return reject(new Error('mock server is in destroyed state'));
-      }
+        setTimeout(waiting, 10);
+      };
 
-      // If we have a message return it
-      if (self.messages.length > 0) {
-        var message = self.messages.shift();
-        return resolve(message);
-      }
+      waiting();
+    });
+  }
 
-      setTimeout(waiting, 10);
-    };
+  /**
+   *
+   * @param {*} messageHandler
+   */
+  setMessageHandler(messageHandler) {
+    this.messageHandler = messageHandler;
+  }
+}
 
-    waiting();
-  });
-};
-
-Server.prototype.setMessageHandler = function(messageHandler) {
-  this.messageHandler = messageHandler;
-};
-
-var protocol = function(self, message) {
-  var index = 0;
+const protocol = function(self, message) {
+  let index = 0;
   self.isCompressed = false;
   // Get the size for the message
-  var size =
+  const size =
     message[index++] |
     (message[index++] << 8) |
     (message[index++] << 16) |
@@ -188,7 +200,7 @@ var protocol = function(self, message) {
   // Adjust to opcode
   index = 12;
   // Get the opCode for the message
-  var type =
+  let type =
     message[index++] |
     (message[index++] << 8) |
     (message[index++] << 16) |
@@ -196,14 +208,14 @@ var protocol = function(self, message) {
 
   // Unpack and decompress if the message is OP_COMPRESSED
   if (type === opcodes.OP_COMPRESSED) {
-    var requestID = message.readInt32LE(4);
-    var responseTo = message.readInt32LE(8);
-    var originalOpcode = message.readInt32LE(16);
-    var uncompressedSize = message.readInt32LE(20);
-    var compressorID = message.readUInt8(24);
+    const requestID = message.readInt32LE(4);
+    const responseTo = message.readInt32LE(8);
+    const originalOpcode = message.readInt32LE(16);
+    const uncompressedSize = message.readInt32LE(20);
+    const compressorID = message.readUInt8(24);
 
-    var compressedData = message.slice(25);
-    var uncompressedData;
+    const compressedData = message.slice(25);
+    let uncompressedData;
     switch (compressorID) {
       case compressorIDs.snappy:
         uncompressedData = Snappy.uncompressSync(compressedData);
@@ -222,7 +234,7 @@ var protocol = function(self, message) {
     }
 
     // Reconstruct the msgHeader of the uncompressed opcode
-    var newMsgHeader = Buffer(MESSAGE_HEADER_SIZE);
+    const newMsgHeader = Buffer(MESSAGE_HEADER_SIZE);
     newMsgHeader.writeInt32LE(MESSAGE_HEADER_SIZE + uncompressedData.length, 0);
     newMsgHeader.writeInt32LE(requestID, 4);
     newMsgHeader.writeInt32LE(responseTo, 8);
@@ -246,7 +258,7 @@ var protocol = function(self, message) {
   throw new Error('unknown wire protocol message type');
 };
 
-var dataHandler = function(server, self, connection) {
+const dataHandler = function(server, self, connection) {
   return function(data) {
     // Parse until we are done with the data
     while (data.length > 0) {
@@ -262,7 +274,7 @@ var dataHandler = function(server, self, connection) {
       // If we still have bytes to read on the current message
       if (self.bytesRead > 0 && self.sizeOfMessage > 0) {
         // Calculate the amount of remaining bytes
-        var remainingBytesToRead = self.sizeOfMessage - self.bytesRead;
+        let remainingBytesToRead = self.sizeOfMessage - self.bytesRead;
         // Check if the current chunk contains the rest of the message
         if (remainingBytesToRead > data.length) {
           // Copy the new data into the exiting buffer (should have been allocated when we know the message size)
@@ -280,7 +292,7 @@ var dataHandler = function(server, self, connection) {
 
           // Emit current complete message
           try {
-            var emitBuffer = self.buffer;
+            let emitBuffer = self.buffer;
             // Reset state of buffer
             self.buffer = null;
             self.sizeOfMessage = 0;
@@ -289,7 +301,7 @@ var dataHandler = function(server, self, connection) {
             // Emit the buffer
             server.emit('message', protocol(server, emitBuffer), connection);
           } catch (err) {
-            var errorObject = {
+            let errorObject = {
               err: 'socketHandler',
               trace: err,
               bin: self.buffer,
@@ -310,7 +322,7 @@ var dataHandler = function(server, self, connection) {
           // If we have enough bytes to determine the message size let's do it
           if (self.stubBuffer.length + data.length > 4) {
             // Prepad the data
-            var newData = new Buffer(self.stubBuffer.length + data.length);
+            let newData = new Buffer(self.stubBuffer.length + data.length);
             self.stubBuffer.copy(newData, 0);
             data.copy(newData, self.stubBuffer.length);
             // Reassign for parsing
@@ -323,7 +335,7 @@ var dataHandler = function(server, self, connection) {
             self.stubBuffer = null;
           } else {
             // Add the the bytes to the stub buffer
-            var newStubBuffer = new Buffer(self.stubBuffer.length + data.length);
+            let newStubBuffer = new Buffer(self.stubBuffer.length + data.length);
             // Copy existing stub buffer
             self.stubBuffer.copy(newStubBuffer, 0);
             // Copy missing part of the data
@@ -334,10 +346,10 @@ var dataHandler = function(server, self, connection) {
         } else {
           if (data.length > 4) {
             // Retrieve the message size
-            var sizeOfMessage = data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+            let sizeOfMessage = data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
             // If we have a negative sizeOfMessage emit error and return
             if (sizeOfMessage < 0 || sizeOfMessage > self.maxBsonMessageSize) {
-              errorObject = {
+              let errorObject = {
                 err: 'socketHandler',
                 trace: '',
                 bin: self.buffer,
@@ -375,7 +387,7 @@ var dataHandler = function(server, self, connection) {
               sizeOfMessage === data.length
             ) {
               try {
-                emitBuffer = data;
+                let emitBuffer = data;
                 // Reset state of buffer
                 self.buffer = null;
                 self.sizeOfMessage = 0;
@@ -386,7 +398,7 @@ var dataHandler = function(server, self, connection) {
                 // Emit the message
                 server.emit('message', protocol(server, emitBuffer), connection);
               } catch (err) {
-                errorObject = {
+                let errorObject = {
                   err: 'socketHandler',
                   trace: err,
                   bin: self.buffer,
@@ -400,7 +412,7 @@ var dataHandler = function(server, self, connection) {
                 server.emit('parseError', errorObject, self);
               }
             } else if (sizeOfMessage <= 4 || sizeOfMessage > self.maxBsonMessageSize) {
-              errorObject = {
+              let errorObject = {
                 err: 'socketHandler',
                 trace: null,
                 bin: data,
@@ -422,7 +434,7 @@ var dataHandler = function(server, self, connection) {
               // Exit parsing loop
               data = new Buffer(0);
             } else {
-              emitBuffer = data.slice(0, sizeOfMessage);
+              let emitBuffer = data.slice(0, sizeOfMessage);
               // Reset state of buffer
               self.buffer = null;
               self.sizeOfMessage = 0;
