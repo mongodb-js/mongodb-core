@@ -17,9 +17,9 @@ const Delete = require('./protocol').Delete;
 const EventEmitter = require('events').EventEmitter;
 
 /*
- * Server class
+ * MockServer class
  */
-class Server extends EventEmitter {
+class MockServer extends EventEmitter {
   constructor(port, host, options) {
     super();
 
@@ -50,6 +50,9 @@ class Server extends EventEmitter {
 
     // sockets
     this.sockets = [];
+
+    // message handlers
+    this.messageHandlers = Object.create(null);
   }
 
   /**
@@ -139,9 +142,29 @@ class Server extends EventEmitter {
 
       self.on('message', function(message, connection) {
         const request = new Request(self, connection, message);
-        if (self.messageHandler) {
+        if (self.genericMessageHandler) {
           try {
-            self.messageHandler(request);
+            self.genericMessageHandler(request);
+          } catch (err) {
+            console.log(err.stack);
+          }
+
+          return;
+        }
+
+        const command = Object.keys(request.document)[0];
+        if (self.handlers[command]) {
+          let messageHandler = self.messageHandlers[command];
+          if (Array.isArray(messageHandler)) {
+            if (messageHandler.length === 0) {
+              delete self.handlers[command];
+            } else {
+              messageHandler = messageHandler.shift();
+            }
+          }
+
+          try {
+            messageHandler(request);
           } catch (err) {
             console.log(err.stack);
           }
@@ -179,11 +202,43 @@ class Server extends EventEmitter {
   }
 
   /**
+   * Legacy method for registering a message handler. This method allows for setting a
+   * generic message handler, if no command type is specified.
    *
-   * @param {*} messageHandler
+   * @param {string|function} typeOrHandler the type of command to register a handler for, or the generic handler
+   * @param {function} [messageHandler] the optional message handler, if a type was specified
    */
-  setMessageHandler(messageHandler) {
-    this.messageHandler = messageHandler;
+  setMessageHandler(type, messageHandler) {
+    if (typeof type === 'function') (messageHandler = type), (type = undefined);
+
+    if (type == null) {
+      this.genericMessageHandler = messageHandler;
+      return;
+    }
+
+    this.messageHandlers[type] = messageHandler;
+  }
+
+  /**
+   * Adds a message handler to the mock server, optionally adding it to an array of
+   * handlers.
+   *
+   * @param {string} type the command type to register this handler for
+   * @param {function} messageHandler the handler for the message
+   * @returns {MockServer} the mock server
+   */
+  addMessageHandler(type, messageHandler) {
+    if (this.messageHandlers[type]) {
+      if (Array.isArray(this.messageHandlers[type])) {
+        this.messageHandlers[type].push(messageHandler);
+      } else {
+        this.messageHandlers[type] = [messageHandler, this.messageHandlers[type]];
+      }
+    } else {
+      this.messageHandlers[type] = messageHandler;
+    }
+
+    return this;
   }
 }
 
@@ -459,4 +514,4 @@ const dataHandler = function(server, self, connection) {
   };
 };
 
-module.exports = Server;
+module.exports = MockServer;

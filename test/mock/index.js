@@ -1,6 +1,6 @@
 'use strict';
 
-var Server = require('./lib/server');
+var MockServer = require('./lib/server');
 
 let mockServers = [];
 const cleanup = (spy, callback) => {
@@ -66,7 +66,7 @@ module.exports = {
     host = host || 'localhost';
     options = options || {};
 
-    let mockServer = new Server(port, host, options);
+    let mockServer = new MockServer(port, host, options);
     mockServers.push(mockServer);
     return mockServer.start();
   },
