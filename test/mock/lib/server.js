@@ -153,7 +153,7 @@ class MockServer extends EventEmitter {
         }
 
         const command = Object.keys(request.document)[0];
-        if (self.handlers[command]) {
+        if (self.messageHandlers[command]) {
           let messageHandler = self.messageHandlers[command];
           if (Array.isArray(messageHandler)) {
             if (messageHandler.length === 0) {
