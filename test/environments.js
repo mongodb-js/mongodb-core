@@ -37,11 +37,11 @@ class ReplicaSetEnvironment extends EnvironmentBase {
       'mongod',
       [
         genReplsetConfig(31000, { tags: { loc: 'ny' } }),
-        genReplsetConfig(31000, { tags: { loc: 'sf' } }),
+        genReplsetConfig(31001, { tags: { loc: 'sf' } }),
         genReplsetConfig(31002, { tags: { loc: 'sf' } }),
         genReplsetConfig(31003, { tags: { loc: 'sf' } }),
-        genReplsetConfig(31000, { tags: { loc: 'sf' } }),
-        genReplsetConfig(31000, { arbiter: true })
+        genReplsetConfig(31004, { tags: { loc: 'sf' } }),
+        genReplsetConfig(31005, { arbiter: true })
       ],
       {
         replSet: 'rs'
