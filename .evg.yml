@@ -23,7 +23,7 @@ functions:
       params:
         working_dir: "src"
         script: |
-          export PATH="/opt/mongodbtoolchain/bin:$PATH"
+          export PATH="/opt/mongodbtoolchain/v2/bin:$PATH"
           export NVM_DIR="$HOME/src/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
