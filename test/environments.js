@@ -190,10 +190,5 @@ module.exports = {
   replicaset: ReplicaSetEnvironment,
   sharded: ShardedEnvironment,
   auth: AuthEnvironment,
-  snappy: SnappyEnvironment,
-
-  // compat for mongo orchestration
-  server: SingleEnvironment,
-  replica_set: ReplicaSetEnvironment,
-  sharded_cluster: ShardedEnvironment
+  snappy: SnappyEnvironment
 };
