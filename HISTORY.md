@@ -1,3 +1,20 @@
+<a name="3.0.2"></a>
+## [3.0.2](https://github.com/mongodb-js/mongodb-core/compare/v3.0.1...v3.0.2) (2018-01-29)
+
+
+### Bug Fixes
+
+* **cursor:** check for autoReconnect option only for single server ([645d6df](https://github.com/mongodb-js/mongodb-core/commit/645d6df))
+
+
+### Features
+
+* **mongodb+srv:** add support for mongodb+srv to the uri parser ([19b42ce](https://github.com/mongodb-js/mongodb-core/commit/19b42ce))
+* **uri-parser:** add initial implementation of uri parser for core ([8f797a7](https://github.com/mongodb-js/mongodb-core/commit/8f797a7))
+* **uri-parser:** expose the connection string parser as api ([fdeca2f](https://github.com/mongodb-js/mongodb-core/commit/fdeca2f))
+
+
+
 <a name="3.0.1"></a>
 ## [3.0.1](https://github.com/mongodb-js/mongodb-core/compare/v3.0.0...v3.0.1) (2017-12-24)
 
