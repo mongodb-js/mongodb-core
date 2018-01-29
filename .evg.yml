@@ -12,11 +12,10 @@ functions:
       type: system
       params:
         script: |
+            export NVM_DIR="$HOME/src/.nvm"
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install --lts=argon
+            nvm install --lts=${NODE_LTS_NAME}
 
     "run tests":
     - command: shell.exec
@@ -25,9 +24,8 @@ functions:
         working_dir: "src"
         script: |
           export PATH="/opt/mongodbtoolchain/bin:$PATH"
-          export NVM_DIR="$HOME/.nvm"
+          export NVM_DIR="$HOME/src/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
           npm install
           MONGODB_VERSION=${VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY} npm test
@@ -249,11 +247,11 @@ axes:
       - id: "Argon"
         display_name: "Node.js Argon LTS"
         variables:
-           NODE_LTS: "argon"
+           NODE_LTS_NAME: "argon"
       - id: "Boron"
         display_name: "Node.js Boron LTS"
         variables:
-           NODE_LTS: "boron"
+           NODE_LTS_NAME: "boron"
 
 buildvariants:
 - matrix_name: "tests-all"
