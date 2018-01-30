@@ -19,7 +19,7 @@ functions:
 
     "run tests":
     - command: shell.exec
-      type: system
+      type: test
       params:
         working_dir: "src"
         script: |
