@@ -156,5 +156,13 @@ describe('OP_MSG', function() {
     });
   });
 
+  it('should properly reflect getMore flag in BSON', function() {
+    const msg = new Msg(bson, {}, { moreToCome: true });
+    const buffers = msg.toBin();
+    const parsedMessage = parseOpMsg(buffers);
+
+    expect(parsedMessage).to.have.property('flags', Msg.flags.MORE_TO_COME);
+  });
+
   it.skip('should properly serialize multiple commands');
 });
