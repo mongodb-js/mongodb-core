@@ -1,17 +1,11 @@
 'use strict';
 
 const expect = require('chai').expect;
-const makeSinonSandbox = require('./utils').makeSinonSandbox;
-const errors = require('../../../../../lib/error');
-const MongoError = errors.MongoError;
-const MongoNetworkError = errors.MongoNetworkError;
+const TestHarness = require('./utils').TestHarness;
 const executeKillCursor = require('../../../../../lib/wireprotocol/3_6_support/execute_kill_cursor');
-const Pool = require('../../../../../lib/connection/pool');
-const BSON = require('bson');
 
 describe('Wire Protocol 3.6 Kill Cursor', function() {
-  const sinon = makeSinonSandbox();
-  let bson, pool, callback;
+  const test = new TestHarness();
 
   const $db = 'darmok';
   const collection = 'jalad';
@@ -21,45 +15,40 @@ describe('Wire Protocol 3.6 Kill Cursor', function() {
     cursorId: 8675309
   };
 
-  beforeEach(() => {
-    bson = sinon.createStubInstance(BSON);
-    pool = sinon.createStubInstance(Pool);
-    pool.isConnected.returns(true);
-    callback = sinon.stub();
-  });
-
   it('should not call to pool if pool is not there, or pool is not connected', function() {
-    executeKillCursor(bson, namespace, cursorState, undefined, callback);
-    expect(pool.write).to.not.have.been.called;
-    expect(callback).to.have.been.calledOnce.and.calledWithExactly(null, null);
-    callback.reset();
+    executeKillCursor(test.bson, namespace, cursorState, undefined, test.callback);
+    expect(test.pool.write).to.not.have.been.called;
+    expect(test.callback).to.have.been.calledOnce.and.calledWithExactly(null, null);
+    test.callback.reset();
 
-    pool.isConnected.returns(false);
+    test.pool.isConnected.returns(false);
 
-    executeKillCursor(bson, namespace, cursorState, pool, callback);
-    expect(pool.write).to.not.have.been.called;
-    expect(callback).to.have.been.calledOnce.and.calledWithExactly(null, null);
+    executeKillCursor(test.bson, namespace, cursorState, test.pool, test.callback);
+    expect(test.pool.write).to.not.have.been.called;
+    expect(test.callback).to.have.been.calledOnce.and.calledWithExactly(null, null);
   });
 
   it('should catch any errors throw by pool.write, and pass them along to callback', function() {
     const err = new Error('this is a test error');
-    pool.write.throws(err);
+    test.pool.write.throws(err);
 
-    expect(() => executeKillCursor(bson, namespace, cursorState, pool, callback)).to.not.throw();
+    expect(() =>
+      executeKillCursor(test.bson, namespace, cursorState, test.pool, test.callback)
+    ).to.not.throw();
 
-    expect(callback).to.have.been.calledOnce.and.calledWithExactly(err, undefined);
+    expect(test.callback).to.have.been.calledOnce.and.calledWithExactly(err, undefined);
   });
 
   it('should properly format command for killing cursor', function() {
-    executeKillCursor(bson, namespace, cursorState, pool, callback);
+    executeKillCursor(test.bson, namespace, cursorState, test.pool, test.callback);
 
-    expect(pool.write).to.have.been.calledOnce.and.calledWithExactly(
-      sinon.match({ query: sinon.match.any }),
-      sinon.match.object,
-      sinon.match.func
+    expect(test.pool.write).to.have.been.calledOnce.and.calledWithExactly(
+      test.sinon.match({ query: test.sinon.match.any }),
+      test.sinon.match.object,
+      test.sinon.match.func
     );
 
-    const msg = pool.write.lastCall.args[0];
+    const msg = test.pool.write.lastCall.args[0];
 
     expect(msg)
       .to.have.property('query')
@@ -75,15 +64,18 @@ describe('Wire Protocol 3.6 Kill Cursor', function() {
   describe('killCursorCallback', function() {
     let killCursorCallback;
     beforeEach(() => {
-      executeKillCursor(bson, namespace, cursorState, pool, callback);
-      killCursorCallback = pool.write.lastCall.args[2];
+      executeKillCursor(test.bson, namespace, cursorState, test.pool, test.callback);
+      killCursorCallback = test.pool.write.lastCall.args[2];
     });
 
     it('should take any errors from pool callback and pass them along', function() {
       const err = new Error('this is a test error');
       killCursorCallback(err);
 
-      expect(callback).to.have.been.calledOnce.and.to.have.been.calledWithExactly(err, undefined);
+      expect(test.callback).to.have.been.calledOnce.and.to.have.been.calledWithExactly(
+        err,
+        undefined
+      );
     });
 
     it('should throw MongoNetworkError if responseFlag is nonzero', function() {
@@ -97,12 +89,12 @@ describe('Wire Protocol 3.6 Kill Cursor', function() {
 
       killCursorCallback(err, response);
 
-      expect(callback).to.have.been.calledOnce;
+      expect(test.callback).to.have.been.calledOnce;
 
-      const returnedError = callback.lastCall.args[0];
+      const returnedError = test.callback.lastCall.args[0];
 
       expect(returnedError)
-        .to.be.an.instanceOf(MongoNetworkError)
+        .to.be.an.instanceOf(test.MongoNetworkError)
         .and.to.have.property('message')
         .that.equals('cursor killed or timed out');
     });
@@ -118,12 +110,12 @@ describe('Wire Protocol 3.6 Kill Cursor', function() {
 
       killCursorCallback(err, response);
 
-      expect(callback).to.have.been.calledOnce;
+      expect(test.callback).to.have.been.calledOnce;
 
-      const returnedError = callback.lastCall.args[0];
+      const returnedError = test.callback.lastCall.args[0];
 
       expect(returnedError)
-        .to.be.an.instanceOf(MongoError)
+        .to.be.an.instanceOf(test.MongoError)
         .and.to.have.property('message')
         .that.equals(`invalid killCursors result returned for cursor id ${cursorState.cursorId}`);
     });
@@ -140,7 +132,7 @@ describe('Wire Protocol 3.6 Kill Cursor', function() {
 
       killCursorCallback(err, response);
 
-      expect(callback).to.have.been.calledOnce.and.to.have.been.calledWithExactly(null, doc);
+      expect(test.callback).to.have.been.calledOnce.and.to.have.been.calledWithExactly(null, doc);
     });
   });
 });

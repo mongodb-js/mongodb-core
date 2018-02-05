@@ -1,11 +1,8 @@
 'use strict';
 
 const expect = require('chai').expect;
-const makeSinonSandbox = require('./utils').makeSinonSandbox;
+const TestHarness = require('./utils').TestHarness;
 const executeWrite = require('../../../../../lib/wireprotocol/3_6_support/execute_write');
-const Pool = require('../../../../../lib/connection/pool');
-const BSON = require('bson');
-const MongoError = require('../../../../../lib/error').MongoError;
 
 [
   { type: 'insert', opsField: 'documents' },
@@ -16,14 +13,7 @@ const MongoError = require('../../../../../lib/error').MongoError;
   const OPSFIELD = opMeta.opsField;
 
   describe(`Wire Protocol 3.6 ${TYPE}`, function() {
-    const sinon = makeSinonSandbox();
-    let bson, pool, callback;
-
-    beforeEach(() => {
-      bson = sinon.createStubInstance(BSON);
-      pool = sinon.createStubInstance(Pool);
-      callback = sinon.stub();
-    });
+    const test = new TestHarness();
 
     it('should throw if no documents are provided', function() {
       const badValues = [
@@ -39,13 +29,22 @@ const MongoError = require('../../../../../lib/error').MongoError;
       ];
       badValues.forEach(badValue => {
         const failingFunction = () =>
-          executeWrite(bson, pool, TYPE, OPSFIELD, 'darmok.jalad', badValue, {}, callback);
+          executeWrite(
+            test.bson,
+            test.pool,
+            TYPE,
+            OPSFIELD,
+            'darmok.jalad',
+            badValue,
+            {},
+            test.callback
+          );
         const stringOfBadValue = JSON.stringify(badValue);
         expect(
           failingFunction,
           `Expected executeWrite to fail when ops === ${stringOfBadValue}, but it succeeded`
         )
-          .to.throw(MongoError)
+          .to.throw(test.MongoError)
           .with.property('message')
           .that.equals('write operation must contain at least one document');
       });
@@ -58,15 +57,15 @@ const MongoError = require('../../../../../lib/error').MongoError;
         { shaka: 'when the walls fell' }
       ];
 
-      executeWrite(pool, bson, TYPE, OPSFIELD, 'darmok.jalad', ops, callback);
+      executeWrite(test.pool, test.bson, TYPE, OPSFIELD, 'darmok.jalad', ops, test.callback);
 
-      expect(pool.write).to.have.been.calledOnce.and.to.have.been.calledWith(
-        sinon.match({ query: sinon.match.any }),
-        sinon.match.any,
-        callback
+      expect(test.pool.write).to.have.been.calledOnce.and.to.have.been.calledWith(
+        test.sinon.match({ query: test.sinon.match.any }),
+        test.sinon.match.any,
+        test.callback
       );
 
-      const msg = pool.write.firstCall.args[0];
+      const msg = test.pool.write.firstCall.args[0];
 
       expect(msg)
         .to.have.property('query')
@@ -92,11 +91,20 @@ const MongoError = require('../../../../../lib/error').MongoError;
         }
       };
 
-      executeWrite(pool, bson, TYPE, OPSFIELD, 'darmok.jalad', ops, options, callback);
+      executeWrite(
+        test.pool,
+        test.bson,
+        TYPE,
+        OPSFIELD,
+        'darmok.jalad',
+        ops,
+        options,
+        test.callback
+      );
 
-      expect(pool.write).to.have.been.calledOnce;
+      expect(test.pool.write).to.have.been.calledOnce;
 
-      const msg = pool.write.firstCall.args[0];
+      const msg = test.pool.write.firstCall.args[0];
 
       expect(msg).to.have.property('moreToCome', true);
     });

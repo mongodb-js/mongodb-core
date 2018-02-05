@@ -1,18 +1,34 @@
 'use strict';
 
-const shared = require('../../../../../lib/wireprotocol/shared');
-const parseHeader = shared.parseHeader;
 const chai = require('chai');
 const sinon = require('sinon');
+const BSON = require('bson');
+const Pool = require('../../../../../lib/connection/pool');
+const shared = require('../../../../../lib/wireprotocol/shared');
+const errors = require('../../../../../lib/error');
+const parseHeader = shared.parseHeader;
 
 chai.use(require('sinon-chai'));
 
-function makeSinonSandbox() {
-  const sandbox = sinon.createSandbox();
+class TestHarness {
+  constructor() {
+    this.sinon = sinon.createSandbox();
+    this.MongoError = errors.MongoError;
+    this.MongoNetworkError = errors.MongoNetworkError;
+    beforeEach(() => this.beforeEach());
+    afterEach(() => this.afterEach());
+  }
 
-  afterEach(() => sandbox.restore());
+  beforeEach() {
+    this.bson = sinon.createStubInstance(BSON);
+    this.pool = sinon.createStubInstance(Pool);
+    this.pool.isConnected.returns(true);
+    this.callback = sinon.stub();
+  }
 
-  return sandbox;
+  afterEach() {
+    this.sinon.restore();
+  }
 }
 
 const OFFSETS = {
@@ -69,4 +85,4 @@ function parseOpMsg(data) {
   return { header, flags, segments, fullSize: data.length, rawData: data };
 }
 
-module.exports = { parseOpMsg, makeSinonSandbox };
+module.exports = { parseOpMsg, TestHarness };
