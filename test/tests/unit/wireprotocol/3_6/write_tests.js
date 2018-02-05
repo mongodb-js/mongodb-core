@@ -79,6 +79,28 @@ const MongoError = require('../../../../../lib/error').MongoError;
         });
     });
 
+    it('should properly set the moreToCome flag for w: 0', function() {
+      const ops = [
+        { temba: 'his arms wide' },
+        { temba: 'at rest' },
+        { shaka: 'when the walls fell' }
+      ];
+
+      const options = {
+        writeConcern: {
+          w: 0
+        }
+      };
+
+      executeWrite(pool, bson, TYPE, OPSFIELD, 'darmok.jalad', ops, options, callback);
+
+      expect(pool.write).to.have.been.calledOnce;
+
+      const msg = pool.write.firstCall.args[0];
+
+      expect(msg).to.have.property('moreToCome', true);
+    });
+
     // TODO: do we need to actually test this?
     describe.skip('option tests', function() {
       it('ordered');
