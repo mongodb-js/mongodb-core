@@ -1,8 +1,10 @@
 'use strict';
 
 const chai = require('chai');
+const expect = chai.expect;
 const sinon = require('sinon');
 const BSON = require('bson');
+const Msg = require('../../../../../lib/connection/msg').Msg;
 const Pool = require('../../../../../lib/connection/pool');
 const shared = require('../../../../../lib/wireprotocol/shared');
 const errors = require('../../../../../lib/error');
@@ -85,4 +87,14 @@ function parseOpMsg(data) {
   return { header, flags, segments, fullSize: data.length, rawData: data };
 }
 
-module.exports = { parseOpMsg, TestHarness };
+function expectMsgToHaveSingleQuery(msg) {
+  return expect(msg)
+    .to.be.an.instanceOf(Msg)
+    .and.to.have.property('query')
+    .that.is.an('array')
+    .with.lengthOf(1)
+    .that.has.property(0)
+    .that.is.an('object');
+}
+
+module.exports = { parseOpMsg, TestHarness, expectMsgToHaveSingleQuery };

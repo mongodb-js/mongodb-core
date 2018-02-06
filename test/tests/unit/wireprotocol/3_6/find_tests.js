@@ -1,7 +1,7 @@
 'use strict';
 
-const expect = require('chai').expect;
 const TestHarness = require('./utils').TestHarness;
+const expectMsgToHaveSingleQuery = require('./utils').expectMsgToHaveSingleQuery;
 const executeFind = require('../../../../../lib/wireprotocol/3_6_support/execute_find');
 const ReadPreference = require('../../../../../lib/topologies/read_preference');
 
@@ -11,15 +11,6 @@ describe('Wire Protocol 3.6 Find', function() {
   const $db = 'darmok';
   const collection = 'jalad';
   const namespace = `${$db}.${collection}`;
-
-  function expectMsgToHaveSingleQuery(msg) {
-    return expect(msg)
-      .to.have.property('query')
-      .that.is.an('array')
-      .with.lengthOf(1)
-      .that.has.property(0)
-      .that.is.an('object');
-  }
 
   it('should properly parse out namespace and readPreference', function() {
     const readPreference = new ReadPreference('secondary');
