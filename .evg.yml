@@ -210,7 +210,7 @@ axes:
   - id: os
     display_name: OS
     values:
-      - name: os_rhel62
+      - id: os_rhel62
         display_name: RHEL 6.2
         run_on:
           - rhel62-test
