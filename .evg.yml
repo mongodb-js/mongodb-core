@@ -28,8 +28,7 @@ functions:
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
           npm install
-          MONGODB_VERSION=${VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY}
-          mongodb-test-runner --evergreen -t 60000 test/tests/functional
+          MONGODB_VERSION=${VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY} npm test -- --evergreen
 
 pre:
     - func: "fetch source"
