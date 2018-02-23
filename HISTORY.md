@@ -1,3 +1,21 @@
+<a name="3.0.3"></a>
+## [3.0.3](https://github.com/mongodb-js/mongodb-core/compare/v3.0.2...v3.0.3) (2018-02-23)
+
+
+### Bug Fixes
+
+* **connection:** make pool not try to reconnect forever when reconnectTries = 0 ([#275](https://github.com/mongodb-js/mongodb-core/issues/275)) ([2d3fa98](https://github.com/mongodb-js/mongodb-core/commit/2d3fa98)), closes [Automattic/mongoose#6028](https://github.com/Automattic/mongoose/issues/6028)
+* **retryableWrites:** only remove primary after retry ([#274](https://github.com/mongodb-js/mongodb-core/issues/274)) ([7ac171e](https://github.com/mongodb-js/mongodb-core/commit/7ac171e))
+* **sessions:** actually allow ending of sessions ([2b81bb6](https://github.com/mongodb-js/mongodb-core/commit/2b81bb6))
+* **uri-parser:** do not use `hasOwnProperty` to detect ssl ([69d16c7](https://github.com/mongodb-js/mongodb-core/commit/69d16c7))
+
+
+### Features
+
+* **sessions:** adding endAllPooledSessions helper method ([d7804ed](https://github.com/mongodb-js/mongodb-core/commit/d7804ed))
+
+
+
 <a name="3.0.2"></a>
 ## [3.0.2](https://github.com/mongodb-js/mongodb-core/compare/v3.0.1...v3.0.2) (2018-01-29)
 
