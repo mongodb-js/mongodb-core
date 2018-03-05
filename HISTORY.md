@@ -1,3 +1,13 @@
+<a name="3.0.4"></a>
+## [3.0.4](https://github.com/mongodb-js/mongodb-core/compare/v3.0.3...v3.0.4) (2018-03-05)
+
+
+### Bug Fixes
+
+* **connection:** ensure socket options are applied to ssl sockets ([e5ff927](https://github.com/mongodb-js/mongodb-core/commit/e5ff927))
+
+
+
 <a name="3.0.3"></a>
 ## [3.0.3](https://github.com/mongodb-js/mongodb-core/compare/v3.0.2...v3.0.3) (2018-02-23)
 
