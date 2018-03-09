@@ -10,6 +10,10 @@ const ReplSetManager = topologyManagers.ReplSet;
 const ShardingManager = topologyManagers.Sharded;
 
 class ReplicaSetEnvironment extends EnvironmentBase {
+  static get displayName() {
+    return 'replicaset';
+  }
+
   constructor() {
     super();
 
@@ -78,6 +82,10 @@ const genConfigServerConfig = (port, options) => {
 };
 
 class ShardedEnvironment extends EnvironmentBase {
+  static get displayName() {
+    return 'sharded';
+  }
+
   constructor() {
     super();
 
@@ -148,6 +156,10 @@ class ShardedEnvironment extends EnvironmentBase {
 }
 
 class AuthEnvironment extends EnvironmentBase {
+  static get displayName() {
+    return 'auth';
+  }
+
   constructor() {
     super();
 
@@ -161,6 +173,10 @@ class AuthEnvironment extends EnvironmentBase {
 }
 
 class SingleEnvironment extends EnvironmentBase {
+  static get displayName() {
+    return 'single';
+  }
+
   constructor() {
     super();
 
@@ -173,6 +189,10 @@ class SingleEnvironment extends EnvironmentBase {
 }
 
 class SnappyEnvironment extends EnvironmentBase {
+  static get displayName() {
+    return 'snappy';
+  }
+
   constructor() {
     super();
 
