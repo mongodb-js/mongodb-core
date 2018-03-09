@@ -190,5 +190,10 @@ module.exports = {
   replicaset: ReplicaSetEnvironment,
   sharded: ShardedEnvironment,
   auth: AuthEnvironment,
-  snappy: SnappyEnvironment
+  snappy: SnappyEnvironment,
+
+  // for compatability with evergreen template
+  server: SingleEnvironment,
+  replica_set: ReplicaSetEnvironment,
+  sharded_cluster: ShardedEnvironment
 };
