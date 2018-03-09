@@ -190,9 +190,7 @@ functions:
         working_dir: "src"
         script: |
           ${PREPARE_SHELL}
-          NODE_LTS_NAME=${NODE_LTS_NAME} file="${PROJECT_DIRECTORY}/.evergreen/install-dependencies.sh"
-          # Don't use ${file} syntax here because evergreen treats it as an empty expansion.
-          [ -f "$file" ] && sh $file || echo "$file not available, skipping"
+          NODE_LTS_NAME=${NODE_LTS_NAME} sh ${PROJECT_DIRECTORY}/.evergreen/install-dependencies.sh
 
 pre:
   - func: "fetch source"
@@ -404,15 +402,15 @@ axes:
     display_name: "Node.js Version"
     values:
       - id: "Argon"
-        display_name: "argon"
+        display_name: "Node.js Argon"
         variables:
            NODE_LTS_NAME: "argon"
       - id: "Boron"
-        display_name: "boron"
+        display_name: "Node.js Boron"
         variables:
            NODE_LTS_NAME: "boron"
       - id: "Carbon"
-        display_name: "carbon"
+        display_name: "Node.js Carbon"
         variables:
            NODE_LTS_NAME: "carbon"
 
@@ -591,8 +589,8 @@ axes:
 
 buildvariants:
 - matrix_name: "tests-all"
-  matrix_spec: {"os-fully-featured": "*", auth: "*", ssl: "*" }
-  display_name: "${os-fully-featured} ${auth} ${ssl}"
+  matrix_spec: {"os-fully-featured": "*", auth: "*", ssl: "*", node-version: "*" }
+  display_name: "${node-version} ${os-fully-featured} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
@@ -614,8 +612,8 @@ buildvariants:
      - name: "test-2.6-standalone"
 
 - matrix_name: "tests-nossl"
-  matrix_spec: {"os-nossl": "*", auth: "*", ssl: "nossl" }
-  display_name: "${os-nossl} ${auth} ${ssl}"
+  matrix_spec: {"os-nossl": "*", auth: "*", ssl: "nossl", node-version: "*" }
+  display_name: "${node-version} ${os-nossl} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
@@ -637,8 +635,8 @@ buildvariants:
      - name: "test-2.6-standalone"
 
 - matrix_name: "tests-os-requires-26"
-  matrix_spec: {"os-requires-26": "*", auth: "*", ssl: "*" }
-  display_name: "${os-requires-26} ${auth} ${ssl}"
+  matrix_spec: {"os-requires-26": "*", auth: "*", ssl: "*", node-version: "*" }
+  display_name: "${node-version} ${os-requires-26} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
@@ -660,8 +658,8 @@ buildvariants:
      - name: "test-2.6-standalone"
 
 - matrix_name: "tests-os-requires-32"
-  matrix_spec: {"os-requires-32": "*", auth: "*", ssl: "*" }
-  display_name: "${os-requires-32} ${auth} ${ssl}"
+  matrix_spec: {"os-requires-32": "*", auth: "*", ssl: "*", node-version: "*" }
+  display_name: "${node-version} ${os-requires-32} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
@@ -677,8 +675,8 @@ buildvariants:
      - name: "test-3.2-standalone"
 
 - matrix_name: "tests-ssl-requires-32"
-  matrix_spec: {"os-ssl-requires-32": "*", auth: "*", ssl: "ssl" }
-  display_name: "${os-ssl-requires-32} ${auth} ${ssl}"
+  matrix_spec: {"os-ssl-requires-32": "*", auth: "*", ssl: "ssl", node-version: "*" }
+  display_name: "${node-version} ${os-ssl-requires-32} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
@@ -694,8 +692,8 @@ buildvariants:
      - name: "test-3.2-standalone"
 
 - matrix_name: "tests-os-requires-34"
-  matrix_spec: {"os-requires-34": "*", auth: "*", ssl: "*" }
-  display_name: "${os-requires-34} ${auth} ${ssl}"
+  matrix_spec: {"os-requires-34": "*", auth: "*", ssl: "*", node-version: "*" }
+  display_name: "${node-version} ${os-requires-34} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
@@ -708,37 +706,16 @@ buildvariants:
      - name: "test-3.4-standalone"
 
 - matrix_name: "tests-os-requires-40"
-  matrix_spec: {"os-requires-40": "*", auth: "*", ssl: "*" }
-  display_name: "${os-requires-40} ${auth} ${ssl}"
+  matrix_spec: {"os-requires-40": "*", auth: "*", ssl: "*", node-version: "*" }
+  display_name: "${node-version} ${os-requires-40} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
      - name: "test-latest-standalone"
 
-# Storage Engine Tests on Amazon Linux (Enterprise)
-- matrix_name: "tests-storage-engines"
-  matrix_spec: {"os-fully-featured": "linux-64-amzn-test", storage-engine: "*" }
-  display_name: "${os-fully-featured} ${storage-engine}"
-  rules:
-    - if:
-        os-fully-featured: "*"
-        storage-engine: ["mmapv1", "inmemory"]
-      then:
-        add_tasks:
-          - "test-latest-standalone"
-          - "test-3.6-standalone"
-          - "test-3.4-standalone"
-          - "test-3.2-standalone"
-    - if:
-        os-fully-featured: "*"
-        storage-engine: "wiredtiger"
-      then:
-        add_tasks:
-          - "test-3.0-standalone"
-
 - matrix_name: "tests-windows"
-  matrix_spec: {os-windows: "*", auth: "*", ssl: "*" }
-  display_name: "${os-windows} ${auth} ${ssl}"
+  matrix_spec: {os-windows: "*", auth: "*", ssl: "*", node-version: "*" }
+  display_name: "${node-version} ${os-windows} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
      - name: "test-latest-sharded_cluster"
