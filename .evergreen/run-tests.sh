@@ -11,7 +11,22 @@ set -o errexit  # Exit the script with error if any of the commands fail
 AUTH=${AUTH:-noauth}
 SSL=${SSL:-nossl}
 MONGODB_URI=${MONGODB_URI:-}
+VERSION=${VERSION:-}
+DRIVERS_TOOLS=${DRIVERS_TOOLS:-}
 
+# install MongoDB
+# Functions to fetch MongoDB binaries
+. ${DRIVERS_TOOLS}/.evergreen/download-mongodb.sh
+
+get_distro
+if [ -z "$MONGODB_DOWNLOAD_URL" ]; then
+    get_mongodb_download_url_for "$DISTRO" "$VERSION"
+fi
+# Even though we have the MONGODB_DOWNLOAD_URL, we still call this to get the proper EXTRACT variable
+get_mongodb_download_url_for "$DISTRO"
+download_and_extract "$MONGODB_DOWNLOAD_URL" "$EXTRACT"
+
+# run tests
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 [ -z "$MARCH" ] && MARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
 

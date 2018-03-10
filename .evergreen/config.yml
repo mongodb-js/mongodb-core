@@ -43,14 +43,6 @@ functions:
 
            export DRIVERS_TOOLS="$(pwd)/../drivers-tools"
            export PROJECT_DIRECTORY="$(pwd)"
-
-           # Python has cygwin path problems on Windows. Detect prospective mongo-orchestration home directory
-           if [ "Windows_NT" = "$OS" ]; then # Magic variable in cygwin
-              export DRIVERS_TOOLS=$(cygpath -m $DRIVERS_TOOLS)
-              export PROJECT_DIRECTORY=$(cygpath -m $PROJECT_DIRECTORY)
-           fi
-
-           export MONGO_ORCHESTRATION_HOME="$DRIVERS_TOOLS/.evergreen/orchestration"
            export MONGODB_BINARIES="$DRIVERS_TOOLS/mongodb/bin"
            export UPLOAD_BUCKET="${project}"
 
@@ -89,7 +81,6 @@ functions:
           ${PREPARE_SHELL}
           rm -rf $DRIVERS_TOOLS
           git clone git://github.com/mongodb-labs/drivers-evergreen-tools.git $DRIVERS_TOOLS
-          echo "{ \"releases\": { \"default\": \"$MONGODB_BINARIES\" }}" > $MONGO_ORCHESTRATION_HOME/orchestration.config
 
   "upload release":
     - command: s3.put
@@ -119,24 +110,6 @@ functions:
         script: |
           ${PREPARE_SHELL}
           [ -f ${PROJECT_DIRECTORY}/${file} ] && sh ${PROJECT_DIRECTORY}/${file} || echo "${PROJECT_DIRECTORY}/${file} not available, skipping"
-
-  "bootstrap mongo-orchestration":
-    - command: shell.exec
-      params:
-        script: |
-          ${PREPARE_SHELL}
-          MONGODB_VERSION=${VERSION} TOPOLOGY=${TOPOLOGY} AUTH=${AUTH} SSL=${SSL} STORAGE_ENGINE=${STORAGE_ENGINE} sh ${DRIVERS_TOOLS}/.evergreen/run-orchestration.sh
-    # run-orchestration generates expansion file with the MONGODB_URI for the cluster
-    - command: expansions.update
-      params:
-        file: mo-expansion.yml
-
-  "stop mongo-orchestration":
-    - command: shell.exec
-      params:
-        script: |
-          ${PREPARE_SHELL}
-          sh ${DRIVERS_TOOLS}/.evergreen/stop-orchestration.sh
 
   "run tests":
     - command: shell.exec
@@ -190,7 +163,7 @@ functions:
         working_dir: "src"
         script: |
           ${PREPARE_SHELL}
-          DRIVERS_TOOLS=${DRIVERS_TOOLS} MONGODB_VERSION=${VERSION} NODE_LTS_NAME=${NODE_LTS_NAME} sh ${PROJECT_DIRECTORY}/.evergreen/install-dependencies.sh
+          NODE_LTS_NAME=${NODE_LTS_NAME} sh ${PROJECT_DIRECTORY}/.evergreen/install-dependencies.sh
 
 pre:
   - func: "fetch source"
@@ -201,7 +174,6 @@ pre:
   - func: "install dependencies"
 
 post:
-  # - func: "stop mongo-orchestration"
   - func: "cleanup"
 
 tasks:
