@@ -30,4 +30,4 @@ echo "Running $AUTH tests over $SSL, connecting to $MONGODB_URI"
 export PATH="/opt/mongodbtoolchain/v2/bin:$PATH"
 export NVM_DIR="$HOME/src/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-MONGODB_VERSION=${VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY} npm test -- --skipStartup --local
+MONGODB_VERSION=${VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY} npm test -- --local
