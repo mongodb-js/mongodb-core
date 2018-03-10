@@ -11,8 +11,8 @@ set -o errexit  # Exit the script with error if any of the commands fail
 AUTH=${AUTH:-noauth}
 SSL=${SSL:-nossl}
 MONGODB_URI=${MONGODB_URI:-}
-VERSION=${VERSION:-}
 DRIVERS_TOOLS=${DRIVERS_TOOLS:-}
+MONGODB_VERSION=${MONGODB_VERSION:-}
 
 # install MongoDB
 # Functions to fetch MongoDB binaries
@@ -20,7 +20,7 @@ DRIVERS_TOOLS=${DRIVERS_TOOLS:-}
 
 get_distro
 if [ -z "$MONGODB_DOWNLOAD_URL" ]; then
-    get_mongodb_download_url_for "$DISTRO" "$VERSION"
+    get_mongodb_download_url_for "$DISTRO" "$MONGODB_VERSION"
 fi
 # Even though we have the MONGODB_DOWNLOAD_URL, we still call this to get the proper EXTRACT variable
 get_mongodb_download_url_for "$DISTRO"
@@ -45,4 +45,4 @@ echo "Running $AUTH tests over $SSL, connecting to $MONGODB_URI"
 export PATH="/opt/mongodbtoolchain/v2/bin:$PATH"
 export NVM_DIR="$HOME/src/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-MONGODB_VERSION=${VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY} npm test -- --local
+MONGODB_VERSION=${MONGODB_VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY} npm test -- --local
