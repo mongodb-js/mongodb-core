@@ -209,163 +209,146 @@ tasks:
     - name: "test-2.6-standalone"
       tags: ["2.6", "standalone"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "2.6"
-        #     TOPOLOGY: "server"
         - func: "run tests"
+          vars:
+            VERSION: "2.6"
+            TOPOLOGY: "server"
 
     - name: "test-2.6-replica_set"
       tags: ["2.6", "replica_set"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "2.6"
-        #     TOPOLOGY: "replica_set"
         - func: "run tests"
+          vars:
+            VERSION: "2.6"
+            TOPOLOGY: "replica_set"
 
     - name: "test-2.6-sharded_cluster"
       tags: ["2.6", "sharded_cluster"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "2.6"
-        #     TOPOLOGY: "sharded_cluster"
         - func: "run tests"
+          vars:
+            VERSION: "2.6"
+            TOPOLOGY: "sharded_cluster"
 
     - name: "test-3.0-standalone"
       tags: ["3.0", "standalone"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.0"
-        #     TOPOLOGY: "server"
         - func: "run tests"
+          vars:
+            VERSION: "3.0"
+            TOPOLOGY: "server"
 
     - name: "test-3.0-replica_set"
       tags: ["3.0", "replica_set"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.0"
-        #     TOPOLOGY: "replica_set"
         - func: "run tests"
+          vars:
+            VERSION: "3.0"
+            TOPOLOGY: "replica_set"
 
     - name: "test-3.0-sharded_cluster"
       tags: ["3.0", "sharded_cluster"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.0"
-        #     TOPOLOGY: "sharded_cluster"
         - func: "run tests"
+          vars:
+            VERSION: "3.0"
+            TOPOLOGY: "sharded_cluster"
 
     - name: "test-3.2-standalone"
       tags: ["3.2", "standalone"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.2"
-        #     TOPOLOGY: "server"
         - func: "run tests"
+          vars:
+            VERSION: "3.2"
+            TOPOLOGY: "server"
 
     - name: "test-3.2-replica_set"
       tags: ["3.2", "replica_set"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.2"
-        #     TOPOLOGY: "replica_set"
         - func: "run tests"
+          vars:
+            VERSION: "3.2"
+            TOPOLOGY: "replica_set"
 
     - name: "test-3.2-sharded_cluster"
       tags: ["3.2", "sharded_cluster"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.2"
-        #     TOPOLOGY: "sharded_cluster"
         - func: "run tests"
+          vars:
+            VERSION: "3.2"
+            TOPOLOGY: "sharded_cluster"
 
     - name: "test-3.4-standalone"
       tags: ["3.4", "standalone"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.4"
-        #     TOPOLOGY: "server"
         - func: "run tests"
+          vars:
+            VERSION: "3.4"
+            TOPOLOGY: "server"
 
     - name: "test-3.4-replica_set"
       tags: ["3.4", "replica_set"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.4"
-        #     TOPOLOGY: "replica_set"
         - func: "run tests"
+          vars:
+            VERSION: "3.4"
+            TOPOLOGY: "replica_set"
 
     - name: "test-3.4-sharded_cluster"
       tags: ["3.4", "sharded_cluster"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.4"
-        #     TOPOLOGY: "sharded_cluster"
         - func: "run tests"
+          vars:
+            VERSION: "3.4"
+            TOPOLOGY: "sharded_cluster"
+
     - name: "test-3.6-standalone"
       tags: ["3.6", "standalone"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.6"
-        #     TOPOLOGY: "server"
         - func: "run tests"
+          vars:
+            VERSION: "3.6"
+            TOPOLOGY: "server"
 
     - name: "test-3.6-replica_set"
       tags: ["3.6", "replica_set"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.6"
-        #     TOPOLOGY: "replica_set"
         - func: "run tests"
+          vars:
+            VERSION: "3.6"
+            TOPOLOGY: "replica_set"
 
     - name: "test-3.6-sharded_cluster"
       tags: ["3.6", "sharded_cluster"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "3.6"
-        #     TOPOLOGY: "sharded_cluster"
         - func: "run tests"
+          vars:
+            VERSION: "3.6"
+            TOPOLOGY: "sharded_cluster"
 
     - name: "test-latest-standalone"
       tags: ["latest", "standalone"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "latest"
-        #     TOPOLOGY: "server"
         - func: "run tests"
+          vars:
+            VERSION: "latest"
+            TOPOLOGY: "server"
 
     - name: "test-latest-replica_set"
       tags: ["latest", "replica_set"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "latest"
-        #     TOPOLOGY: "replica_set"
         - func: "run tests"
+          vars:
+            VERSION: "latest"
+            TOPOLOGY: "replica_set"
 
     - name: "test-latest-sharded_cluster"
       tags: ["latest", "sharded_cluster"]
       commands:
-        # - func: "bootstrap mongo-orchestration"
-        #   vars:
-        #     VERSION: "latest"
-        #     TOPOLOGY: "sharded_cluster"
         - func: "run tests"
+          vars:
+            VERSION: "latest"
+            TOPOLOGY: "sharded_cluster"
 
 # }}}
 
