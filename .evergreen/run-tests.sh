@@ -43,6 +43,7 @@ fi
 echo "Running $AUTH tests over $SSL, connecting to $MONGODB_URI"
 
 export PATH="/opt/mongodbtoolchain/v2/bin:$PATH"
-export NVM_DIR="${HOME}/src/node/nvm"
+NODE_ARTIFACTS_PATH="${PROJECT_DIRECTORY}/node-artifacts"
+export NVM_DIR="${NODE_ARTIFACTS_PATH}/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 MONGODB_VERSION=${MONGODB_VERSION} MONGODB_ENVIRONMENT=${TOPOLOGY} npm test -- --local
