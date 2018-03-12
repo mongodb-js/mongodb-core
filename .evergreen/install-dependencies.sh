@@ -12,4 +12,4 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | b
 nvm install --lts=${NODE_LTS_NAME}
 
 # install node dependencies
-npm install
+npm install --verbose
