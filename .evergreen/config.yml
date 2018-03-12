@@ -373,17 +373,30 @@ axes:
   - id: os-fully-featured
     display_name: OS
     values:
-      - id: ubuntu1204-test
-        display_name: "Ubuntu 12.04"
-        run_on: ubuntu1204-test
-
       - id: suse11-x86-64-test
         display_name: "SUSE 11 (x86_64)"
         run_on: suse11-test
+        batchtime: 10080  # 7 days
 
       - id: linux-64-amzn-test
         display_name: "Amazon Linux (Enterprise)"
         run_on: linux-64-amzn-test
+        batchtime: 10080  # 7 days
+
+      - id: ubuntu-14.04
+        display_name: "Ubuntu 14.04"
+        run_on: ubuntu1404-test
+        batchtime: 10080  # 7 days
+
+      - id: rhel70
+        display_name: "RHEL 7.0"
+        run_on: rhel70-small
+        batchtime: 10080  # 7 days
+
+      - id: debian71-test
+        display_name: "Debian 7.1"
+        run_on: debian71-test
+        batchtime: 10080  # 7 days
 
   # OSes that support versions of MongoDB without SSL.
   - id: os-nossl
@@ -392,57 +405,30 @@ axes:
       - id: archlinux-test
         display_name: "Archlinux"
         run_on: archlinux-test
+        batchtime: 10080  # 7 days
 
       - id: macos-1012
         display_name: "macOS 10.12"
         run_on: macos-1012
 
-  - id: os-windows
-    display_name: OS
-    values:
-      - id: windows-64-vs2010-test
-        display_name: "Windows (VS2010)"
-        run_on: windows-64-vs2010-test
-
-      - id: windows-64-vs2013-test
-        display_name: "Windows (VS2013)"
-        run_on: windows-64-vs2013-test
-
-      - id: windows-64-vs2015-test
-        display_name: "Windows (VS2015)"
-        run_on: windows-64-vs2015-test
-
-  # OSes that support versions of MongoDB>=2.6 with SSL.
-  - id: os-requires-26
-    display_name: OS
-    values:
-      - id: ubuntu-14.04
-        display_name: "Ubuntu 14.04"
-        run_on: ubuntu1404-test
-
-      - id: rhel70
-        display_name: "RHEL 7.0"
-        run_on: rhel70-small
-
-      - id: debian71-test
-        display_name: "Debian 7.1"
-        run_on: debian71-test
-
   # OSes that support versions of MongoDB>=3.2 with SSL.
   - id: os-requires-32
     display_name: OS
     values:
-      - id: suse12-x86-64-test
-        display_name: "SUSE 12 (x86_64)"
-        run_on: suse12-test
-
       - id: ubuntu-16.04
         display_name: "Ubuntu 16.04"
         run_on: ubuntu1604-test
+        batchtime: 10080  # 7 days
+
+      - id: suse12-x86-64-test
+        display_name: "SUSE 12 (x86_64)"
+        run_on: suse12-test
+        batchtime: 10080  # 7 days
 
       - id: rhel71-power8-test
         display_name: "RHEL 7.1 (POWER8)"
         run_on: rhel71-power8-test
+        batchtime: 10080  # 7 days
 
   # OSes that introduced support for SSL with MongoDB>=3.2.
   - id: os-ssl-requires-32
@@ -459,34 +445,48 @@ axes:
       - id: debian81-test
         display_name: "Debian 8.1"
         run_on: debian81-test
+        batchtime: 10080  # 7 days
 
       - id: rhel72-zseries-test
         display_name: "RHEL 7.2 (zSeries)"
         run_on: rhel72-zseries-test
+        batchtime: 10080  # 7 days
 
       - id: suse12-zseries-test
         display_name: "SUSE 12 (zSeries)"
         run_on: suse12-zseries-test
+        batchtime: 10080  # 7 days
 
       - id: ubuntu1604-arm64-small
         display_name: "Ubuntu 16.04 (ARM64)"
         run_on: ubuntu1604-arm64-small
+        batchtime: 10080  # 7 days
 
       - id: ubuntu1604-power8-test
         display_name: "Ubuntu 16.04 (POWER8)"
         run_on: ubuntu1604-power8-test
+        batchtime: 10080  # 7 days
 
       - id: ubuntu1604-zseries-small
         display_name: "Ubuntu 16.04 (zSeries)"
         run_on: ubuntu1604-zseries-small
+        batchtime: 10080  # 7 days
 
-  # OSes that support versions of MongoDB>=4.0 with SSL.
-  - id: os-requires-40
+  - id: os-windows
     display_name: OS
     values:
-      - id: debian92-test
-        display_name: "Debian 9.2"
-        run_on: debian92-test
+      - id: windows-64-vs2010-test
+        display_name: "Windows (VS2010)"
+        run_on: windows-64-vs2010-test
+
+      - id: windows-64-vs2013-test
+        display_name: "Windows (VS2013)"
+        run_on: windows-64-vs2013-test
+
+      - id: windows-64-vs2015-test
+        display_name: "Windows (VS2015)"
+        run_on: windows-64-vs2015-test
+
 
   - id: topology
     display_name: Topology
@@ -589,29 +589,6 @@ buildvariants:
      - name: "test-2.6-sharded_cluster"
      - name: "test-2.6-standalone"
 
-- matrix_name: "tests-os-requires-26"
-  matrix_spec: {"os-requires-26": "*", auth: "*", ssl: "*", node-version: "*" }
-  display_name: "${node-version} ${os-requires-26} ${auth} ${ssl}"
-  tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
-     - name: "test-latest-standalone"
-     - name: "test-3.6-replica_set"
-     - name: "test-3.6-sharded_cluster"
-     - name: "test-3.6-standalone"
-     - name: "test-3.4-replica_set"
-     - name: "test-3.4-sharded_cluster"
-     - name: "test-3.4-standalone"
-     - name: "test-3.2-replica_set"
-     - name: "test-3.2-sharded_cluster"
-     - name: "test-3.2-standalone"
-     - name: "test-3.0-replica_set"
-     - name: "test-3.0-sharded_cluster"
-     - name: "test-3.0-standalone"
-     - name: "test-2.6-replica_set"
-     - name: "test-2.6-sharded_cluster"
-     - name: "test-2.6-standalone"
-
 - matrix_name: "tests-os-requires-32"
   matrix_spec: {"os-requires-32": "*", auth: "*", ssl: "*", node-version: "*" }
   display_name: "${node-version} ${os-requires-32} ${auth} ${ssl}"
@@ -659,14 +636,6 @@ buildvariants:
      - name: "test-3.4-replica_set"
      - name: "test-3.4-sharded_cluster"
      - name: "test-3.4-standalone"
-
-- matrix_name: "tests-os-requires-40"
-  matrix_spec: {"os-requires-40": "*", auth: "*", ssl: "*", node-version: "*" }
-  display_name: "${node-version} ${os-requires-40} ${auth} ${ssl}"
-  tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
-     - name: "test-latest-standalone"
 
 - matrix_name: "tests-windows"
   matrix_spec: {os-windows: "*", auth: "*", ssl: "*", node-version: "*" }
