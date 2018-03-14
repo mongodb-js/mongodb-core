@@ -1,3 +1,13 @@
+<a name="3.0.5"></a>
+## [3.0.5](https://github.com/mongodb-js/mongodb-core/compare/v3.0.4...v3.0.5) (2018-03-14)
+
+
+### Features
+
+* **sessions:** adding implicit cursor session support ([1607321](https://github.com/mongodb-js/mongodb-core/commit/1607321))
+
+
+
 <a name="3.0.4"></a>
 ## [3.0.4](https://github.com/mongodb-js/mongodb-core/compare/v3.0.3...v3.0.4) (2018-03-05)
 
