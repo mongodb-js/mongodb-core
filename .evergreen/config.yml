@@ -515,7 +515,7 @@ axes:
 
 buildvariants:
 - matrix_name: "tests-all"
-  matrix_spec: {"os-fully-featured": "*", auth: "*", ssl: "*", node-version: "*" }
+  matrix_spec: {"os-fully-featured": "*", node-version: "*" } # auth: "*", ssl: "*",
   display_name: "${node-version} ${os-fully-featured} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
@@ -537,31 +537,31 @@ buildvariants:
      - name: "test-2.6-sharded_cluster"
      - name: "test-2.6-standalone"
 
-- matrix_name: "tests-nossl"
-  matrix_spec: {"os-nossl": "*", auth: "*", ssl: "nossl", node-version: "*" }
-  display_name: "${node-version} ${os-nossl} ${auth} ${ssl}"
-  tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
-     - name: "test-latest-standalone"
-     - name: "test-3.6-replica_set"
-     - name: "test-3.6-sharded_cluster"
-     - name: "test-3.6-standalone"
-     - name: "test-3.4-replica_set"
-     - name: "test-3.4-sharded_cluster"
-     - name: "test-3.4-standalone"
-     - name: "test-3.2-replica_set"
-     - name: "test-3.2-sharded_cluster"
-     - name: "test-3.2-standalone"
-     - name: "test-3.0-replica_set"
-     - name: "test-3.0-sharded_cluster"
-     - name: "test-3.0-standalone"
-     - name: "test-2.6-replica_set"
-     - name: "test-2.6-sharded_cluster"
-     - name: "test-2.6-standalone"
+# - matrix_name: "tests-nossl"
+#   matrix_spec: {"os-nossl": "*", auth: "*", ssl: "nossl", node-version: "*" }
+#   display_name: "${node-version} ${os-nossl} ${auth} ${ssl}"
+#   tasks:
+#      - name: "test-latest-replica_set"
+#      - name: "test-latest-sharded_cluster"
+#      - name: "test-latest-standalone"
+#      - name: "test-3.6-replica_set"
+#      - name: "test-3.6-sharded_cluster"
+#      - name: "test-3.6-standalone"
+#      - name: "test-3.4-replica_set"
+#      - name: "test-3.4-sharded_cluster"
+#      - name: "test-3.4-standalone"
+#      - name: "test-3.2-replica_set"
+#      - name: "test-3.2-sharded_cluster"
+#      - name: "test-3.2-standalone"
+#      - name: "test-3.0-replica_set"
+#      - name: "test-3.0-sharded_cluster"
+#      - name: "test-3.0-standalone"
+#      - name: "test-2.6-replica_set"
+#      - name: "test-2.6-sharded_cluster"
+#      - name: "test-2.6-standalone"
 
 - matrix_name: "tests-os-requires-32"
-  matrix_spec: {"os-requires-32": "*", auth: "*", ssl: "*", node-version: "*" }
+  matrix_spec: {"os-requires-32": "*", node-version: "*" } # auth: "*", ssl: "*",
   display_name: "${node-version} ${os-requires-32} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
@@ -577,25 +577,25 @@ buildvariants:
      - name: "test-3.2-sharded_cluster"
      - name: "test-3.2-standalone"
 
-- matrix_name: "tests-ssl-requires-32"
-  matrix_spec: {"os-ssl-requires-32": "*", auth: "*", ssl: "ssl", node-version: "*" }
-  display_name: "${node-version} ${os-ssl-requires-32} ${auth} ${ssl}"
-  tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
-     - name: "test-latest-standalone"
-     - name: "test-3.6-replica_set"
-     - name: "test-3.6-sharded_cluster"
-     - name: "test-3.6-standalone"
-     - name: "test-3.4-replica_set"
-     - name: "test-3.4-sharded_cluster"
-     - name: "test-3.4-standalone"
-     - name: "test-3.2-replica_set"
-     - name: "test-3.2-sharded_cluster"
-     - name: "test-3.2-standalone"
+# - matrix_name: "tests-ssl-requires-32"
+#   matrix_spec: {"os-ssl-requires-32": "*", auth: "*", ssl: "ssl", node-version: "*" }
+#   display_name: "${node-version} ${os-ssl-requires-32} ${auth} ${ssl}"
+#   tasks:
+#      - name: "test-latest-replica_set"
+#      - name: "test-latest-sharded_cluster"
+#      - name: "test-latest-standalone"
+#      - name: "test-3.6-replica_set"
+#      - name: "test-3.6-sharded_cluster"
+#      - name: "test-3.6-standalone"
+#      - name: "test-3.4-replica_set"
+#      - name: "test-3.4-sharded_cluster"
+#      - name: "test-3.4-standalone"
+#      - name: "test-3.2-replica_set"
+#      - name: "test-3.2-sharded_cluster"
+#      - name: "test-3.2-standalone"
 
 - matrix_name: "tests-os-requires-34"
-  matrix_spec: {"os-requires-34": "*", auth: "*", ssl: "*", node-version: "*" }
+  matrix_spec: {"os-requires-34": "*", node-version: "*" } # auth: "*", ssl: "*",
   display_name: "${node-version} ${os-requires-34} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
@@ -609,7 +609,7 @@ buildvariants:
      - name: "test-3.4-standalone"
 
 - matrix_name: "tests-windows"
-  matrix_spec: {os-windows: "*", auth: "*", ssl: "*", node-version: "*" }
+  matrix_spec: {os-windows: "*", node-version: "*" } # ssl: "*", auth: "*"
   display_name: "${node-version} ${os-windows} ${auth} ${ssl}"
   tasks:
      - name: "test-latest-replica_set"
