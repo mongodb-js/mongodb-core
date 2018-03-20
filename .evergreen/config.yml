@@ -107,17 +107,17 @@ functions:
             perl -p -i -e "s|ABSOLUTE_PATH_REPLACEMENT_TOKEN|${DRIVERS_TOOLS}|g" $filename
           done
 
-  "windows fix":
-    - command: shell.exec
-      params:
-        script: |
-          ${PREPARE_SHELL}
-          for i in $(find ${DRIVERS_TOOLS}/.evergreen ${PROJECT_DIRECTORY}/.evergreen -name \*.sh); do
-            cat $i | tr -d '\r' > $i.new
-            mv $i.new $i
-          done
-          # Copy client certificate because symlinks do not work on Windows.
-          cp ${DRIVERS_TOOLS}/.evergreen/x509gen/client.pem ${MONGO_ORCHESTRATION_HOME}/lib/client.pem
+  # "windows fix":
+  #   - command: shell.exec
+  #     params:
+  #       script: |
+  #         ${PREPARE_SHELL}
+  #         for i in $(find ${DRIVERS_TOOLS}/.evergreen ${PROJECT_DIRECTORY}/.evergreen -name \*.sh); do
+  #           cat $i | tr -d '\r' > $i.new
+  #           mv $i.new $i
+  #         done
+  #         # Copy client certificate because symlinks do not work on Windows.
+  #         cp ${DRIVERS_TOOLS}/.evergreen/x509gen/client.pem ${MONGO_ORCHESTRATION_HOME}/lib/client.pem
 
   "make files executable":
     - command: shell.exec
@@ -139,7 +139,7 @@ functions:
 pre:
   - func: "fetch source"
   - func: "prepare resources"
-  - func: "windows fix"
+  # - func: "windows fix"
   - func: "fix absolute paths"
   - func: "make files executable"
   - func: "install dependencies"
@@ -438,20 +438,21 @@ axes:
         run_on: ubuntu1604-zseries-small
         batchtime: 10080  # 7 days
 
-  - id: os-windows
-    display_name: OS
-    values:
-      - id: windows-64-vs2010-test
-        display_name: "Windows (VS2010)"
-        run_on: windows-64-vs2010-test
+  # NOTE: reenable this when nvm supports windows, or we settle on an alternative
+  # - id: os-windows
+  #   display_name: OS
+  #   values:
+  #     - id: windows-64-vs2010-test
+  #       display_name: "Windows (VS2010)"
+  #       run_on: windows-64-vs2010-test
 
-      - id: windows-64-vs2013-test
-        display_name: "Windows (VS2013)"
-        run_on: windows-64-vs2013-test
+  #     - id: windows-64-vs2013-test
+  #       display_name: "Windows (VS2013)"
+  #       run_on: windows-64-vs2013-test
 
-      - id: windows-64-vs2015-test
-        display_name: "Windows (VS2015)"
-        run_on: windows-64-vs2015-test
+  #     - id: windows-64-vs2015-test
+  #       display_name: "Windows (VS2015)"
+  #       run_on: windows-64-vs2015-test
 
 
   - id: topology
@@ -603,25 +604,25 @@ buildvariants:
      - name: "test-3.4-sharded_cluster"
      - name: "test-3.4-standalone"
 
-- matrix_name: "tests-windows"
-  matrix_spec: {os-windows: "*", node-version: "*" } # ssl: "*", auth: "*"
-  display_name: "${node-version} ${os-windows} ${auth} ${ssl}"
-  tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
-     - name: "test-latest-standalone"
-     - name: "test-3.6-replica_set"
-     - name: "test-3.6-sharded_cluster"
-     - name: "test-3.6-standalone"
-     - name: "test-3.4-replica_set"
-     - name: "test-3.4-sharded_cluster"
-     - name: "test-3.4-standalone"
-     - name: "test-3.2-replica_set"
-     - name: "test-3.2-sharded_cluster"
-     - name: "test-3.2-standalone"
-     - name: "test-3.0-replica_set"
-     - name: "test-3.0-sharded_cluster"
-     - name: "test-3.0-standalone"
-     - name: "test-2.6-replica_set"
-     - name: "test-2.6-sharded_cluster"
-     - name: "test-2.6-standalone"
+# - matrix_name: "tests-windows"
+#   matrix_spec: {os-windows: "*", node-version: "*" } # ssl: "*", auth: "*"
+#   display_name: "${node-version} ${os-windows} ${auth} ${ssl}"
+#   tasks:
+#      - name: "test-latest-replica_set"
+#      - name: "test-latest-sharded_cluster"
+#      - name: "test-latest-standalone"
+#      - name: "test-3.6-replica_set"
+#      - name: "test-3.6-sharded_cluster"
+#      - name: "test-3.6-standalone"
+#      - name: "test-3.4-replica_set"
+#      - name: "test-3.4-sharded_cluster"
+#      - name: "test-3.4-standalone"
+#      - name: "test-3.2-replica_set"
+#      - name: "test-3.2-sharded_cluster"
+#      - name: "test-3.2-standalone"
+#      - name: "test-3.0-replica_set"
+#      - name: "test-3.0-sharded_cluster"
+#      - name: "test-3.0-standalone"
+#      - name: "test-2.6-replica_set"
+#      - name: "test-2.6-sharded_cluster"
+#      - name: "test-2.6-standalone"
