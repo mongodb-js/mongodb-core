@@ -2,6 +2,11 @@
 const ConfigurationBase = require('mongodb-test-runner').ConfigurationBase;
 const f = require('util').format;
 
+const chai = require('chai');
+chai.config.includeStack = true;
+chai.config.showDiff = true;
+chai.config.truncateThreshold = 0;
+
 // Configuration for mongodb-core
 class CoreConfiguration extends ConfigurationBase {
   constructor(options) {
