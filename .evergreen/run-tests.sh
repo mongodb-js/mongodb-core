@@ -27,19 +27,6 @@ get_mongodb_download_url_for "$DISTRO"
 download_and_extract "$MONGODB_DOWNLOAD_URL" "$EXTRACT"
 
 # run tests
-OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-[ -z "$MARCH" ] && MARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
-
-if [ "$AUTH" != "noauth" ]; then
-  export MONGOC_TEST_USER="bob"
-  export MONGOC_TEST_PASSWORD="pwd123"
-fi
-
-if [ "$SSL" != "nossl" ]; then
-   export MONGOC_TEST_SSL_PEM_FILE="$DRIVERS_TOOLS/.evergreen/x509gen/client.pem"
-   export MONGOC_TEST_SSL_CA_FILE="$DRIVERS_TOOLS/.evergreen/x509gen/ca.pem"
-fi
-
 echo "Running $AUTH tests over $SSL, connecting to $MONGODB_URI"
 
 export PATH="/opt/mongodbtoolchain/v2/bin:$PATH"
