@@ -837,6 +837,7 @@ describe('Server tests', function() {
 
           function callNext(_cursor) {
             _cursor.next(function(cursorErr, doc) {
+              expect(cursorErr).to.not.exist;
               if (!doc) {
                 return done();
               }
