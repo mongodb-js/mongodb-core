@@ -1,3 +1,27 @@
+<a name="3.0.6"></a>
+## [3.0.6](https://github.com/mongodb-js/mongodb-core/compare/v3.0.5...v3.0.6) (2018-04-09)
+
+
+### Bug Fixes
+
+* **2.6-protocol:** kill cursor callback is called by pool now ([65f2bf7](https://github.com/mongodb-js/mongodb-core/commit/65f2bf7))
+* **evergreen:** change name to id ([9303e12](https://github.com/mongodb-js/mongodb-core/commit/9303e12))
+* **evergreen:** change nvm path to local ([e42ea5b](https://github.com/mongodb-js/mongodb-core/commit/e42ea5b))
+* **evergreen:** pass in flag through npm scripts ([85708dd](https://github.com/mongodb-js/mongodb-core/commit/85708dd))
+* **pool:** ensure noResponse callback is only called if cb exists ([5281605](https://github.com/mongodb-js/mongodb-core/commit/5281605))
+* **replset:** only remove primary if primary is there ([1acd288](https://github.com/mongodb-js/mongodb-core/commit/1acd288))
+* **test-environments:** ensure all servers run on separate ports ([b63e5d8](https://github.com/mongodb-js/mongodb-core/commit/b63e5d8))
+* **uri_parser:** support a default database on mongodb+srv uris ([be01ffe](https://github.com/mongodb-js/mongodb-core/commit/be01ffe))
+
+
+### Features
+
+* **apm:** add events for command monitoring support in core ([37dce9c](https://github.com/mongodb-js/mongodb-core/commit/37dce9c))
+* **evergreen:** add evergreen config based on drivers skeleton ([b71da99](https://github.com/mongodb-js/mongodb-core/commit/b71da99))
+* **evergreen:** use evergreen flag when running tests ([55dff3b](https://github.com/mongodb-js/mongodb-core/commit/55dff3b))
+
+
+
 <a name="3.0.5"></a>
 ## [3.0.5](https://github.com/mongodb-js/mongodb-core/compare/v3.0.4...v3.0.5) (2018-03-14)
 
