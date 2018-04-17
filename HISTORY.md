@@ -1,3 +1,14 @@
+<a name="3.0.7"></a>
+## [3.0.7](https://github.com/mongodb-js/mongodb-core/compare/v3.0.6...v3.0.7) (2018-04-17)
+
+
+### Bug Fixes
+
+* **auth:** pass auth result to callback ([d2192fd](https://github.com/mongodb-js/mongodb-core/commit/d2192fd))
+* **auth:** prevent stalling on authentication when connected ([f52cf68](https://github.com/mongodb-js/mongodb-core/commit/f52cf68))
+
+
+
 <a name="3.0.6"></a>
 ## [3.0.6](https://github.com/mongodb-js/mongodb-core/compare/v3.0.5...v3.0.6) (2018-04-09)
 
