@@ -44,5 +44,8 @@
   "bugs": {
     "url": "https://github.com/mongodb-js/mongodb-core/issues"
   },
-  "homepage": "https://github.com/mongodb-js/mongodb-core"
+  "homepage": "https://github.com/mongodb-js/mongodb-core",
+  "optionalDependencies": {
+    "saslprep": "^1.0.0"
+  }
 }
