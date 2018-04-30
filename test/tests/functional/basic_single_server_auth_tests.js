@@ -48,8 +48,6 @@ describe('Basic single server auth tests', function() {
             expect(dropUserRes).to.exist;
 
             _server.destroy({ force: true });
-            expect(Object.keys(Connection.connections()).length).to.equal(0);
-            Connection.disableConnectionAccounting();
             done();
           });
         });
@@ -381,6 +379,7 @@ describe('Basic single server auth tests', function() {
     }
   });
 
+  // This test is broken, we should fix it at some point
   it.skip('should correctly authenticate server using scram-sha-1 using connect auth then logout', {
     metadata: { requires: { topology: 'auth' } },
 
