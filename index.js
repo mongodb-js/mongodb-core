@@ -28,7 +28,7 @@ module.exports = {
   // Raw operations
   Query: require('./lib/connection/commands').Query,
   // Auth mechanisms
-  getDefaultAuthProviders: require('./lib/auth/defaultAuthProviders').getDefaultAuthProviders,
+  defaultAuthProviders: require('./lib/auth/defaultAuthProviders').defaultAuthProviders,
   MongoCR: require('./lib/auth/mongocr'),
   X509: require('./lib/auth/x509'),
   Plain: require('./lib/auth/plain'),
