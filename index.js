@@ -28,11 +28,13 @@ module.exports = {
   // Raw operations
   Query: require('./lib/connection/commands').Query,
   // Auth mechanisms
+  defaultAuthProviders: require('./lib/auth/defaultAuthProviders').defaultAuthProviders,
   MongoCR: require('./lib/auth/mongocr'),
   X509: require('./lib/auth/x509'),
   Plain: require('./lib/auth/plain'),
   GSSAPI: require('./lib/auth/gssapi'),
-  ScramSHA1: require('./lib/auth/scram'),
+  ScramSHA1: require('./lib/auth/scram').ScramSHA1,
+  ScramSHA256: require('./lib/auth/scram').ScramSHA256,
   // Utilities
   parseConnectionString: require('./lib/uri_parser')
 };
