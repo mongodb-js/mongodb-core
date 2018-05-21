@@ -16,6 +16,7 @@ try {
 module.exports = {
   MongoError: require('./lib/error').MongoError,
   MongoNetworkError: require('./lib/error').MongoNetworkError,
+  mongoErrorContextSymbol: require('./lib/error').mongoErrorContextSymbol,
   Connection: require('./lib/connection/connection'),
   Server: require('./lib/topologies/server'),
   ReplSet: require('./lib/topologies/replset'),
