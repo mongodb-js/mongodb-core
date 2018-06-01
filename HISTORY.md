@@ -1,3 +1,13 @@
+<a name="3.0.9"></a>
+## [3.0.9](https://github.com/mongodb-js/mongodb-core/compare/v3.0.8...v3.0.9) (2018-06-01)
+
+
+### Features
+
+* **retryableWrites:** adding more support for retries ([abea96d](https://github.com/mongodb-js/mongodb-core/commit/abea96d))
+
+
+
 <a name="3.0.8"></a>
 ## [3.0.8](https://github.com/mongodb-js/mongodb-core/compare/v3.0.7...v3.0.8) (2018-05-08)
 
