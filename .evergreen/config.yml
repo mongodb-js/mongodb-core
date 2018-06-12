@@ -269,6 +269,30 @@ tasks:
             VERSION: "3.6"
             TOPOLOGY: "sharded_cluster"
 
+    - name: "test-4.0-standalone"
+      tags: ["4.0", "standalone"]
+      commands:
+        - func: "run tests"
+          vars:
+            VERSION: "4.0"
+            TOPOLOGY: "server"
+
+    - name: "test-4.0-replica_set"
+      tags: ["4.0", "replica_set"]
+      commands:
+        - func: "run tests"
+          vars:
+            VERSION: "4.0"
+            TOPOLOGY: "replica_set"
+
+    - name: "test-4.0-sharded_cluster"
+      tags: ["4.0", "sharded_cluster"]
+      commands:
+        - func: "run tests"
+          vars:
+            VERSION: "4.0"
+            TOPOLOGY: "sharded_cluster"
+
     - name: "test-latest-standalone"
       tags: ["latest", "standalone"]
       commands:
@@ -303,6 +327,10 @@ axes:
         display_name: "latest"
         variables:
            VERSION: "latest"
+      - id: "4.0"
+        display_name: "4.0"
+        variables:
+           VERSION: "4.0"
       - id: "3.6"
         display_name: "3.6"
         variables:
