@@ -136,6 +136,15 @@ functions:
           ${PREPARE_SHELL}
           NODE_LTS_NAME=${NODE_LTS_NAME} sh ${PROJECT_DIRECTORY}/.evergreen/install-dependencies.sh
 
+  "run atlas tests":
+    - command: shell.exec
+      params:
+        working_dir: "src"
+        silent: true
+        script: |
+          # DO NOT ECHO WITH XTRACE (which PREPARE_SHELL does)
+          NODE_LTS_NAME='${NODE_LTS_NAME}' ATLAS_REPL='${atlas_repl}' ATLAS_SHRD='${atlas_shrd}' ATLAS_FREE='${atlas_free}' ATLAS_TLS11='${atlas_tls11}' ATLAS_TLS12='${atlas_tls12}' sh ${PROJECT_DIRECTORY}/.evergreen/run-atlas-tests.sh
+
 pre:
   - func: "fetch source"
   - func: "prepare resources"
@@ -316,6 +325,11 @@ tasks:
           vars:
             VERSION: "latest"
             TOPOLOGY: "sharded_cluster"
+    
+    - name: "atlas-connect"
+      tags: ["atlas-connect"]
+      commands:
+        - func: "run atlas tests"
 
 # }}}
 
@@ -632,6 +646,12 @@ buildvariants:
      - name: "test-3.4-replica_set"
      - name: "test-3.4-sharded_cluster"
      - name: "test-3.4-standalone"
+
+- matrix_name: "test-atlas-connect"
+  matrix_spec: { node-version: "*", "os-fully-featured": "*" }
+  display_name: "${node-version} ${os-fully-featured} atlas connect"
+  tasks:
+    - name: "atlas-connect"
 
 # - matrix_name: "tests-windows"
 #   matrix_spec: {os-windows: "*", node-version: "*" } # ssl: "*", auth: "*"
