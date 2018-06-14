@@ -8,15 +8,6 @@ const Pool = require('../../../lib/connection/pool.js');
 const wireProtocol2_6 = require('../../../lib/wireprotocol/2_6_support.js');
 const wireProtocol3_2 = require('../../../lib/wireprotocol/3_2_support.js');
 
-const fake_topology = 'fake_topology';
-const fake_bson = {
-  serialize: () => {},
-  deserialize: () => {}
-};
-
-const pool = new Pool(fake_topology, { bson: fake_bson });
-sinon.stub(pool, 'write');
-
 describe('WireProtocol', function() {
   it('2.6 should only set bypassDocumentValidation to true if explicitly set by user to true', function() {
     testPoolWrite(true, new wireProtocol2_6(), true);
@@ -35,9 +26,10 @@ describe('WireProtocol', function() {
   });
 
   function testPoolWrite(bypassDocumentValidation, wireProtocol, expected) {
+    const pool = sinon.createStubInstance(Pool);
     const isMaster = {};
     const ns = 'fake.namespace';
-    const ops = 'fake.ops';
+    const ops = [{ a: 1 }, { b: 2 }];
     const options = { bypassDocumentValidation: bypassDocumentValidation };
 
     wireProtocol.insert(pool, isMaster, ns, bson, ops, options, () => {});
