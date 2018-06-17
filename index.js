@@ -14,9 +14,14 @@ try {
 } catch (err) {} // eslint-disable-line
 
 module.exports = {
+  // Errors
   MongoError: require('./lib/error').MongoError,
   MongoNetworkError: require('./lib/error').MongoNetworkError,
+  MongoParseError: require('./lib/error').MongoParseError,
+  MongoTimeoutError: require('./lib/error').MongoTimeoutError,
+  MongoWriteConcernError: require('./lib/error').MongoWriteConcernError,
   mongoErrorContextSymbol: require('./lib/error').mongoErrorContextSymbol,
+  // Core
   Connection: require('./lib/connection/connection'),
   Server: require('./lib/topologies/server'),
   ReplSet: require('./lib/topologies/replset'),
