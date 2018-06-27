@@ -1,3 +1,46 @@
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/mongodb-js/mongodb-core/compare/v3.0.6...v3.1.0) (2018-06-27)
+
+
+### Bug Fixes
+
+* **auth:** prevent stalling on authentication when connected ([6b4ac89](https://github.com/mongodb-js/mongodb-core/commit/6b4ac89))
+* **cursor:** check for session presence independently ([7c76c62](https://github.com/mongodb-js/mongodb-core/commit/7c76c62))
+* **cursor:** check for sessions independently in core cursor ([cb5df28](https://github.com/mongodb-js/mongodb-core/commit/cb5df28))
+* **error:** attach command response to MongoWriteConcernError ([#322](https://github.com/mongodb-js/mongodb-core/issues/322)) ([24c5d06](https://github.com/mongodb-js/mongodb-core/commit/24c5d06))
+* **getmore-killcursor:** slaveOk shall not be included on these ([40fb2f4](https://github.com/mongodb-js/mongodb-core/commit/40fb2f4))
+* **kerberos:** loosen restrictions on kerberos versions ([c4add26](https://github.com/mongodb-js/mongodb-core/commit/c4add26))
+* **mongos:** use `incrementTransactionNumber` directly on session ([e230d54](https://github.com/mongodb-js/mongodb-core/commit/e230d54))
+* **pool:** ensure that lsid is sent in get requests to mongos ([ae820f6](https://github.com/mongodb-js/mongodb-core/commit/ae820f6))
+* **sdam:** we can't use Array.includes yet ([9c3b5ab](https://github.com/mongodb-js/mongodb-core/commit/9c3b5ab))
+* **sessions:** add `toBSON` method to `ClientSession` ([d95a4d1](https://github.com/mongodb-js/mongodb-core/commit/d95a4d1))
+* **sessions:** never send `endSessions` from a `ClientSession` ([05ffe82](https://github.com/mongodb-js/mongodb-core/commit/05ffe82))
+* **topology-description:** we can't use Object.values yet ([91df350](https://github.com/mongodb-js/mongodb-core/commit/91df350))
+* **transactions:** do not send txnNumber for non-write commands ([#308](https://github.com/mongodb-js/mongodb-core/issues/308)) ([eb67b1a](https://github.com/mongodb-js/mongodb-core/commit/eb67b1a))
+* **wireprotocol:** only send bypassDocumentValidation if true  ([a81678b](https://github.com/mongodb-js/mongodb-core/commit/a81678b))
+
+
+### Features
+
+* **auth:** adds saslprep and SCRAM-SHA-256 ([506c087](https://github.com/mongodb-js/mongodb-core/commit/506c087))
+* **cursor:** implement cursor for new sdam implementation ([f289226](https://github.com/mongodb-js/mongodb-core/commit/f289226))
+* **cursor:** store operation time from initial query ([55e761e](https://github.com/mongodb-js/mongodb-core/commit/55e761e))
+* **error:** add more specific error type for write concern errors ([347c5d7](https://github.com/mongodb-js/mongodb-core/commit/347c5d7))
+* **Error:** adding error metadata field ([33be560](https://github.com/mongodb-js/mongodb-core/commit/33be560))
+* **kerberos:** expose warning for kerberos mismatch versions ([efc0e43](https://github.com/mongodb-js/mongodb-core/commit/efc0e43))
+* **max-staleness:** properly support a max staleness reducer ([d9c5c16](https://github.com/mongodb-js/mongodb-core/commit/d9c5c16))
+* **MongoTimeoutError:** add common class for timeout events ([c5b4752](https://github.com/mongodb-js/mongodb-core/commit/c5b4752))
+* **op-compressed:** add support for OP_COMPRESSED to new sdam impl ([8deec9b](https://github.com/mongodb-js/mongodb-core/commit/8deec9b))
+* **retryableWrites:** adding more support for retries ([d4c1597](https://github.com/mongodb-js/mongodb-core/commit/d4c1597))
+* **sdam-monitoring:** add basic monitoring for new Topology type ([bb0c522](https://github.com/mongodb-js/mongodb-core/commit/bb0c522))
+* **server:** add `command` support to new server class ([d9a8c05](https://github.com/mongodb-js/mongodb-core/commit/d9a8c05))
+* **server-selection:** add basic support for server selection ([ccc5e1d](https://github.com/mongodb-js/mongodb-core/commit/ccc5e1d))
+* **topology:** introduce a single Topology type, and test runner ([f35d773](https://github.com/mongodb-js/mongodb-core/commit/f35d773))
+* **topology-description:** add helper method for server ownership ([2c64c75](https://github.com/mongodb-js/mongodb-core/commit/2c64c75))
+* **txns:** add initial transaction interface for sessions ([ed76be0](https://github.com/mongodb-js/mongodb-core/commit/ed76be0))
+
+
+
 <a name="3.0.6"></a>
 ## [3.0.6](https://github.com/mongodb-js/mongodb-core/compare/v3.0.5...v3.0.6) (2018-04-09)
 
