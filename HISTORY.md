@@ -1,3 +1,13 @@
+<a name="3.0.11"></a>
+## [3.0.11](https://github.com/mongodb-js/mongodb-core/compare/v3.0.9...v3.0.11) (2018-06-28)
+
+
+### Bug Fixes
+
+* **sessions:** add `toBSON` method to `ClientSession` ([b4e7333](https://github.com/mongodb-js/mongodb-core/commit/b4e7333))
+
+
+
 <a name="3.0.9"></a>
 ## [3.0.9](https://github.com/mongodb-js/mongodb-core/compare/v3.0.8...v3.0.9) (2018-06-01)
 
