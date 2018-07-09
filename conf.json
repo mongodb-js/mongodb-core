@@ -13,6 +13,8 @@
       "lib/connection/connection.js",
       "lib/cursor.js",
       "lib/error.js",
+      "lib/sessions.js",
+      "lib/transactions.js",
       "node_modules/bson/lib/bson/binary.js",
       "node_modules/bson/lib/bson/code.js",
       "node_modules/bson/lib/bson/db_ref.js",
