@@ -4,7 +4,7 @@
   "description": "Core MongoDB driver functionality, no bells and whistles and meant for integration not end applications",
   "main": "index.js",
   "scripts": {
-    "test": "node test/runner.js -t functional",
+    "test": "bash -e test.sh",
     "coverage": "node_modules/.bin/nyc node test/runner.js -t functional -l && node_modules/.bin/nyc report --reporter=text-lcov | node_modules/.bin/coveralls",
     "lint": "eslint lib",
     "changelog": "conventional-changelog -p angular -i HISTORY.md -s"

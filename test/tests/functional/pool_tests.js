@@ -574,7 +574,7 @@ exports['Should correctly reclaim immediateRelease socket'] = {
 }
 
 exports['Should correctly authenticate using scram-sha-1 using connect auth'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Pool = require('../../../lib/connection/pool')
@@ -626,7 +626,7 @@ exports['Should correctly authenticate using scram-sha-1 using connect auth'] = 
 }
 
 exports['Should correctly authenticate using scram-sha-1 using connect auth and maintain auth on new connections'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Pool = require('../../../lib/connection/pool')
@@ -723,7 +723,7 @@ exports['Should correctly authenticate using scram-sha-1 using connect auth and 
 }
 
 exports['Should correctly authenticate using scram-sha-1 using auth method'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Pool = require('../../../lib/connection/pool')
@@ -805,7 +805,7 @@ exports['Should correctly authenticate using scram-sha-1 using auth method'] = {
 }
 
 exports['Should correctly authenticate using scram-sha-1 using connect auth then logout'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Pool = require('../../../lib/connection/pool')
@@ -868,7 +868,7 @@ exports['Should correctly authenticate using scram-sha-1 using connect auth then
 }
 
 exports['Should correctly have auth wait for logout to finish'] = {
-  metadata: { requires: { topology: "auth" } },
+  metadata: { requires: { topology: "auth", mongodb: ">=2.6.0" } },
 
   test: function(configuration, test) {
     var Pool = require('../../../lib/connection/pool')
