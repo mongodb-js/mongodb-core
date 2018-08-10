@@ -8,7 +8,9 @@ const ServerSelectors = require('../../../lib/sdam/server_selectors');
 const MongoTimeoutError = require('../../../lib/error').MongoTimeoutError;
 const ReadPreference = require('../../../lib/topologies/read_preference');
 const EJSON = require('mongodb-extjson');
+const Server = require('../../../lib/sdam/server');
 
+const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-subset'));
@@ -103,6 +105,16 @@ function collectStalenessTests(specDir) {
 }
 
 describe('Max Staleness (spec)', function() {
+  before(() => {
+    // we want to bypass anything that would modify the topology description because these
+    // tests provide us the exact servers we should select from.
+    sinon.stub(Server.prototype, 'connect');
+  });
+
+  after(() => {
+    Server.prototype.connect.restore();
+  });
+
   const specTests = collectStalenessTests(maxStalenessDir);
 
   Object.keys(specTests).forEach(specTestName => {
@@ -208,7 +220,8 @@ function executeServerSelectionTest(testDefinition, options, done) {
   );
 
   const topologyOptions = {
-    heartbeatFrequencyMS: testDefinition.heartbeatFrequencyMS
+    heartbeatFrequencyMS: testDefinition.heartbeatFrequencyMS,
+    monitorFunction: () => {}
   };
 
   const topology = new Topology(seedData.seedlist, topologyOptions);
@@ -248,7 +261,7 @@ function executeServerSelectionTest(testDefinition, options, done) {
   }
 
   // default to serverSelectionTimeoutMS of `0` for unit tests
-  topology.selectServer(selector, { serverSelectionTimeoutMS: 0 }, (err, server) => {
+  topology.selectServer(selector, { serverSelectionTimeoutMS: 100 }, (err, server) => {
     // are we expecting an error?
     if (testDefinition.error) {
       if (!err) {
