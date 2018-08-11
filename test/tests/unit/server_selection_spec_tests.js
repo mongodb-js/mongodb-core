@@ -9,6 +9,7 @@ const MongoTimeoutError = require('../../../lib/error').MongoTimeoutError;
 const ReadPreference = require('../../../lib/topologies/read_preference');
 const EJSON = require('mongodb-extjson');
 const Server = require('../../../lib/sdam/server');
+const Pool = require('../../../lib/connection/pool');
 
 const sinon = require('sinon');
 const chai = require('chai');
@@ -49,6 +50,18 @@ function collectSelectionTests(specDir) {
 }
 
 describe('Server Selection (spec)', function() {
+  before(() => {
+    // we want to bypass anything that would modify the topology description because these
+    // tests provide us the exact servers we should select from.
+    sinon.stub(Server.prototype, 'connect');
+    sinon.stub(Pool.prototype, 'connect');
+  });
+
+  after(() => {
+    Server.prototype.connect.restore();
+    Pool.prototype.connect.restore();
+  });
+
   const specTests = collectSelectionTests(selectionSpecDir);
 
   Object.keys(specTests).forEach(topologyType => {
@@ -109,10 +122,12 @@ describe('Max Staleness (spec)', function() {
     // we want to bypass anything that would modify the topology description because these
     // tests provide us the exact servers we should select from.
     sinon.stub(Server.prototype, 'connect');
+    sinon.stub(Pool.prototype, 'connect');
   });
 
   after(() => {
     Server.prototype.connect.restore();
+    Pool.prototype.connect.restore();
   });
 
   const specTests = collectStalenessTests(maxStalenessDir);
