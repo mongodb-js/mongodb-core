@@ -146,12 +146,13 @@ function normalizeServerDescription(serverDescription) {
   return serverDescription;
 }
 
-function executeSDAMTest(testData, done) {
+function executeSDAMTest(testData, callback) {
   parse(testData.uri, (err, parsedUri) => {
     if (err) return done(err);
 
     // create the topology
-    const topology = new Topology(parsedUri.hosts, parsedUri.options);
+    const topologyOptions = Object.assign({}, { monitorFunction: () => {} }, parsedUri.options);
+    const topology = new Topology(parsedUri.hosts, topologyOptions);
 
     // listen for SDAM monitoring events
     const events = [];
@@ -171,6 +172,9 @@ function executeSDAMTest(testData, done) {
 
     // connect the topology
     topology.connect(testData.uri);
+    function done(err) {
+      topology.close(e => callback(e || err));
+    }
 
     testData.phases.forEach(phase => {
       // simulate each ismaster response
