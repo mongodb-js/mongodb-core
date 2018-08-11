@@ -208,7 +208,7 @@ function readPreferenceFromDefinition(definition) {
   return new ReadPreference(mode, tags, options);
 }
 
-function executeServerSelectionTest(testDefinition, options, done) {
+function executeServerSelectionTest(testDefinition, options, callback) {
   const topologyDescription = testDefinition.topology_description;
   const seedData = topologyDescription.servers.reduce(
     (result, seed) => {
@@ -226,6 +226,11 @@ function executeServerSelectionTest(testDefinition, options, done) {
 
   const topology = new Topology(seedData.seedlist, topologyOptions);
   topology.connect();
+
+  // wrap done to cleanup the topology
+  function done(err) {
+    topology.close(e => callback(e || err));
+  }
 
   // Update topologies with server descriptions.
   topologyDescription.servers.forEach(server => {
