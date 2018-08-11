@@ -33,6 +33,7 @@ module.exports = {
   Sessions: require('./lib/sessions'),
   BSON: BSON,
   EJSON: EJSON,
+  Topology: require('./lib/sdam/topology'),
   // Raw operations
   Query: require('./lib/connection/commands').Query,
   // Auth mechanisms
