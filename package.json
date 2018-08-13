@@ -20,7 +20,7 @@
     "core"
   ],
   "dependencies": {
-    "bson": "~1.0.4",
+    "bson": "^1.1.0",
     "require_optional": "^1.0.1"
   },
   "devDependencies": {
