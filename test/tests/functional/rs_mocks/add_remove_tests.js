@@ -603,6 +603,7 @@ describe('ReplSet Add Remove (mocks)', function() {
             done();
           }, 1000);
         }, 500);
+        // }, 650);
 
         server.on('left', function(_type, _server) {
           if (_type === 'secondary' && _server.name === 'localhost:32003') {

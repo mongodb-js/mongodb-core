@@ -84,7 +84,17 @@ describe('Pool tests', function() {
 
       expect(pool.allConnections()).to.have.lengthOf(1);
       connection = pool.allConnections()[0];
-      expect(connection.connection.listenerCount('connect')).to.equal(1);
+
+      const possibleConnections = [
+        connection,
+        connection.ipv6connection,
+        connection.ipv4connection
+      ];
+      possibleConnections.forEach(function(connection) {
+        if (connection) {
+          expect(connection.listenerCount('connect')).to.equal(1);
+        }
+      });
     }
   });
 
