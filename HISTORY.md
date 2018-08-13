@@ -1,3 +1,18 @@
+<a name="3.1.2"></a>
+## [3.1.2](https://github.com/mongodb-js/mongodb-core/compare/v3.1.1...v3.1.2) (2018-08-13)
+
+
+### Bug Fixes
+
+* **mongos:** fix connection leak when mongos reconnects ([2453746](https://github.com/mongodb-js/mongodb-core/commit/2453746))
+
+
+### Features
+
+* **bson:** update to bson ^1.1.x ([952a2f0](https://github.com/mongodb-js/mongodb-core/commit/952a2f0))
+
+
+
 <a name="3.1.1"></a>
 ## [3.1.1](https://github.com/mongodb-js/mongodb-core/compare/v3.0.6...v3.1.1) (2018-08-13)
 
