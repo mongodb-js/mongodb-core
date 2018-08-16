@@ -2,6 +2,7 @@
 
 var BSON = require('bson');
 var require_optional = require('require_optional');
+const EJSON = require('./lib/utils').retrieveEJSON();
 
 try {
   // Attempt to grab the native BSON parser
@@ -31,6 +32,7 @@ module.exports = {
   ReadPreference: require('./lib/topologies/read_preference'),
   Sessions: require('./lib/sessions'),
   BSON: BSON,
+  EJSON: EJSON,
   // Raw operations
   Query: require('./lib/connection/commands').Query,
   // Auth mechanisms
