@@ -148,7 +148,7 @@ function normalizeServerDescription(serverDescription) {
 
 function executeSDAMTest(testData, callback) {
   parse(testData.uri, (err, parsedUri) => {
-    if (err) return done(err);
+    if (err) return callback(err);
 
     // create the topology
     const topologyOptions = Object.assign({}, { monitorFunction: () => {} }, parsedUri.options);
