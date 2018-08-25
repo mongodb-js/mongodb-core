@@ -1,3 +1,24 @@
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+<a name="3.1.3"></a>
+## [3.1.3](https://github.com/mongodb-js/mongodb-core/compare/v3.1.2...v3.1.3) (2018-08-25)
+
+
+### Bug Fixes
+
+* **buffer:** use safe-buffer polyfill to maintain compatibility ([728d897](https://github.com/mongodb-js/mongodb-core/commit/728d897))
+* **EJSON:** export the result of optionally requiring EJSON ([645d73d](https://github.com/mongodb-js/mongodb-core/commit/645d73d))
+
+
+### Features
+
+* **kerberos:** bump kerberos dependency to `^1.0.0` ([1155ebe](https://github.com/mongodb-js/mongodb-core/commit/1155ebe))
+* **standard-version:** automate part of the release process ([4c768c4](https://github.com/mongodb-js/mongodb-core/commit/4c768c4))
+
+
+
 <a name="3.1.2"></a>
 ## [3.1.2](https://github.com/mongodb-js/mongodb-core/compare/v3.1.1...v3.1.2) (2018-08-13)
 
