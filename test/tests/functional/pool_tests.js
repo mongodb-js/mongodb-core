@@ -11,6 +11,8 @@ var expect = require('chai').expect,
   mock = require('mongodb-mock-server'),
   ConnectionSpy = require('./shared').ConnectionSpy;
 
+const MongoCredentials = require('../../../lib/auth/mongo_credentials').MongoCredentials;
+
 const test = {};
 describe('Pool tests', function() {
   beforeEach(() => {
@@ -493,6 +495,9 @@ describe('Pool tests', function() {
         locateAuthMethod(self.configuration, function(err, method) {
           expect(err).to.be.null;
 
+          const auth = [method, 'admin', 'root', 'root'];
+          const credentials = MongoCredentials.makeCredentialsFromLegacyArray(auth);
+
           executeCommand(
             self.configuration,
             'admin',
@@ -520,7 +525,7 @@ describe('Pool tests', function() {
                   {
                     dropUser: 'root'
                   },
-                  { auth: [method, 'admin', 'root', 'root'] },
+                  { auth },
                   function(dropUserErr, dropUserRes) {
                     expect(dropUserRes).to.exist;
                     expect(dropUserErr).to.be.null;
@@ -532,7 +537,7 @@ describe('Pool tests', function() {
               });
 
               // Start connection
-              pool.connect(method, 'admin', 'root', 'root');
+              pool.connect(credentials);
             }
           );
         });
@@ -1181,7 +1186,13 @@ describe('Pool tests', function() {
           pool.write(query, { monitoring: true }, function() {});
 
           setTimeout(function() {
-            pool.auth('mongocr', 'test', 'admin', 'admin', function(err) {
+            const credentials = new MongoCredentials({
+              mechanism: 'mongocr',
+              source: 'test',
+              username: 'admin',
+              password: 'admin'
+            });
+            pool.auth(credentials, function(err) {
               expect(err).to.not.exist;
 
               // ensure that there are no duplicates in the available connection queue
