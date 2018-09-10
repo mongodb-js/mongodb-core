@@ -9,7 +9,6 @@ const commands = require('../../../lib/connection/commands');
 const Query = commands.Query;
 const KillCursor = commands.KillCursor;
 const GetMore = commands.GetMore;
-// const Response = commands.Response;
 
 const bson = new BSON();
 const pool = new Pool({}, { bson });
@@ -154,9 +153,5 @@ describe('APM tests', function() {
           filter: query.query.$query
         });
     });
-  });
-
-  describe('CommandSucceeded', function() {
-    it.skip('Some test to test redacting?');
   });
 });
