@@ -495,8 +495,12 @@ describe('Pool tests', function() {
         locateAuthMethod(self.configuration, function(err, method) {
           expect(err).to.be.null;
 
-          const auth = [method, 'admin', 'root', 'root'];
-          const credentials = MongoCredentials.makeCredentialsFromLegacyArray(auth);
+          const credentials = new MongoCredentials({
+            mechanism: method,
+            source: 'admin',
+            username: 'root',
+            password: 'root'
+          });
 
           executeCommand(
             self.configuration,
@@ -525,7 +529,7 @@ describe('Pool tests', function() {
                   {
                     dropUser: 'root'
                   },
-                  { auth },
+                  { credentials },
                   function(dropUserErr, dropUserRes) {
                     expect(dropUserRes).to.exist;
                     expect(dropUserErr).to.be.null;
@@ -559,6 +563,13 @@ describe('Pool tests', function() {
           locateAuthMethod(self.configuration, function(err, method) {
             expect(err).to.be.null;
 
+            const credentials = new MongoCredentials({
+              mechansim: method,
+              source: 'admin',
+              username: 'root',
+              passsword: 'root'
+            });
+
             executeCommand(
               self.configuration,
               'admin',
@@ -581,7 +592,7 @@ describe('Pool tests', function() {
                     roles: ['readWrite', 'dbAdmin'],
                     digestPassword: true
                   },
-                  { auth: [method, 'admin', 'root', 'root'] },
+                  { credentials },
                   function(createAdminUserErr, createAdminUserRes) {
                     expect(createAdminUserRes).to.exist;
                     expect(createAdminUserErr).to.be.null;
@@ -747,7 +758,7 @@ describe('Pool tests', function() {
                     });
 
                     // Start connection
-                    pool.connect(method, 'test', 'admin', 'admin');
+                    pool.connect(credentials);
                   }
                 );
               }
@@ -773,6 +784,13 @@ describe('Pool tests', function() {
         locateAuthMethod(self.configuration, function(err, method) {
           expect(err).to.be.null;
 
+          const credentials = new MongoCredentials({
+            mechansim: method,
+            source: 'admin',
+            username: 'root',
+            passsword: 'root'
+          });
+
           executeCommand(
             self.configuration,
             'admin',
@@ -795,7 +813,7 @@ describe('Pool tests', function() {
                   roles: ['readWrite', 'dbAdmin'],
                   digestPassword: true
                 },
-                { auth: [method, 'admin', 'root', 'root'] },
+                { credentials },
                 function(createAdminUserErr, createAdminUserRes) {
                   expect(createAdminUserRes).to.exist;
                   expect(createAdminUserErr).to.be.null;
@@ -828,7 +846,7 @@ describe('Pool tests', function() {
 
                   // Add event listeners
                   pool.on('connect', function() {
-                    pool.auth(method, 'test', 'admin', 'admin', function(authErr, authRes) {
+                    pool.auth(credentials, function(authErr, authRes) {
                       expect(authRes).to.exist;
                       expect(authErr).to.not.exist;
 
@@ -893,6 +911,13 @@ describe('Pool tests', function() {
         locateAuthMethod(self.configuration, function(err, method) {
           expect(err).to.be.null;
 
+          const credentials = new MongoCredentials({
+            mechansim: method,
+            source: 'admin',
+            username: 'root',
+            passsword: 'root'
+          });
+
           executeCommand(
             self.configuration,
             'admin',
@@ -915,7 +940,7 @@ describe('Pool tests', function() {
                   roles: ['readWrite', 'dbAdmin'],
                   digestPassword: true
                 },
-                { auth: [method, 'admin', 'root', 'root'] },
+                { credentials },
                 function(createAdminUserErr, createAdminUserRes) {
                   expect(createAdminUserRes).to.exist;
                   expect(createAdminUserErr).to.be.null;
@@ -961,7 +986,7 @@ describe('Pool tests', function() {
                   });
 
                   // Start connection
-                  pool.connect(method, 'test', 'admin', 'admin');
+                  pool.connect(credentials);
                 }
               );
             }
@@ -982,6 +1007,13 @@ describe('Pool tests', function() {
       self.configuration.manager.restart(true).then(function() {
         locateAuthMethod(self.configuration, function(err, method) {
           expect(err).to.be.null;
+
+          const credentials = new MongoCredentials({
+            mechansim: method,
+            source: 'admin',
+            username: 'root',
+            passsword: 'root'
+          });
 
           executeCommand(
             self.configuration,
@@ -1005,7 +1037,7 @@ describe('Pool tests', function() {
                   roles: ['readWrite', 'dbAdmin'],
                   digestPassword: true
                 },
-                { auth: [method, 'admin', 'root', 'root'] },
+                { credentials },
                 function(createAdminUserErr, createAdminUserRes) {
                   expect(createAdminUserErr).to.be.null;
                   expect(createAdminUserRes).to.exist;
@@ -1035,10 +1067,7 @@ describe('Pool tests', function() {
                         expect(logoutErr).to.be.null;
                       });
 
-                      pool.auth(method, 'test', 'admin', 'admin', function(
-                        testMethodErr,
-                        testMethodRes
-                      ) {
+                      pool.auth(credentials, function(testMethodErr, testMethodRes) {
                         expect(testMethodRes).to.exist;
                         expect(testMethodErr).to.be.null;
 
@@ -1057,7 +1086,7 @@ describe('Pool tests', function() {
                   });
 
                   // Start connection
-                  pool.connect(method, 'test', 'admin', 'admin');
+                  pool.connect(credentials);
                 }
               );
             }

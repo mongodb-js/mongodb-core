@@ -6,8 +6,6 @@ const f = require('util').format;
 const bson = require('bson');
 const Query = require('../../../lib/connection/commands').Query;
 
-const MongoCredentials = require('../../../lib/auth/mongo_credentials').MongoCredentials;
-
 function executeCommand(configuration, db, cmd, options, cb) {
   // Optional options
   if (typeof options === 'function') (cb = options), (options = {});
@@ -48,11 +46,7 @@ function executeCommand(configuration, db, cmd, options, cb) {
     );
   });
 
-  const credentials = options.auth
-    ? MongoCredentials.makeCredentialsFromLegacyArray(options.auth)
-    : undefined;
-
-  pool.connect(credentials);
+  pool.connect(options.credentials);
 }
 
 function locateAuthMethod(configuration, cb) {
