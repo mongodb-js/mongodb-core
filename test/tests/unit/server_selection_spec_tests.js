@@ -55,7 +55,9 @@ describe('Server Selection (spec)', function() {
     // tests provide us the exact servers we should select from.
     sinon.stub(Server.prototype, 'connect');
     sinon.stub(Pool.prototype, 'connect');
-    sinon.stub(Pool.prototype, 'destroy').callsArgWith(1, null, null);
+    sinon.stub(Pool.prototype, 'destroy').callsFake((force, callback) => {
+      if (typeof callback === 'function') callback(null, null);
+    });
   });
 
   after(() => {
