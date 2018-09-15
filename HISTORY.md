@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.5"></a>
+## [3.1.5](https://github.com/mongodb-js/mongodb-core/compare/v3.1.4...v3.1.5) (2018-09-15)
+
+### Bug Fixes
+
+* **connection:** Revert fast fallback due to Atlas connect issues ([3133fc3](https://github.com/mongodb-js/mongodb-core/commit/3133fc3))
+
+
 <a name="3.1.4"></a>
 ## [3.1.4](https://github.com/mongodb-js/mongodb-core/compare/v3.1.3...v3.1.4) (2018-09-14)
 
