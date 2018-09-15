@@ -325,7 +325,7 @@ tasks:
           vars:
             VERSION: "latest"
             TOPOLOGY: "sharded_cluster"
-    
+
     - name: "atlas-connect"
       tags: ["atlas-connect"]
       commands:
@@ -497,7 +497,6 @@ axes:
   #       display_name: "Windows (VS2015)"
   #       run_on: windows-64-vs2015-test
 
-
   - id: topology
     display_name: Topology
     values:
@@ -575,6 +574,7 @@ buildvariants:
      - name: "test-2.6-replica_set"
      - name: "test-2.6-sharded_cluster"
      - name: "test-2.6-standalone"
+     - name: "atlas-connect"
 
 # - matrix_name: "tests-nossl"
 #   matrix_spec: {"os-nossl": "*", auth: "*", ssl: "nossl", node-version: "*" }
@@ -646,12 +646,6 @@ buildvariants:
      - name: "test-3.4-replica_set"
      - name: "test-3.4-sharded_cluster"
      - name: "test-3.4-standalone"
-
-- matrix_name: "test-atlas-connect"
-  matrix_spec: { node-version: "*", "os-fully-featured": "*" }
-  display_name: "${node-version} ${os-fully-featured} atlas connect"
-  tasks:
-    - name: "atlas-connect"
 
 # - matrix_name: "tests-windows"
 #   matrix_spec: {os-windows: "*", node-version: "*" } # ssl: "*", auth: "*"
