@@ -401,10 +401,10 @@ axes:
         run_on: rhel70-small
         batchtime: 10080  # 7 days
 
-      - id: debian71-test
-        display_name: "Debian 7.1"
-        run_on: debian71-test
-        batchtime: 10080  # 7 days
+      # - id: debian71-test
+      #   display_name: "Debian 7.1"
+      #   run_on: debian71-test
+      #   batchtime: 10080  # 7 days
 
   # OSes that support versions of MongoDB without SSL.
   - id: os-nossl
