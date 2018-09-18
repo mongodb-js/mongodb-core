@@ -7,29 +7,37 @@ var expect = require('chai').expect,
   Connection = require('../../../lib/connection/connection'),
   Bson = require('bson');
 
-// Skipped due to use of topology manager
+const MongoCredentials = require('../../../lib/auth/mongo_credentials').MongoCredentials;
+
 describe('Basic single server auth tests', function() {
   it('should correctly authenticate server using scram-sha-256 using connect auth', {
     metadata: { requires: { topology: 'auth', mongodb: '>=3.7.3' } },
     test: function(done) {
       const config = this.configuration;
-      const method = 'scram-sha-256';
-      const user = 'user';
+      const mechanism = 'scram-sha-256';
+      const source = 'admin';
+      const username = 'user';
       const password = 'pencil';
       const createUserCommand = {
-        createUser: user,
+        createUser: username,
         pwd: password,
-        roles: [{ role: 'root', db: 'admin' }],
+        roles: [{ role: 'root', db: source }],
         digestPassword: true
       };
-      const dropUserCommand = { dropUser: user };
-      const auth = [method, 'admin', user, password];
+      const dropUserCommand = { dropUser: username };
 
-      const createUser = cb => executeCommand(config, 'admin', createUserCommand, cb);
-      const dropUser = cb => executeCommand(config, 'admin', dropUserCommand, { auth }, cb);
+      const credentials = new MongoCredentials({
+        mechanism,
+        source,
+        username,
+        password
+      });
+
+      const createUser = cb => executeCommand(config, source, createUserCommand, cb);
+      const dropUser = cb => executeCommand(config, source, dropUserCommand, { credentials }, cb);
 
       const cleanup = err => {
-        executeCommand(config, 'admin', dropUserCommand, {}, () => done(err));
+        executeCommand(config, source, dropUserCommand, {}, () => done(err));
       };
 
       createUser((cmdErr, r) => {
@@ -54,7 +62,7 @@ describe('Basic single server auth tests', function() {
 
         server.on('error', cleanup);
 
-        server.connect({ auth });
+        server.connect({ credentials });
       });
     }
   });
@@ -72,6 +80,13 @@ describe('Basic single server auth tests', function() {
       self.configuration.manager.restart(true).then(function() {
         locateAuthMethod(self.configuration, function(err, method) {
           expect(err).to.be.null;
+
+          const credentials = new MongoCredentials({
+            mechanism: method,
+            source: 'admin',
+            username: 'root2',
+            password: 'root'
+          });
 
           executeCommand(
             self.configuration,
@@ -99,7 +114,7 @@ describe('Basic single server auth tests', function() {
                 done();
               });
 
-              server.connect({ auth: [method, 'admin', 'root2', 'root'] });
+              server.connect({ credentials });
             }
           );
         });
@@ -141,14 +156,19 @@ describe('Basic single server auth tests', function() {
                 bson: new Bson()
               });
 
+              const credentials = new MongoCredentials({
+                mechanism: method,
+                source: 'admin',
+                username: 'root',
+                password: 'root'
+              });
+
               server.on('connect', function(_server) {
                 executeCommand(
                   self.configuration,
                   'admin',
-                  {
-                    dropUser: 'root'
-                  },
-                  { auth: [method, 'admin', 'root', 'root'] },
+                  { dropUser: 'root' },
+                  { credentials },
                   function(dropUserErr, dropUserRes) {
                     expect(dropUserRes).to.exist;
                     expect(dropUserErr).to.be.null;
@@ -162,7 +182,7 @@ describe('Basic single server auth tests', function() {
                 );
               });
 
-              server.connect({ auth: [method, 'admin', 'root', 'root'] });
+              server.connect({ credentials });
             }
           );
         });
@@ -199,6 +219,13 @@ describe('Basic single server auth tests', function() {
                 expect(r).to.exist;
                 expect(cmdErr).to.be.null;
 
+                const credentials = new MongoCredentials({
+                  mechanism: method,
+                  source: 'admin',
+                  username: 'root',
+                  password: 'root'
+                });
+
                 executeCommand(
                   self.configuration,
                   'test',
@@ -208,7 +235,7 @@ describe('Basic single server auth tests', function() {
                     roles: ['readWrite', 'dbAdmin'],
                     digestPassword: true
                   },
-                  { auth: [method, 'admin', 'root', 'root'] },
+                  { credentials },
                   function(createUserErr, createUserRes) {
                     expect(createUserRes).to.exist;
                     expect(createUserErr).to.be.null;
@@ -258,7 +285,7 @@ describe('Basic single server auth tests', function() {
                     });
 
                     // Start connection
-                    server.connect({ auth: [method, 'test', 'admin', 'admin'] });
+                    server.connect({ credentials });
                   }
                 );
               }
@@ -296,6 +323,13 @@ describe('Basic single server auth tests', function() {
               expect(r).to.exist;
               expect(cmdErr).to.be.null;
 
+              const credentials = new MongoCredentials({
+                mechanism: method,
+                source: 'admin',
+                username: 'root',
+                password: 'root'
+              });
+
               executeCommand(
                 self.configuration,
                 'test',
@@ -305,7 +339,7 @@ describe('Basic single server auth tests', function() {
                   roles: ['readWrite', 'dbAdmin'],
                   digestPassword: true
                 },
-                { auth: [method, 'admin', 'root', 'root'] },
+                { credentials },
                 function(createUserErr, createUserRes) {
                   expect(createUserRes).to.exist;
                   expect(createUserErr).to.be.null;
@@ -341,7 +375,7 @@ describe('Basic single server auth tests', function() {
 
                   // Add event listeners
                   server.on('connect', function(_server) {
-                    _server.auth(method, 'test', 'admin', 'admin', function(authErr, authRes) {
+                    _server.auth(credentials, function(authErr, authRes) {
                       expect(authRes).to.exist;
                       expect(authErr).to.not.exist;
 
@@ -407,6 +441,13 @@ describe('Basic single server auth tests', function() {
               expect(r).to.exist;
               expect(cmdErr).to.be.null;
 
+              const credentials = new MongoCredentials({
+                mechanism: method,
+                source: 'admin',
+                username: 'root',
+                password: 'root'
+              });
+
               executeCommand(
                 self.configuration,
                 'test',
@@ -416,7 +457,7 @@ describe('Basic single server auth tests', function() {
                   roles: ['readWrite', 'dbAdmin'],
                   digestPassword: true
                 },
-                { auth: [method, 'admin', 'root', 'root'] },
+                { credentials },
                 function(createUserErr, createUserRes) {
                   expect(createUserRes).to.exist;
                   expect(createUserErr).to.be.null;
@@ -457,7 +498,7 @@ describe('Basic single server auth tests', function() {
                   });
 
                   // Start connection
-                  server.connect({ auth: [method, 'test', 'admin', 'admin'] });
+                  server.connect({ credentials });
                 }
               );
             }
@@ -494,6 +535,13 @@ describe('Basic single server auth tests', function() {
               expect(r).to.exist;
               expect(err).to.be.null;
 
+              const credentials = new MongoCredentials({
+                mechanism: method,
+                source: 'admin',
+                username: 'root',
+                password: 'root'
+              });
+
               executeCommand(
                 self.configuration,
                 'test',
@@ -503,7 +551,7 @@ describe('Basic single server auth tests', function() {
                   roles: ['readWrite', 'dbAdmin'],
                   digestPassword: true
                 },
-                { auth: [method, 'admin', 'root', 'root'] },
+                { credentials },
                 function(createUserErr, createUserRes) {
                   expect(createUserRes).to.exist;
                   expect(createUserErr).to.be.null;
@@ -525,7 +573,7 @@ describe('Basic single server auth tests', function() {
                         expect(logoutErr).to.be.null;
                       });
 
-                      _server.auth(method, 'test', 'admin', 'admin', function(authErr, authRes) {
+                      _server.auth(credentials, function(authErr, authRes) {
                         expect(authRes).to.exist;
                         expect(authErr).to.be.null;
 
@@ -546,7 +594,7 @@ describe('Basic single server auth tests', function() {
                   });
 
                   // Start connection
-                  server.connect({ auth: [method, 'test', 'admin', 'admin'] });
+                  server.connect({ credentials });
                 }
               );
             }
