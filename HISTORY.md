@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.5"></a>
+## [3.1.5](https://github.com/mongodb-js/mongodb-core/compare/v3.1.4...v3.1.5) (2018-09-15)
+
+### Bug Fixes
+
+* **connection:** Revert fast fallback due to Atlas connect issues ([3133fc3](https://github.com/mongodb-js/mongodb-core/commit/3133fc3))
+
+
+<a name="3.1.4"></a>
+## [3.1.4](https://github.com/mongodb-js/mongodb-core/compare/v3.1.3...v3.1.4) (2018-09-14)
+
+
+### Bug Fixes
+
+* **apm:** fix upconversion for OP_QUERY in apm ([f969bee](https://github.com/mongodb-js/mongodb-core/commit/f969bee))
+* **gssapi:** check lowercase and camelCase gssapiServiceName option ([bf0315d](https://github.com/mongodb-js/mongodb-core/commit/bf0315d))
+* **test:** do not check deep equality when test.auth.db is null ([7d3c057](https://github.com/mongodb-js/mongodb-core/commit/7d3c057))
+* **uri_parser:** use admin as default auth.db ([345e6af](https://github.com/mongodb-js/mongodb-core/commit/345e6af))
+
+
+### Features
+
+* **connection:** Implement fast fallback ([622394a](https://github.com/mongodb-js/mongodb-core/commit/622394a))
+
+
+
 <a name="3.1.3"></a>
 ## [3.1.3](https://github.com/mongodb-js/mongodb-core/compare/v3.1.2...v3.1.3) (2018-08-25)
 

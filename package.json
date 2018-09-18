@@ -1,8 +1,12 @@
 {
   "name": "mongodb-core",
-  "version": "3.1.3",
+  "version": "3.1.5",
   "description": "Core MongoDB driver functionality, no bells and whistles and meant for integration not end applications",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "scripts": {
     "test": "npm run lint && mongodb-test-runner -t 60000 test/tests",
     "coverage": "node_modules/.bin/nyc node test/runner.js -t functional -l && node_modules/.bin/nyc report --reporter=text-lcov | node_modules/.bin/coveralls",
