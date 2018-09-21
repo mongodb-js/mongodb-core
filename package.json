@@ -41,13 +41,13 @@
     "mongodb-test-runner": "^1.1.18",
     "prettier": "~1.12.0",
     "sinon": "^6.0.0",
-    "snappy": "^6.0.1",
+    "snappy": "^6.1.1",
     "standard-version": "^4.4.0"
   },
   "peerOptionalDependencies": {
     "kerberos": "^1.0.0",
     "mongodb-extjson": "^2.1.2",
-    "snappy": "^6.0.1",
+    "snappy": "^6.1.1",
     "bson-ext": "^2.0.0"
   },
   "author": "Christian Kvalheim",
