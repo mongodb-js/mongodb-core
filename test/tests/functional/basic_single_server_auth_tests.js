@@ -3,7 +3,6 @@
 var expect = require('chai').expect,
   locateAuthMethod = require('./shared').locateAuthMethod,
   executeCommand = require('./shared').executeCommand,
-  Server = require('../../../lib/topologies/server'),
   Connection = require('../../../lib/connection/connection'),
   Bson = require('bson');
 
@@ -44,7 +43,7 @@ describe('Basic single server auth tests', function() {
         expect(cmdErr).to.be.null;
         expect(r).to.exist;
 
-        const server = new Server({
+        const server = config.newTopology({
           host: this.configuration.host,
           port: this.configuration.port,
           bson: new Bson()
@@ -101,7 +100,7 @@ describe('Basic single server auth tests', function() {
               expect(r).to.exist;
               expect(cmdErr).to.be.null;
 
-              var server = new Server({
+              var server = this.configuration.newTopology({
                 host: self.configuration.host,
                 port: self.configuration.port,
                 bson: new Bson()
@@ -128,6 +127,7 @@ describe('Basic single server auth tests', function() {
 
     test: function(done) {
       var self = this;
+      const config = this.configuration;
 
       // Enable connections accounting
       Connection.enableConnectionAccounting();
@@ -150,7 +150,7 @@ describe('Basic single server auth tests', function() {
               expect(r).to.exist;
               expect(cmdErr).to.be.null;
 
-              var server = new Server({
+              var server = config.newTopology({
                 host: self.configuration.host,
                 port: self.configuration.port,
                 bson: new Bson()
@@ -197,6 +197,7 @@ describe('Basic single server auth tests', function() {
 
       test: function(done) {
         var self = this;
+        const config = this.configuration;
 
         // Enable connections accounting
         Connection.enableConnectionAccounting();
@@ -241,7 +242,7 @@ describe('Basic single server auth tests', function() {
                     expect(createUserErr).to.be.null;
 
                     // Attempt to connect
-                    var server = new Server({
+                    var server = config.newTopology({
                       host: self.configuration.host,
                       port: self.configuration.port,
                       bson: new Bson()
@@ -301,6 +302,7 @@ describe('Basic single server auth tests', function() {
 
     test: function(done) {
       var self = this;
+      const config = this.configuration;
 
       // Enable connections accounting
       Connection.enableConnectionAccounting();
@@ -345,7 +347,7 @@ describe('Basic single server auth tests', function() {
                   expect(createUserErr).to.be.null;
 
                   // Attempt to connect
-                  var server = new Server({
+                  var server = config.newTopology({
                     host: self.configuration.host,
                     port: self.configuration.port,
                     bson: new Bson()
@@ -419,6 +421,7 @@ describe('Basic single server auth tests', function() {
 
     test: function(done) {
       var self = this;
+      const config = this.configuration;
 
       // Enable connections accounting
       Connection.enableConnectionAccounting();
@@ -463,7 +466,7 @@ describe('Basic single server auth tests', function() {
                   expect(createUserErr).to.be.null;
 
                   // Attempt to connect
-                  var server = new Server({
+                  var server = config.newTopology({
                     host: self.configuration.host,
                     port: self.configuration.port,
                     bson: new Bson()
@@ -513,6 +516,7 @@ describe('Basic single server auth tests', function() {
 
     test: function(done) {
       var self = this;
+      const config = this.configuration;
 
       // Enable connections accounting
       Connection.enableConnectionAccounting();
@@ -556,7 +560,7 @@ describe('Basic single server auth tests', function() {
                   expect(createUserRes).to.exist;
                   expect(createUserErr).to.be.null;
                   // Attempt to connect
-                  var server = new Server({
+                  var server = config.newTopology({
                     host: self.configuration.host,
                     port: self.configuration.port,
                     bson: new Bson()
