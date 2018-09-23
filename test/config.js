@@ -15,11 +15,17 @@ class CoreConfiguration extends ConfigurationBase {
     this.topology = options.topology || this.defaultTopology;
   }
 
-  defaultTopology(self, _mongo) {
-    return new _mongo.Server({
-      host: self.host,
-      port: self.port
-    });
+  defaultTopology(self, _mongo, options) {
+    options = Object.assign(
+      {},
+      {
+        host: self.host,
+        port: self.port
+      },
+      options
+    );
+
+    return new _mongo.Server(options);
   }
 
   start(callback) {
@@ -62,13 +68,9 @@ class CoreConfiguration extends ConfigurationBase {
       });
   }
 
-  newTopology(opts, callback) {
-    if (typeof opts === 'function') {
-      callback = opts;
-      opts = {};
-    }
-
-    callback(null, this.topology(this, this.mongo));
+  newTopology(options) {
+    options = options || {};
+    return this.topology(this, this.mongo, options);
   }
 
   newConnection(opts, callback) {

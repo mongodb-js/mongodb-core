@@ -3,7 +3,6 @@ const expect = require('chai').expect;
 const f = require('util').format;
 const locateAuthMethod = require('./shared').locateAuthMethod;
 const executeCommand = require('./shared').executeCommand;
-const Server = require('../../../lib/topologies/server');
 const Bson = require('bson');
 const Connection = require('../../../lib/connection/connection');
 const mock = require('mongodb-mock-server');
@@ -15,8 +14,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -37,8 +36,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -65,8 +64,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -100,8 +99,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -137,11 +136,10 @@ describe('Server tests', function() {
       metadata: { requires: { topology: 'single' } },
 
       test: function(done) {
-        var Server = this.configuration.mongo.Server,
-          ReadPreference = this.configuration.mongo.ReadPreference;
+        var ReadPreference = this.configuration.mongo.ReadPreference;
 
-        // Attempt to connect
-        var server = new Server({
+        const config = this.configuration;
+        var server = config.newTopology({
           host: this.configuration.host,
           port: this.configuration.port,
           bson: new Bson(),
@@ -177,8 +175,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -217,8 +215,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -257,8 +255,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -298,8 +296,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -345,8 +343,8 @@ describe('Server tests', function() {
       var self = this;
       var testDone = false;
 
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         bson: new Bson()
@@ -433,11 +431,9 @@ describe('Server tests', function() {
     },
 
     test: function(done) {
-      var Server = this.configuration.mongo.Server,
-        ReadPreference = this.configuration.mongo.ReadPreference;
-
-      // Attempt to connect
-      var server = new Server({
+      var ReadPreference = this.configuration.mongo.ReadPreference;
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         reconnect: true,
@@ -510,11 +506,9 @@ describe('Server tests', function() {
     },
 
     test: function(done) {
-      var Server = this.configuration.require.Server,
-        ReadPreference = this.configuration.require.ReadPreference;
-
-      // Attempt to connect
-      var server = new Server({
+      var ReadPreference = this.configuration.require.ReadPreference;
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         reconnect: false,
@@ -581,13 +575,12 @@ describe('Server tests', function() {
 
     test: function(done) {
       var self = this;
-
-      var Server = this.configuration.require.Server,
-        manager = this.configuration.manager;
+      const config = this.configuration;
+      var manager = this.configuration.manager;
 
       manager.stop('SIGINT').then(function() {
         // Attempt to connect while server is down
-        var server = new Server({
+        var server = config.newTopology({
           host: self.configuration.host,
           port: self.configuration.port,
           reconnect: true,
@@ -626,11 +619,10 @@ describe('Server tests', function() {
     },
 
     test: function(done) {
-      var Server = this.configuration.require.Server,
-        ReadPreference = this.configuration.require.ReadPreference;
+      var ReadPreference = this.configuration.require.ReadPreference;
 
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         reconnect: true,
@@ -699,11 +691,8 @@ describe('Server tests', function() {
 
     test: function(done) {
       var self = this;
-
-      var Server = this.configuration.require.Server;
-
-      // Attempt to connect while server is down
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         reconnect: true,
@@ -756,8 +745,8 @@ describe('Server tests', function() {
 
     // The actual test we wish to run
     test: function(done) {
-      // Attempt to connect
-      var server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: this.configuration.host,
         port: this.configuration.port,
         size: 10,
@@ -826,9 +815,10 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
+      const config = this.configuration;
+
       try {
-        new Server({
+        config.newTopology({
           host: this.configuration.host,
           port: this.configuration.port,
           bson: new Bson(),
@@ -849,6 +839,7 @@ describe('Server tests', function() {
 
       test: function(done) {
         var self = this;
+        const config = this.configuration;
 
         Connection.enableConnectionAccounting();
 
@@ -877,7 +868,7 @@ describe('Server tests', function() {
                 expect(cmdErr).to.not.exist;
                 expect(r).to.exist;
 
-                var server = new Server({
+                var server = config.newTopology({
                   host: self.configuration.host,
                   port: self.configuration.port,
                   bson: new Bson(),
@@ -926,6 +917,7 @@ describe('Server tests', function() {
 
       test: function(done) {
         var self = this;
+        const config = this.configuration;
 
         Connection.enableConnectionAccounting();
 
@@ -954,7 +946,7 @@ describe('Server tests', function() {
                 expect(cmdErr).to.not.exist;
                 expect(r).to.exist;
 
-                var server = new Server({
+                var server = config.newTopology({
                   host: self.configuration.host,
                   port: self.configuration.port,
                   bson: new Bson(),
@@ -983,8 +975,8 @@ describe('Server tests', function() {
       metadata: { requires: { topology: ['single'], mongodb: '>=3.5.x' } },
 
       test: function(done) {
-        // Attempt to connect to server
-        var server = new Server({
+        const config = this.configuration;
+        var server = config.newTopology({
           host: this.configuration.host,
           port: this.configuration.port,
           bson: new Bson(),
@@ -1036,7 +1028,8 @@ describe('Server tests', function() {
           request.reply(Object.assign({}, mock.DEFAULT_ISMASTER, { maxWireVersion: 1 }));
         });
 
-        const client = new Server(server.address());
+        const config = this.configuration;
+        var client = config.newTopology(server.address());
         client.on('error', error => {
           let err;
           try {
@@ -1047,9 +1040,11 @@ describe('Server tests', function() {
           }
           done(err);
         });
+
         client.on('connect', () => {
           done(new Error('This should not connect'));
         });
+
         client.connect();
       }
     });
@@ -1059,8 +1054,8 @@ describe('Server tests', function() {
     metadata: { requires: { topology: 'single' } },
 
     test: function(done) {
-      // Attempt to connect
-      let server = new Server({
+      const config = this.configuration;
+      var server = config.newTopology({
         host: 'doesntexist',
         bson: new Bson(),
         reconnectTries: 0
