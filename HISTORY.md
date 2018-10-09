@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.6"></a>
+## [3.1.6](https://github.com/mongodb-js/mongodb-core/compare/v3.1.4...v3.1.6) (2018-10-09)
+
+
+### Bug Fixes
+
+* **srv-parsing:** ensure parse options are propogated to txt lookup ([923ceb0](https://github.com/mongodb-js/mongodb-core/commit/923ceb0))
+* **uri-parser:** add exemption list for number coercion in options ([82896ea](https://github.com/mongodb-js/mongodb-core/commit/82896ea))
+
+
+
 <a name="3.1.5"></a>
 ## [3.1.5](https://github.com/mongodb-js/mongodb-core/compare/v3.1.4...v3.1.5) (2018-09-15)
 
