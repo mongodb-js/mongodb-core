@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.7"></a>
+## [3.1.7](https://github.com/mongodb-js/mongodb-core/compare/v3.1.6...v3.1.7) (2018-10-10)
+
+
+### Bug Fixes
+
+* **uri-parser:** persist default database when authSource present ([aa601d3](https://github.com/mongodb-js/mongodb-core/commit/aa601d3))
+
+
+
 <a name="3.1.6"></a>
 ## [3.1.6](https://github.com/mongodb-js/mongodb-core/compare/v3.1.4...v3.1.6) (2018-10-09)
 
