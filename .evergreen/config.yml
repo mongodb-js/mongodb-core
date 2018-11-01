@@ -381,6 +381,10 @@ axes:
         display_name: "Node.js Carbon"
         variables:
            NODE_LTS_NAME: "carbon"
+      - id: "Dubnium"
+        display_name: "Node.js Dubnium"
+        variables:
+           NODE_LTS_NAME: "dubnium"
 
   # OSes that support versions of MongoDB>=2.6 with SSL.
   - id: os-fully-featured
