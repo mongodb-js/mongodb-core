@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.8"></a>
+## [3.1.8](https://github.com/mongodb-js/mongodb-core/compare/v3.1.7...v3.1.8) (2018-11-05)
+
+
+### Bug Fixes
+
+* **sspi:** correct auth process for SSPI ([808ab21](https://github.com/mongodb-js/mongodb-core/commit/808ab21))
+* **uri_parser:** add `replSet` to exemption list for number coercion ([d00b1ab](https://github.com/mongodb-js/mongodb-core/commit/d00b1ab))
+
+
+
 <a name="3.1.7"></a>
 ## [3.1.7](https://github.com/mongodb-js/mongodb-core/compare/v3.1.6...v3.1.7) (2018-10-10)
 
