@@ -82,7 +82,6 @@ describe('Wire Protocol 3.6 Find', function() {
     expectMsgToHaveSingleQuery(msg)
       .that.includes.property('explain')
       .that.deep.includes({
-        $db,
         find: collection,
         filter: cmd.query,
         sort: cmd.sort
@@ -90,7 +89,6 @@ describe('Wire Protocol 3.6 Find', function() {
   });
 
   [
-    'fields',
     'hint',
     'skip',
     'limit',
@@ -100,7 +98,6 @@ describe('Wire Protocol 3.6 Find', function() {
     'min',
     'max',
     'returnKey',
-    'showDiskLoc',
     'snapshot',
     'tailable',
     'oplogReplay',
