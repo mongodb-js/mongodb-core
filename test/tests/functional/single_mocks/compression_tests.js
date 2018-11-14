@@ -77,6 +77,12 @@ describe('Single Compression (mocks)', function() {
               // Acknowledge connection using OP_COMPRESSED with no compression
               request.reply(serverResponse, { compression: { compressor: 'no_compression' } });
             } else if (currentStep === 1) {
+              if (doc.ismaster) {
+                // unified topology
+                request.reply(serverResponse, { compression: { compressor: 'no_compression' } });
+                return;
+              }
+
               expect(server.isCompressed).to.be.false;
               // Acknowledge insertion using OP_COMPRESSED with no compression
               request.reply(
@@ -172,6 +178,12 @@ describe('Single Compression (mocks)', function() {
               // Acknowledge connection using OP_COMPRESSED with snappy
               request.reply(serverResponse, { compression: { compressor: 'snappy' } });
             } else if (currentStep === 1) {
+              if (doc.ismaster) {
+                // unified topology
+                request.reply(serverResponse, { compression: { compressor: 'snappy' } });
+                return;
+              }
+
               expect(server.isCompressed).to.be.true;
               // Acknowledge insertion using OP_COMPRESSED with snappy
               request.reply(
@@ -267,6 +279,12 @@ describe('Single Compression (mocks)', function() {
               // Acknowledge connection using OP_COMPRESSED with zlib
               request.reply(serverResponse, { compression: { compressor: 'zlib' } });
             } else if (currentStep === 1) {
+              if (doc.ismaster) {
+                // unified topology
+                request.reply(serverResponse, { compression: { compressor: 'zlib' } });
+                return;
+              }
+
               expect(server.isCompressed).to.be.true;
               // Acknowledge insertion using OP_COMPRESSED with zlib
               request.reply(
@@ -354,12 +372,19 @@ describe('Single Compression (mocks)', function() {
         server = yield mock.createServer();
 
         server.setMessageHandler(request => {
+          const doc = request.document;
           if (currentStep === 0) {
             expect(request.response.documents[0].compression).to.have.members(['snappy', 'zlib']);
             expect(server.isCompressed).to.be.false;
             // Acknowledge connection using OP_COMPRESSED with snappy
             request.reply(serverResponse, { compression: { compressor: 'snappy' } });
           } else if (currentStep === 1) {
+            if (doc.ismaster) {
+              // unified topology
+              request.reply(serverResponse, { compression: { compressor: 'snappy' } });
+              return;
+            }
+
             expect(server.isCompressed).to.be.true;
             // Acknowledge ping using OP_COMPRESSED with snappy
             request.reply({ ok: 1 }, { compression: { compressor: 'snappy' } });
