@@ -9,6 +9,10 @@ const ServerManager = topologyManagers.Server;
 const ReplSetManager = topologyManagers.ReplSet;
 const ShardingManager = topologyManagers.Sharded;
 
+function usingUnifiedTopology() {
+  return !!process.env.MONGODB_UNIFIED_TOPOLOGY;
+}
+
 class ReplicaSetEnvironment extends EnvironmentBase {
   static get displayName() {
     return 'replicaset';
@@ -21,6 +25,10 @@ class ReplicaSetEnvironment extends EnvironmentBase {
     this.port = 31000;
     this.setName = 'rs';
     this.topology = (self, _mongo) => {
+      if (usingUnifiedTopology()) {
+        return new _mongo.Topology([{ host: 'localhost', port: 31000 }], { setName: 'rs' });
+      }
+
       return new _mongo.ReplSet([{ host: 'localhost', port: 31000 }], { setName: 'rs' });
     };
 
@@ -92,6 +100,10 @@ class ShardedEnvironment extends EnvironmentBase {
     this.host = 'localhost';
     this.port = 51000;
     this.topology = (self, _mongo) => {
+      if (usingUnifiedTopology()) {
+        return new _mongo.Topology([{ host: 'localhost', port: 51000 }]);
+      }
+
       return new _mongo.Mongos([{ host: 'localhost', port: 51000 }]);
     };
 
