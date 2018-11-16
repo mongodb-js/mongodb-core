@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.9"></a>
+## [3.1.9](https://github.com/mongodb-js/mongodb-core/compare/v3.1.8...v3.1.9) (2018-11-16)
+
+
+### Bug Fixes
+
+* **mongos:** ensure servers are properly cleaned up when destroyed ([68f4fd3](https://github.com/mongodb-js/mongodb-core/commit/68f4fd3))
+* **uri_parser:** uri-encoded auth handling ([81b5b45](https://github.com/mongodb-js/mongodb-core/commit/81b5b45))
+* **url-parser:** support passing in `auth` to parsing options ([29455ca](https://github.com/mongodb-js/mongodb-core/commit/29455ca))
+
+
+
 <a name="3.1.8"></a>
 ## [3.1.8](https://github.com/mongodb-js/mongodb-core/compare/v3.1.7...v3.1.8) (2018-11-05)
 
