@@ -26,7 +26,11 @@ devdir=${NPM_CACHE_DIR}/.node-gyp
 init-module=${NPM_CACHE_DIR}/.npm-init.js
 cache=${NPM_CACHE_DIR}
 tmp=${NPM_TMP_DIR}
+registry=https://registry.npmjs.org
 EOT
+
+# NOTE: registry was overridden to not use artifactory, remove the `registry` line when
+#       BUILD-6774 is resolved.
 
 # install node dependencies
 npm install
