@@ -342,6 +342,7 @@ tasks:
     - name: "test-latest-sharded_cluster"
       tags: ["latest", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "latest"
