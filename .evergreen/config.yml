@@ -151,7 +151,7 @@ pre:
   # - func: "windows fix"
   - func: "fix absolute paths"
   - func: "make files executable"
-  - func: "install dependencies"
+  # - func: "install dependencies"
 
 post:
   - func: "cleanup"
@@ -161,6 +161,7 @@ tasks:
     - name: "test-2.6-standalone"
       tags: ["2.6", "standalone"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "2.6"
@@ -169,6 +170,7 @@ tasks:
     - name: "test-2.6-replica_set"
       tags: ["2.6", "replica_set"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "2.6"
@@ -177,6 +179,7 @@ tasks:
     - name: "test-2.6-sharded_cluster"
       tags: ["2.6", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "2.6"
@@ -185,6 +188,7 @@ tasks:
     - name: "test-3.0-standalone"
       tags: ["3.0", "standalone"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.0"
@@ -193,6 +197,7 @@ tasks:
     - name: "test-3.0-replica_set"
       tags: ["3.0", "replica_set"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.0"
@@ -201,6 +206,7 @@ tasks:
     - name: "test-3.0-sharded_cluster"
       tags: ["3.0", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.0"
@@ -209,6 +215,7 @@ tasks:
     - name: "test-3.2-standalone"
       tags: ["3.2", "standalone"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.2"
@@ -217,6 +224,7 @@ tasks:
     - name: "test-3.2-replica_set"
       tags: ["3.2", "replica_set"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.2"
@@ -225,6 +233,7 @@ tasks:
     - name: "test-3.2-sharded_cluster"
       tags: ["3.2", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.2"
@@ -233,6 +242,7 @@ tasks:
     - name: "test-3.4-standalone"
       tags: ["3.4", "standalone"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.4"
@@ -241,6 +251,7 @@ tasks:
     - name: "test-3.4-replica_set"
       tags: ["3.4", "replica_set"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.4"
@@ -249,6 +260,7 @@ tasks:
     - name: "test-3.4-sharded_cluster"
       tags: ["3.4", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.4"
@@ -257,6 +269,7 @@ tasks:
     - name: "test-3.6-standalone"
       tags: ["3.6", "standalone"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.6"
@@ -265,6 +278,7 @@ tasks:
     - name: "test-3.6-replica_set"
       tags: ["3.6", "replica_set"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.6"
@@ -273,6 +287,7 @@ tasks:
     - name: "test-3.6-sharded_cluster"
       tags: ["3.6", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.6"
@@ -281,6 +296,7 @@ tasks:
     - name: "test-4.0-standalone"
       tags: ["4.0", "standalone"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "4.0"
@@ -289,6 +305,7 @@ tasks:
     - name: "test-4.0-replica_set"
       tags: ["4.0", "replica_set"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "4.0"
@@ -297,6 +314,7 @@ tasks:
     - name: "test-4.0-sharded_cluster"
       tags: ["4.0", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "4.0"
@@ -305,6 +323,7 @@ tasks:
     - name: "test-latest-standalone"
       tags: ["latest", "standalone"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "latest"
@@ -313,6 +332,7 @@ tasks:
     - name: "test-latest-replica_set"
       tags: ["latest", "replica_set"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "latest"
@@ -321,6 +341,7 @@ tasks:
     - name: "test-latest-sharded_cluster"
       tags: ["latest", "sharded_cluster"]
       commands:
+        - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "latest"
