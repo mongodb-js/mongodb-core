@@ -5,7 +5,7 @@ set -o errexit  # Exit the script with error if any of the commands fail
 NODE_LTS_NAME=${NODE_LTS_NAME:-carbon}
 NODE_ARTIFACTS_PATH="${PROJECT_DIRECTORY}/node-artifacts"
 NPM_CACHE_DIR="${NODE_ARTIFACTS_PATH}/npm"
-NPM_TMP_DIR="${NODE_ARTIFATS_PATH}/tmp"
+NPM_TMP_DIR="${NODE_ARTIFACTS_PATH}/tmp"
 
 # this needs to be explicitly exported for the nvm install below
 export NVM_DIR="${NODE_ARTIFACTS_PATH}/nvm"
