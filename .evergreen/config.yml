@@ -342,7 +342,7 @@ tasks:
     - name: "test-latest-sharded_cluster"
       tags: ["latest", "sharded_cluster"]
       commands:
-c        - func: "run tests"
+        - func: "run tests"
           vars:
             VERSION: "latest"
             TOPOLOGY: "sharded_cluster"
