@@ -342,8 +342,7 @@ tasks:
     - name: "test-latest-sharded_cluster"
       tags: ["latest", "sharded_cluster"]
       commands:
-        - func: "install dependencies"
-        - func: "run tests"
+c        - func: "run tests"
           vars:
             VERSION: "latest"
             TOPOLOGY: "sharded_cluster"
@@ -351,6 +350,7 @@ tasks:
     - name: "atlas-connect"
       tags: ["atlas-connect"]
       commands:
+        - func: "install dependencies"
         - func: "run atlas tests"
 
 # }}}
