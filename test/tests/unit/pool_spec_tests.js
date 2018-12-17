@@ -10,7 +10,7 @@ const ALL_EVENTS = [
   'connectionPoolCreated',
   'connectionPoolClosed',
   'connectionCreated',
-  'connectionReady',
+  // 'connectionReady',
   'connectionClosed',
   'connectionAcquisitionStarted',
   'connectionAcquisitionFailed',
@@ -254,6 +254,9 @@ describe('Pool Spec Tests', function() {
       }
 
       const actualEvents = poolEvents.filter(ev => ignoreEvents.indexOf(ev.type) < 0);
+
+      // console.log(expectedEvents.map(e => e.type));
+      // console.log(actualEvents.map(e => e.type));
 
       expectedEvents.forEach((expected, index) => {
         const actual = actualEvents[index];
