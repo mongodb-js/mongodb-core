@@ -6,18 +6,44 @@ const expect = require('chai').expect;
 require('chai').use(require('../../match_spec').default);
 const Pool = require('../../../lib/pool').Pool;
 
-const ALL_EVENTS = [
-  'connectionPoolCreated',
-  'connectionPoolClosed',
-  'connectionCreated',
-  // 'connectionReady',
-  'connectionClosed',
-  'connectionAcquisitionStarted',
-  'connectionAcquisitionFailed',
-  'connectionAcquired',
-  'connectionReleased',
-  'connectionPoolCleared'
-];
+class Connection {
+  constructor(options = {}) {
+    this.generation = options.generation;
+    this.id = options.id;
+    this.maxIdleTimeMS = options.maxIdleTimeMS;
+    this.poolId = options.poolId;
+    this.address = options.address;
+    this.lastUsed = Date.now();
+  }
+
+  get metadata() {
+    return {
+      id: this.id,
+      generation: this.generation,
+      poolId: this.poolId,
+      address: this.adress
+    };
+  }
+
+  write(callback) {
+    this.lastUsed = Date.now();
+    setTimeout(() => callback());
+  }
+
+  makeAvailable() {
+    this.lastMadeAvialable = new Date();
+  }
+
+  connect(callback) {
+    setTimeout(() => callback(null, this));
+  }
+
+  destroy() {}
+}
+
+const ALL_EVENTS = Object.values(require('../../../lib/pool/events'))
+  .filter(Ctor => Ctor.eventType)
+  .map(Ctor => Ctor.eventType);
 
 function promisify(fn) {
   return function(...args) {
@@ -34,53 +60,41 @@ function promisify(fn) {
 }
 
 const PROMISIFIED_POOL_FUNCTIONS = {
-  acquire: promisify(Pool.prototype.acquire),
-  release: promisify(Pool.prototype.release),
+  checkOut: promisify(Pool.prototype.checkOut),
+  checkIn: promisify(Pool.prototype.checkIn),
   clear: promisify(Pool.prototype.clear),
   close: promisify(Pool.prototype.close)
 };
 
 async function destroyPool(pool) {
-  pool.destroy();
+  await new Promise(r => pool.destroy(r));
   ALL_EVENTS.forEach(ev => pool.removeAllListeners(ev));
 }
 
 describe('Pool Spec Tests', function() {
   const threads = new Map();
-  const pools = new Map();
   const connections = new Map();
   const poolEvents = [];
+  let pool = undefined;
 
   afterEach(async () => {
-    await Promise.all(Array.from(pools.values()).map(destroyPool));
-    pools.clear();
+    if (pool) {
+      await destroyPool(pool);
+      pool = undefined;
+    }
     threads.clear();
     connections.clear();
     poolEvents.length = 0;
   });
 
   function createPool(options) {
-    const id = pools.size + 1;
-    const label = `pool${id}`;
-    options = Object.assign({}, options, { enableConnectionMonitoring: true, id });
+    const address = 'localhost:27017';
+    options = Object.assign({}, options, { Connection, address });
 
-    const pool = new Pool(options);
+    pool = new Pool(options);
     ALL_EVENTS.forEach(ev => {
       pool.on(ev, x => poolEvents.push(x));
     });
-
-    pools.set(label, pool);
-  }
-
-  function getPool({ name, object }) {
-    const poolName = object || 'pool1';
-    const pool = pools.get(poolName);
-
-    if (!pool) {
-      throw new Error(`Attempted to run op ${name} on non-existent pool ${poolName}`);
-    }
-
-    return pool;
   }
 
   function getThread(name) {
@@ -94,17 +108,14 @@ describe('Pool Spec Tests', function() {
   }
 
   const OPERATION_FUNCTIONS = {
-    acquire: async function(op) {
-      const pool = getPool(op);
-
-      const connection = await PROMISIFIED_POOL_FUNCTIONS.acquire.call(pool);
+    checkOut: async function(op) {
+      const connection = await PROMISIFIED_POOL_FUNCTIONS.checkOut.call(pool);
 
       if (op.label != null) {
         connections.set(op.label, connection);
       }
     },
-    release: function(op) {
-      const pool = getPool(op);
+    checkIn: function(op) {
       const connection = connections.get(op.connection);
       const force = op.force;
 
@@ -112,16 +123,12 @@ describe('Pool Spec Tests', function() {
         throw new Error(`Attempted to release non-existient connection ${op.connection}`);
       }
 
-      return PROMISIFIED_POOL_FUNCTIONS.release.call(pool, connection, force);
+      return PROMISIFIED_POOL_FUNCTIONS.checkIn.call(pool, connection, force);
     },
-    clear: function(op) {
-      const pool = getPool(op);
-
+    clear: function() {
       return PROMISIFIED_POOL_FUNCTIONS.clear.call(pool);
     },
-    close: function(op) {
-      const pool = getPool(op);
-
+    close: function() {
       return PROMISIFIED_POOL_FUNCTIONS.close.call(pool);
     },
     wait: function({ ms }) {
@@ -209,7 +216,6 @@ describe('Pool Spec Tests', function() {
       const ignoreEvents = singleTest.ignore || [];
       const expectedError = singleTest.error;
       const poolOptions = singleTest.poolOptions || {};
-      const numberOfPools = singleTest.numberOfPools || 1;
 
       let actualError;
 
@@ -219,9 +225,7 @@ describe('Pool Spec Tests', function() {
         threads.set(MAIN_THREAD_KEY, mainThread);
         mainThread.start();
 
-        for (let i = 0; i < numberOfPools; ++i) {
-          createPool(poolOptions);
-        }
+        createPool(poolOptions);
 
         for (let idx in operations) {
           const op = operations[idx];
