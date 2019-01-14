@@ -13,7 +13,8 @@ class Connection {
     this.maxIdleTimeMS = options.maxIdleTimeMS;
     this.poolId = options.poolId;
     this.address = options.address;
-    this.available = false;
+    this.readyToUse = false;
+    this.lastMadeAvailable = undefined;
   }
 
   get metadata() {
@@ -25,17 +26,21 @@ class Connection {
     };
   }
 
+  timeIdle() {
+    return this.readyToUse ? Date.now() - this.lastMadeAvailable : 0;
+  }
+
   write(callback) {
     setTimeout(() => callback());
   }
 
-  makeAvailable() {
-    this.available = true;
+  makeReadyToUse() {
+    this.readyToUse = true;
     this.lastMadeAvailable = Date.now();
   }
 
   makeInUse() {
-    this.available = false;
+    this.readyToUse = false;
     this.lastMadeAvailable = undefined;
   }
 
