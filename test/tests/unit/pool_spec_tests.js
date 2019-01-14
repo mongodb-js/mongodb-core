@@ -13,7 +13,7 @@ class Connection {
     this.maxIdleTimeMS = options.maxIdleTimeMS;
     this.poolId = options.poolId;
     this.address = options.address;
-    this.lastUsed = Date.now();
+    this.available = false;
   }
 
   get metadata() {
@@ -26,12 +26,17 @@ class Connection {
   }
 
   write(callback) {
-    this.lastUsed = Date.now();
     setTimeout(() => callback());
   }
 
   makeAvailable() {
-    this.lastMadeAvialable = new Date();
+    this.available = true;
+    this.lastMadeAvailable = Date.now();
+  }
+
+  makeInUse() {
+    this.available = false;
+    this.lastMadeAvailable = undefined;
   }
 
   connect(callback) {
