@@ -15,6 +15,7 @@ class Connection {
     this.address = options.address;
     this.readyToUse = false;
     this.lastMadeAvailable = undefined;
+    this.callbacks = [];
   }
 
   get metadata() {
@@ -44,8 +45,21 @@ class Connection {
     this.lastMadeAvailable = undefined;
   }
 
+  waitUntilConnect(callback) {
+    if (this.readyToUse) {
+      return callback(null, this);
+    }
+
+    this.callbacks.push(callback);
+  }
+
   connect(callback) {
-    setTimeout(() => callback(null, this));
+    this.callbacks.push(callback);
+    setTimeout(() => {
+      this.makeReadyToUse();
+      this.callbacks.forEach(c => c(null, this));
+      this.callbacks = [];
+    });
   }
 
   destroy() {}
