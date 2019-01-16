@@ -38,3 +38,11 @@ jobs:
     - stage: tests
       node_js: 10
       env: MONGODB_VERSION=4.0.x
+
+  allow_failures:
+    - env:
+        - MONGODB_VERSION=4.0.x
+        - MONGODB_ENVIRONMENT=replicaset
+    - env:
+        - MONGODB_VERSION=4.0.x
+        - MONGODB_ENVIRONMENT=sharded
