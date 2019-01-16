@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.11"></a>
+## [3.1.11](https://github.com/mongodb-js/mongodb-core/compare/v3.1.10...v3.1.11) (2019-01-16)
+
+
+### Bug Fixes
+
+* **wire-protocol:** don't allow override of `slaveOk` ([8fcef69](https://github.com/mongodb-js/mongodb-core/commit/8fcef69))
+
+
+
 <a name="3.1.10"></a>
 ## [3.1.10](https://github.com/mongodb-js/mongodb-core/compare/v3.1.9...v3.1.10) (2019-01-15)
 
