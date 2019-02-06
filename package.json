@@ -37,7 +37,7 @@
     "eslint-plugin-prettier": "^2.2.0",
     "jsdoc": "3.5.4",
     "mongodb-extjson": "^2.1.2",
-    "mongodb-mock-server": "^1.0.0",
+    "mongodb-mock-server": "^1.0.1",
     "mongodb-test-runner": "^1.1.18",
     "prettier": "~1.12.0",
     "sinon": "^6.0.0",
