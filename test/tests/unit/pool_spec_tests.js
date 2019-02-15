@@ -5,6 +5,7 @@ const path = require('path');
 const expect = require('chai').expect;
 require('chai').use(require('../../match_spec').default);
 const Pool = require('../../../lib/pool').Pool;
+const EventEmitter = require('events').EventEmitter;
 
 class Connection {
   constructor(options = {}) {
@@ -99,6 +100,7 @@ describe('Pool Spec Tests', function() {
   const threads = new Map();
   const connections = new Map();
   const poolEvents = [];
+  const poolEventsEventEmitter = new EventEmitter();
   let pool = undefined;
 
   afterEach(async () => {
@@ -109,6 +111,7 @@ describe('Pool Spec Tests', function() {
     threads.clear();
     connections.clear();
     poolEvents.length = 0;
+    poolEventsEventEmitter.removeAllListeners();
   });
 
   function createPool(options) {
@@ -117,7 +120,10 @@ describe('Pool Spec Tests', function() {
 
     pool = new Pool(options);
     ALL_EVENTS.forEach(ev => {
-      pool.on(ev, x => poolEvents.push(x));
+      pool.on(ev, x => {
+        poolEvents.push(x);
+        poolEventsEventEmitter.emit('poolEvent');
+      });
     });
   }
 
@@ -162,7 +168,7 @@ describe('Pool Spec Tests', function() {
       const thread = getThread(target);
       thread.start();
     },
-    waitFor: async function({ name, target, suppressError }) {
+    waitForThread: async function({ name, target, suppressError }) {
       const threadObj = threads.get(target);
 
       if (!threadObj) {
@@ -176,6 +182,18 @@ describe('Pool Spec Tests', function() {
           throw e;
         }
       }
+    },
+    waitForEvent: function({ event, count }) {
+      return new Promise(resolve => {
+        function run() {
+          if (poolEvents.filter(ev => ev.type === event).length >= count) {
+            return resolve();
+          }
+
+          poolEventsEventEmitter.once('poolEvent', run);
+        }
+        run();
+      });
     }
   };
 
@@ -203,7 +221,7 @@ describe('Pool Spec Tests', function() {
         throw new Error(`Invalid command ${op.name}`);
       }
 
-      await operationFn(op);
+      await operationFn(op, this);
       await new Promise(r => setTimeout(r));
     }
 
@@ -270,6 +288,8 @@ describe('Pool Spec Tests', function() {
         actualError = e;
       }
 
+      const actualEvents = poolEvents.filter(ev => ignoreEvents.indexOf(ev.type) < 0);
+
       if (expectedError) {
         if (!actualError) {
           expect(actualError).to.matchSpec(expectedError);
@@ -280,11 +300,6 @@ describe('Pool Spec Tests', function() {
       } else if (actualError) {
         throw actualError;
       }
-
-      const actualEvents = poolEvents.filter(ev => ignoreEvents.indexOf(ev.type) < 0);
-
-      // console.log(expectedEvents.map(e => e.type));
-      // console.log(actualEvents.map(e => e.type));
 
       expectedEvents.forEach((expected, index) => {
         const actual = actualEvents[index];
