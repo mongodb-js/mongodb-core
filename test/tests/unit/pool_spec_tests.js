@@ -2,7 +2,7 @@
 
 try {
   new Function('return (async function foo() {return await Promise.resolve(42);})();')();
-  require('../next/pool_spec_tests');
+  require('../../next/pool_spec_tests');
 } catch (e) {
   console.warn(
     `Warning: Current Node Version ${

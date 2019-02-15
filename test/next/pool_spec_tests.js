@@ -3,8 +3,10 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
-require('chai').use(require('../../match_spec').default);
-const Pool = require('../../../lib/pool').Pool;
+
+/// TODO: change import path
+require('chai').use(require('../match_spec').default);
+const Pool = require('../../lib/pool').Pool;
 const EventEmitter = require('events').EventEmitter;
 
 class Connection {
@@ -66,7 +68,8 @@ class Connection {
   destroy() {}
 }
 
-const ALL_EVENTS = Object.values(require('../../../lib/pool/events'))
+// TODO: change import path
+const ALL_EVENTS = Object.values(require('../../lib/pool/events'))
   .filter(Ctor => Ctor.eventType)
   .map(Ctor => Ctor.eventType);
 
@@ -239,7 +242,7 @@ describe('Pool Spec Tests', function() {
     }
   }
 
-  const specPath = path.join(__dirname, '../spec', 'connection-monitoring-and-pooling');
+  const specPath = path.join(__dirname, '../tests/spec', 'connection-monitoring-and-pooling');
   const testFiles = fs
     .readdirSync(specPath)
     .filter(x => x.indexOf('.json') !== -1)
