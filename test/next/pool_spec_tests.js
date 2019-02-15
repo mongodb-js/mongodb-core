@@ -10,7 +10,8 @@ const Pool = require('../../lib/pool').Pool;
 const EventEmitter = require('events').EventEmitter;
 
 class Connection {
-  constructor(options = {}) {
+  constructor(options) {
+    options = options || {};
     this.generation = options.generation;
     this.id = options.id;
     this.maxIdleTimeMS = options.maxIdleTimeMS;
@@ -68,13 +69,17 @@ class Connection {
   destroy() {}
 }
 
+const events = require('../../lib/pool/events');
+
 // TODO: change import path
-const ALL_EVENTS = Object.values(require('../../lib/pool/events'))
+const ALL_EVENTS = Object.keys(events)
+  .map(key => events[key])
   .filter(Ctor => Ctor.eventType)
   .map(Ctor => Ctor.eventType);
 
 function promisify(fn) {
-  return function(...args) {
+  return function() {
+    const args = Array.from(arguments);
     return new Promise((resolve, reject) => {
       const cb = (err, value) => {
         if (err) {
@@ -82,7 +87,7 @@ function promisify(fn) {
         }
         return resolve(value);
       };
-      fn.apply(this, [...args, cb]);
+      fn.apply(this, args.concat([cb]));
     });
   };
 }
@@ -94,9 +99,10 @@ const PROMISIFIED_POOL_FUNCTIONS = {
   close: promisify(Pool.prototype.close)
 };
 
-async function destroyPool(pool) {
-  await new Promise(r => pool.destroy(r));
-  ALL_EVENTS.forEach(ev => pool.removeAllListeners(ev));
+function destroyPool(pool) {
+  return new Promise(r => pool.destroy(r)).then(() => {
+    ALL_EVENTS.forEach(ev => pool.removeAllListeners(ev));
+  });
 }
 
 describe('Pool Spec Tests', function() {
@@ -106,15 +112,15 @@ describe('Pool Spec Tests', function() {
   const poolEventsEventEmitter = new EventEmitter();
   let pool = undefined;
 
-  afterEach(async () => {
-    if (pool) {
-      await destroyPool(pool);
+  afterEach(() => {
+    const p = pool ? destroyPool(pool) : Promise.resolve();
+    return p.then(() => {
       pool = undefined;
-    }
-    threads.clear();
-    connections.clear();
-    poolEvents.length = 0;
-    poolEventsEventEmitter.removeAllListeners();
+      threads.clear();
+      connections.clear();
+      poolEvents.length = 0;
+      poolEventsEventEmitter.removeAllListeners();
+    });
   });
 
   function createPool(options) {
@@ -141,12 +147,12 @@ describe('Pool Spec Tests', function() {
   }
 
   const OPERATION_FUNCTIONS = {
-    checkOut: async function(op) {
-      const connection = await PROMISIFIED_POOL_FUNCTIONS.checkOut.call(pool);
-
-      if (op.label != null) {
-        connections.set(op.label, connection);
-      }
+    checkOut: function(op) {
+      return PROMISIFIED_POOL_FUNCTIONS.checkOut.call(pool).then(connection => {
+        if (op.label != null) {
+          connections.set(op.label, connection);
+        }
+      });
     },
     checkIn: function(op) {
       const connection = connections.get(op.connection);
@@ -164,29 +170,35 @@ describe('Pool Spec Tests', function() {
     close: function() {
       return PROMISIFIED_POOL_FUNCTIONS.close.call(pool);
     },
-    wait: function({ ms }) {
+    wait: function(options) {
+      const ms = options.ms;
       return new Promise(r => setTimeout(r, ms));
     },
-    start: function({ target }) {
+    start: function(options) {
+      const target = options.target;
       const thread = getThread(target);
       thread.start();
     },
-    waitForThread: async function({ name, target, suppressError }) {
+    waitForThread: function(options) {
+      const name = options.name;
+      const target = options.target;
+      const suppressError = options.suppressError;
+
       const threadObj = threads.get(target);
 
       if (!threadObj) {
         throw new Error(`Attempted to run op ${name} on non-existent thread ${target}`);
       }
 
-      try {
-        await threadObj.finish();
-      } catch (e) {
+      return threadObj.finish().catch(e => {
         if (!suppressError) {
           throw e;
         }
-      }
+      });
     },
-    waitForEvent: function({ event, count }) {
+    waitForEvent: function(options) {
+      const event = options.event;
+      const count = options.count;
       return new Promise(resolve => {
         function run() {
           if (poolEvents.filter(ev => ev.type === event).length >= count) {
@@ -218,27 +230,24 @@ describe('Pool Spec Tests', function() {
         .catch(e => (this._error = e));
     }
 
-    async _runOperation(op) {
+    _runOperation(op) {
       const operationFn = OPERATION_FUNCTIONS[op.name];
       if (!operationFn) {
         throw new Error(`Invalid command ${op.name}`);
       }
 
-      await operationFn(op, this);
-      await new Promise(r => setTimeout(r));
+      return Promise.resolve()
+        .then(() => operationFn(op, this))
+        .then(() => new Promise(r => setTimeout(r)));
     }
 
-    async finish() {
+    finish() {
       this._killed = true;
-      try {
-        await this._promise;
-      } catch (e) {
-        throw e;
-      }
-
-      if (this._error) {
-        throw this._error;
-      }
+      return this._promise.then(() => {
+        if (this._error) {
+          throw this._error;
+        }
+      });
     }
   }
 
@@ -255,7 +264,7 @@ describe('Pool Spec Tests', function() {
     const singleTest = testFile[1];
     const itFn = singleTest.only ? it.only : it;
 
-    itFn(singleTest.description, async function() {
+    itFn(singleTest.description, function() {
       const operations = singleTest.operations;
       const expectedEvents = singleTest.events || [];
       const ignoreEvents = singleTest.ignore || [];
@@ -264,50 +273,54 @@ describe('Pool Spec Tests', function() {
 
       let actualError;
 
-      try {
-        const MAIN_THREAD_KEY = Symbol('Main Thread');
-        const mainThread = new Thread();
-        threads.set(MAIN_THREAD_KEY, mainThread);
-        mainThread.start();
+      const MAIN_THREAD_KEY = Symbol('Main Thread');
+      const mainThread = new Thread();
+      threads.set(MAIN_THREAD_KEY, mainThread);
+      mainThread.start();
 
-        createPool(poolOptions);
+      createPool(poolOptions);
 
-        for (let idx in operations) {
-          const op = operations[idx];
+      let basePromise = Promise.resolve();
 
-          const threadKey = op.thread || MAIN_THREAD_KEY;
-          const thread = getThread(threadKey);
+      for (let idx in operations) {
+        const op = operations[idx];
 
-          if (thread) {
-            await thread.run(op);
-            await new Promise(r => setTimeout(r));
-          } else {
+        const threadKey = op.thread || MAIN_THREAD_KEY;
+        const thread = getThread(threadKey);
+
+        basePromise = basePromise.then(() => {
+          if (!thread) {
             throw new Error(`Invalid thread ${threadKey}`);
           }
-        }
 
-        await mainThread.finish();
-      } catch (e) {
-        actualError = e;
+          return Promise.resolve()
+            .then(() => thread.run(op))
+            .then(() => new Promise(r => setTimeout(r)));
+        });
       }
 
-      const actualEvents = poolEvents.filter(ev => ignoreEvents.indexOf(ev.type) < 0);
+      return basePromise
+        .then(() => mainThread.finish())
+        .catch(e => (actualError = e))
+        .then(() => {
+          const actualEvents = poolEvents.filter(ev => ignoreEvents.indexOf(ev.type) < 0);
 
-      if (expectedError) {
-        if (!actualError) {
-          expect(actualError).to.matchSpec(expectedError);
-        } else {
-          const ae = Object.assign({}, actualError, { message: actualError.message });
-          expect(ae).to.matchSpec(expectedError);
-        }
-      } else if (actualError) {
-        throw actualError;
-      }
+          if (expectedError) {
+            if (!actualError) {
+              expect(actualError).to.matchSpec(expectedError);
+            } else {
+              const ae = Object.assign({}, actualError, { message: actualError.message });
+              expect(ae).to.matchSpec(expectedError);
+            }
+          } else if (actualError) {
+            throw actualError;
+          }
 
-      expectedEvents.forEach((expected, index) => {
-        const actual = actualEvents[index];
-        expect(actual).to.matchSpec(expected);
-      });
+          expectedEvents.forEach((expected, index) => {
+            const actual = actualEvents[index];
+            expect(actual).to.matchSpec(expected);
+          });
+        });
     });
   });
 });
