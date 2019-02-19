@@ -1,6 +1,4 @@
-sudo: required
-dist: trusty
-
+dist: xenial
 language: node_js
 
 cache:
