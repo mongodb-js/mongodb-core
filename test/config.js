@@ -15,6 +15,10 @@ class CoreConfiguration extends ConfigurationBase {
     this.topology = options.topology || this.defaultTopology;
   }
 
+  usingUnifiedTopology() {
+    return !!process.env.MONGODB_UNIFIED_TOPOLOGY;
+  }
+
   defaultTopology(self, _mongo, options) {
     options = Object.assign(
       {},
@@ -24,6 +28,10 @@ class CoreConfiguration extends ConfigurationBase {
       },
       options
     );
+
+    if (this.usingUnifiedTopology()) {
+      return new _mongo.Topology(options);
+    }
 
     return new _mongo.Server(options);
   }
