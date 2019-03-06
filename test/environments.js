@@ -121,12 +121,6 @@ class ShardedEnvironment extends EnvironmentBase {
         {
           replSet: 'rs1'
         }
-      ),
-      shardingManager.addShard(
-        [genMongosConfig(31010), genMongosConfig(31011), genMongosConfig(31012, { arbiter: true })],
-        {
-          replSet: 'rs2'
-        }
       )
     ]);
 
