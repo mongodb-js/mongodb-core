@@ -1,6 +1,6 @@
 {
   "name": "mongodb-core",
-  "version": "3.2.0-beta1",
+  "version": "3.2.0-beta2",
   "description": "Core MongoDB driver functionality, no bells and whistles and meant for integration not end applications",
   "main": "index.js",
   "files": [
@@ -25,12 +25,12 @@
     "core"
   ],
   "dependencies": {
-    "bson": "^1.1.0",
+    "bson": "^1.1.1",
     "require_optional": "^1.0.1",
     "safe-buffer": "^5.1.2"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "chai-subset": "^1.6.0",
     "co": "^4.6.0",
     "eslint": "^4.6.1",
@@ -38,7 +38,7 @@
     "jsdoc": "3.5.4",
     "mongodb-extjson": "^2.1.2",
     "mongodb-mock-server": "^1.0.1",
-    "mongodb-test-runner": "^1.1.18",
+    "mongodb-test-runner": "^1.3.4",
     "prettier": "~1.12.0",
     "sinon": "^6.0.0",
     "snappy": "^6.1.1",
