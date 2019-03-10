@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -o errexit  # Exit the script with error if any of the commands fail
+set -v
 
 export PROJECT_DIRECTORY="$(pwd)"
 NODE_ARTIFACTS_PATH="${PROJECT_DIRECTORY}/node-artifacts"
