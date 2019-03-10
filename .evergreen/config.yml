@@ -167,25 +167,25 @@ tasks:
         - func: "run tests"
           vars:
             VERSION: "2.6"
-            TOPOLOGY: "server"
+            TOPOLOGY: "single"
 
-    - name: "test-2.6-replica_set"
-      tags: ["2.6", "replica_set"]
+    - name: "test-2.6-replicaset"
+      tags: ["2.6", "replicaset"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "2.6"
-            TOPOLOGY: "replica_set"
+            TOPOLOGY: "replicaset"
 
-    - name: "test-2.6-sharded_cluster"
-      tags: ["2.6", "sharded_cluster"]
+    - name: "test-2.6-sharded"
+      tags: ["2.6", "sharded"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "2.6"
-            TOPOLOGY: "sharded_cluster"
+            TOPOLOGY: "sharded"
 
     - name: "test-3.0-standalone"
       tags: ["3.0", "standalone"]
@@ -194,25 +194,25 @@ tasks:
         - func: "run tests"
           vars:
             VERSION: "3.0"
-            TOPOLOGY: "server"
+            TOPOLOGY: "single"
 
-    - name: "test-3.0-replica_set"
-      tags: ["3.0", "replica_set"]
+    - name: "test-3.0-replicaset"
+      tags: ["3.0", "replicaset"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.0"
-            TOPOLOGY: "replica_set"
+            TOPOLOGY: "replicaset"
 
-    - name: "test-3.0-sharded_cluster"
-      tags: ["3.0", "sharded_cluster"]
+    - name: "test-3.0-sharded"
+      tags: ["3.0", "sharded"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.0"
-            TOPOLOGY: "sharded_cluster"
+            TOPOLOGY: "sharded"
 
     - name: "test-3.2-standalone"
       tags: ["3.2", "standalone"]
@@ -221,25 +221,25 @@ tasks:
         - func: "run tests"
           vars:
             VERSION: "3.2"
-            TOPOLOGY: "server"
+            TOPOLOGY: "single"
 
-    - name: "test-3.2-replica_set"
-      tags: ["3.2", "replica_set"]
+    - name: "test-3.2-replicaset"
+      tags: ["3.2", "replicaset"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.2"
-            TOPOLOGY: "replica_set"
+            TOPOLOGY: "replicaset"
 
-    - name: "test-3.2-sharded_cluster"
-      tags: ["3.2", "sharded_cluster"]
+    - name: "test-3.2-sharded"
+      tags: ["3.2", "sharded"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.2"
-            TOPOLOGY: "sharded_cluster"
+            TOPOLOGY: "sharded"
 
     - name: "test-3.4-standalone"
       tags: ["3.4", "standalone"]
@@ -248,25 +248,25 @@ tasks:
         - func: "run tests"
           vars:
             VERSION: "3.4"
-            TOPOLOGY: "server"
+            TOPOLOGY: "single"
 
-    - name: "test-3.4-replica_set"
-      tags: ["3.4", "replica_set"]
+    - name: "test-3.4-replicaset"
+      tags: ["3.4", "replicaset"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.4"
-            TOPOLOGY: "replica_set"
+            TOPOLOGY: "replicaset"
 
-    - name: "test-3.4-sharded_cluster"
-      tags: ["3.4", "sharded_cluster"]
+    - name: "test-3.4-sharded"
+      tags: ["3.4", "sharded"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.4"
-            TOPOLOGY: "sharded_cluster"
+            TOPOLOGY: "sharded"
 
     - name: "test-3.6-standalone"
       tags: ["3.6", "standalone"]
@@ -275,25 +275,25 @@ tasks:
         - func: "run tests"
           vars:
             VERSION: "3.6"
-            TOPOLOGY: "server"
+            TOPOLOGY: "single"
 
-    - name: "test-3.6-replica_set"
-      tags: ["3.6", "replica_set"]
+    - name: "test-3.6-replicaset"
+      tags: ["3.6", "replicaset"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.6"
-            TOPOLOGY: "replica_set"
+            TOPOLOGY: "replicaset"
 
-    - name: "test-3.6-sharded_cluster"
-      tags: ["3.6", "sharded_cluster"]
+    - name: "test-3.6-sharded"
+      tags: ["3.6", "sharded"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "3.6"
-            TOPOLOGY: "sharded_cluster"
+            TOPOLOGY: "sharded"
 
     - name: "test-4.0-standalone"
       tags: ["4.0", "standalone"]
@@ -302,25 +302,25 @@ tasks:
         - func: "run tests"
           vars:
             VERSION: "4.0"
-            TOPOLOGY: "server"
+            TOPOLOGY: "single"
 
-    - name: "test-4.0-replica_set"
-      tags: ["4.0", "replica_set"]
+    - name: "test-4.0-replicaset"
+      tags: ["4.0", "replicaset"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "4.0"
-            TOPOLOGY: "replica_set"
+            TOPOLOGY: "replicaset"
 
-    - name: "test-4.0-sharded_cluster"
-      tags: ["4.0", "sharded_cluster"]
+    - name: "test-4.0-sharded"
+      tags: ["4.0", "sharded"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "4.0"
-            TOPOLOGY: "sharded_cluster"
+            TOPOLOGY: "sharded"
 
     - name: "test-latest-standalone"
       tags: ["latest", "standalone"]
@@ -329,25 +329,25 @@ tasks:
         - func: "run tests"
           vars:
             VERSION: "latest"
-            TOPOLOGY: "server"
+            TOPOLOGY: "single"
 
-    - name: "test-latest-replica_set"
-      tags: ["latest", "replica_set"]
+    - name: "test-latest-replicaset"
+      tags: ["latest", "replicaset"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "latest"
-            TOPOLOGY: "replica_set"
+            TOPOLOGY: "replicaset"
 
-    - name: "test-latest-sharded_cluster"
-      tags: ["latest", "sharded_cluster"]
+    - name: "test-latest-sharded"
+      tags: ["latest", "sharded"]
       commands:
         - func: "install dependencies"
         - func: "run tests"
           vars:
             VERSION: "latest"
-            TOPOLOGY: "sharded_cluster"
+            TOPOLOGY: "sharded"
 
     - name: "atlas-connect"
       tags: ["atlas-connect"]
@@ -510,15 +510,15 @@ axes:
       - id: standalone
         display_name: Standalone
         variables:
-           TOPOLOGY: "server"
+           TOPOLOGY: "single"
       - id: replicaset
         display_name: Replica Set
         variables:
-           TOPOLOGY: "replica_set"
+           TOPOLOGY: "replicaset"
       - id: sharded-cluster
         display_name: Sharded Cluster
         variables:
-           TOPOLOGY: "sharded_cluster"
+           TOPOLOGY: "sharded"
   - id: auth
     display_name: Authentication
     values:
@@ -563,23 +563,23 @@ buildvariants:
   matrix_spec: {"os-fully-featured": "*", node-version: "*" } # auth: "*", ssl: "*",
   display_name: "${node-version} ${os-fully-featured} ${auth} ${ssl}"
   tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
+     - name: "test-latest-replicaset"
+     - name: "test-latest-sharded"
      - name: "test-latest-standalone"
-     - name: "test-3.6-replica_set"
-     - name: "test-3.6-sharded_cluster"
+     - name: "test-3.6-replicaset"
+     - name: "test-3.6-sharded"
      - name: "test-3.6-standalone"
-     - name: "test-3.4-replica_set"
-     - name: "test-3.4-sharded_cluster"
+     - name: "test-3.4-replicaset"
+     - name: "test-3.4-sharded"
      - name: "test-3.4-standalone"
-     - name: "test-3.2-replica_set"
-     - name: "test-3.2-sharded_cluster"
+     - name: "test-3.2-replicaset"
+     - name: "test-3.2-sharded"
      - name: "test-3.2-standalone"
-     - name: "test-3.0-replica_set"
-     - name: "test-3.0-sharded_cluster"
+     - name: "test-3.0-replicaset"
+     - name: "test-3.0-sharded"
      - name: "test-3.0-standalone"
-     - name: "test-2.6-replica_set"
-     - name: "test-2.6-sharded_cluster"
+     - name: "test-2.6-replicaset"
+     - name: "test-2.6-sharded"
      - name: "test-2.6-standalone"
      - name: "atlas-connect"
 
@@ -587,92 +587,92 @@ buildvariants:
 #   matrix_spec: {"os-nossl": "*", auth: "*", ssl: "nossl", node-version: "*" }
 #   display_name: "${node-version} ${os-nossl} ${auth} ${ssl}"
 #   tasks:
-#      - name: "test-latest-replica_set"
-#      - name: "test-latest-sharded_cluster"
+#      - name: "test-latest-replicaset"
+#      - name: "test-latest-sharded"
 #      - name: "test-latest-standalone"
-#      - name: "test-3.6-replica_set"
-#      - name: "test-3.6-sharded_cluster"
+#      - name: "test-3.6-replicaset"
+#      - name: "test-3.6-sharded"
 #      - name: "test-3.6-standalone"
-#      - name: "test-3.4-replica_set"
-#      - name: "test-3.4-sharded_cluster"
+#      - name: "test-3.4-replicaset"
+#      - name: "test-3.4-sharded"
 #      - name: "test-3.4-standalone"
-#      - name: "test-3.2-replica_set"
-#      - name: "test-3.2-sharded_cluster"
+#      - name: "test-3.2-replicaset"
+#      - name: "test-3.2-sharded"
 #      - name: "test-3.2-standalone"
-#      - name: "test-3.0-replica_set"
-#      - name: "test-3.0-sharded_cluster"
+#      - name: "test-3.0-replicaset"
+#      - name: "test-3.0-sharded"
 #      - name: "test-3.0-standalone"
-#      - name: "test-2.6-replica_set"
-#      - name: "test-2.6-sharded_cluster"
+#      - name: "test-2.6-replicaset"
+#      - name: "test-2.6-sharded"
 #      - name: "test-2.6-standalone"
 
 - matrix_name: "tests-os-requires-32"
   matrix_spec: {"os-requires-32": "*", node-version: "*" } # auth: "*", ssl: "*",
   display_name: "${node-version} ${os-requires-32} ${auth} ${ssl}"
   tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
+     - name: "test-latest-replicaset"
+     - name: "test-latest-sharded"
      - name: "test-latest-standalone"
-     - name: "test-3.6-replica_set"
-     - name: "test-3.6-sharded_cluster"
+     - name: "test-3.6-replicaset"
+     - name: "test-3.6-sharded"
      - name: "test-3.6-standalone"
-     - name: "test-3.4-replica_set"
-     - name: "test-3.4-sharded_cluster"
+     - name: "test-3.4-replicaset"
+     - name: "test-3.4-sharded"
      - name: "test-3.4-standalone"
-     - name: "test-3.2-replica_set"
-     - name: "test-3.2-sharded_cluster"
+     - name: "test-3.2-replicaset"
+     - name: "test-3.2-sharded"
      - name: "test-3.2-standalone"
 
 # - matrix_name: "tests-ssl-requires-32"
 #   matrix_spec: {"os-ssl-requires-32": "*", auth: "*", ssl: "ssl", node-version: "*" }
 #   display_name: "${node-version} ${os-ssl-requires-32} ${auth} ${ssl}"
 #   tasks:
-#      - name: "test-latest-replica_set"
-#      - name: "test-latest-sharded_cluster"
+#      - name: "test-latest-replicaset"
+#      - name: "test-latest-sharded"
 #      - name: "test-latest-standalone"
-#      - name: "test-3.6-replica_set"
-#      - name: "test-3.6-sharded_cluster"
+#      - name: "test-3.6-replicaset"
+#      - name: "test-3.6-sharded"
 #      - name: "test-3.6-standalone"
-#      - name: "test-3.4-replica_set"
-#      - name: "test-3.4-sharded_cluster"
+#      - name: "test-3.4-replicaset"
+#      - name: "test-3.4-sharded"
 #      - name: "test-3.4-standalone"
-#      - name: "test-3.2-replica_set"
-#      - name: "test-3.2-sharded_cluster"
+#      - name: "test-3.2-replicaset"
+#      - name: "test-3.2-sharded"
 #      - name: "test-3.2-standalone"
 
 - matrix_name: "tests-os-requires-34"
   matrix_spec: {"os-requires-34": "*", node-version: ["Boron", "Carbon"]} # auth: "*", ssl: "*",
   display_name: "${node-version} ${os-requires-34} ${auth} ${ssl}"
   tasks:
-     - name: "test-latest-replica_set"
-     - name: "test-latest-sharded_cluster"
+     - name: "test-latest-replicaset"
+     - name: "test-latest-sharded"
      - name: "test-latest-standalone"
-     - name: "test-3.6-replica_set"
-     - name: "test-3.6-sharded_cluster"
+     - name: "test-3.6-replicaset"
+     - name: "test-3.6-sharded"
      - name: "test-3.6-standalone"
-     - name: "test-3.4-replica_set"
-     - name: "test-3.4-sharded_cluster"
+     - name: "test-3.4-replicaset"
+     - name: "test-3.4-sharded"
      - name: "test-3.4-standalone"
 
 # - matrix_name: "tests-windows"
 #   matrix_spec: {os-windows: "*", node-version: "*" } # ssl: "*", auth: "*"
 #   display_name: "${node-version} ${os-windows} ${auth} ${ssl}"
 #   tasks:
-#      - name: "test-latest-replica_set"
-#      - name: "test-latest-sharded_cluster"
+#      - name: "test-latest-replicaset"
+#      - name: "test-latest-sharded"
 #      - name: "test-latest-standalone"
-#      - name: "test-3.6-replica_set"
-#      - name: "test-3.6-sharded_cluster"
+#      - name: "test-3.6-replicaset"
+#      - name: "test-3.6-sharded"
 #      - name: "test-3.6-standalone"
-#      - name: "test-3.4-replica_set"
-#      - name: "test-3.4-sharded_cluster"
+#      - name: "test-3.4-replicaset"
+#      - name: "test-3.4-sharded"
 #      - name: "test-3.4-standalone"
-#      - name: "test-3.2-replica_set"
-#      - name: "test-3.2-sharded_cluster"
+#      - name: "test-3.2-replicaset"
+#      - name: "test-3.2-sharded"
 #      - name: "test-3.2-standalone"
-#      - name: "test-3.0-replica_set"
-#      - name: "test-3.0-sharded_cluster"
+#      - name: "test-3.0-replicaset"
+#      - name: "test-3.0-sharded"
 #      - name: "test-3.0-standalone"
-#      - name: "test-2.6-replica_set"
-#      - name: "test-2.6-sharded_cluster"
+#      - name: "test-2.6-replicaset"
+#      - name: "test-2.6-sharded"
 #      - name: "test-2.6-standalone"
