@@ -4,6 +4,7 @@ console.log('starting atlas connectivity tests');
 
 const Core = require('../index');
 const parseConnectionString = Core.parseConnectionString;
+const MongoCredentials = Core.MongoCredentials;
 
 if (
   !(
@@ -90,15 +91,20 @@ function topologyRunCmd(topology, ns, cmd) {
 }
 
 function runConnectionTest(config) {
-  let data;
   let topology;
   return Promise.resolve()
     .then(() => console.log(`testing ${config.name}`))
     .then(() => parse(config.url))
-    .then(_data => (data = _data))
-    .then(() => new config.Ctor(data.hosts, data.options))
+    .then(data => {
+      const options = Object.assign({}, data.options);
+      if (data.auth) {
+        options.credentials = new MongoCredentials(data.auth);
+      }
+
+      return new config.Ctor(data.hosts, options);
+    })
     .then(_topology => (topology = _topology))
-    .then(() => topologyConnect(topology, data.auth))
+    .then(() => topologyConnect(topology))
     .then(() => topologyIsMaster(topology))
     .then(() => topologyFindCmd(topology))
     .then(() => console.log(`${config.name} passed`))
@@ -114,7 +120,8 @@ configs
     console.log('all tests passed');
     process.exit(0);
   })
-  .catch(() => {
+  .catch(err => {
     console.log('test failed');
+    console.dir({ err });
     process.exit(1);
   });
