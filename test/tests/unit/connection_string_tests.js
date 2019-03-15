@@ -158,6 +158,22 @@ describe('Connection String', function() {
     });
   });
 
+  it('should parse multiple readPreferenceTags', function(done) {
+    parseConnectionString(
+      'mongodb://localhost/?readPreferenceTags=dc:ny,rack:1&readPreferenceTags=dc:ny',
+      (err, result) => {
+        expect(err).to.not.exist;
+        expect(result.options).to.have.property('readPreferenceTags');
+        expect(result.options.readPreferenceTags).to.deep.equal([
+          { dc: 'ny', rack: '1' },
+          { dc: 'ny' }
+        ]);
+
+        done();
+      }
+    );
+  });
+
   describe('validation', function() {
     it('should validate compression options', function(done) {
       parseConnectionString('mongodb://localhost/?zlibCompressionLevel=15', err => {
