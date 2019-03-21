@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/mongodb-js/mongodb-core/compare/v3.1.11...v3.2.0) (2019-03-21)
+
+
+### Bug Fixes
+
+* **command:** invert boolean expression for applying `$query` ([8513ad5](https://github.com/mongodb-js/mongodb-core/commit/8513ad5))
+* **command:** only add `$query` to command in OP_QUERY ([3e57690](https://github.com/mongodb-js/mongodb-core/commit/3e57690))
+* **cursor:** ensure that cursor id defaults to 0 ([e7e1775](https://github.com/mongodb-js/mongodb-core/commit/e7e1775))
+* **get-more:** documents are already returned as raw in this case ([c81f609](https://github.com/mongodb-js/mongodb-core/commit/c81f609))
+* **msg:** support raw cursor results using OP_MSG ([f91304b](https://github.com/mongodb-js/mongodb-core/commit/f91304b))
+* **op-msg:** only include `$readPreference` if not primary ([0d10317](https://github.com/mongodb-js/mongodb-core/commit/0d10317))
+* **scram:** allow errors to be passed through callbacks ([dccc2ba](https://github.com/mongodb-js/mongodb-core/commit/dccc2ba))
+* **sessions:** enable sessions in OP_MSG ([d8bf209](https://github.com/mongodb-js/mongodb-core/commit/d8bf209))
+* **topology:** correctly pick up command options for cursors ([259231e](https://github.com/mongodb-js/mongodb-core/commit/259231e))
+* **topology:** ensure read preferences are translated on selection ([ebefb7b](https://github.com/mongodb-js/mongodb-core/commit/ebefb7b))
+* **transactions:** only send recovery token on commitTransaction ([923a089](https://github.com/mongodb-js/mongodb-core/commit/923a089))
+* **transactions:** special case non-deterministic wc errors in txns ([5a2ae77](https://github.com/mongodb-js/mongodb-core/commit/5a2ae77))
+* **transactions:** write concern is always majority on txn retry ([7b240ea](https://github.com/mongodb-js/mongodb-core/commit/7b240ea))
+* **with-transaction:** throw a useful error on invalid return type ([ae64bb4](https://github.com/mongodb-js/mongodb-core/commit/ae64bb4))
+* make mongos write commands work the same as replset write commands ([31b984f](https://github.com/mongodb-js/mongodb-core/commit/31b984f))
+
+
+### Features
+
+* **auth:** add authentication to handshake process ([aacac68](https://github.com/mongodb-js/mongodb-core/commit/aacac68))
+* **error:** all `hasErrorLabel` method to MongoError ([32a5e74](https://github.com/mongodb-js/mongodb-core/commit/32a5e74))
+* **OP_MSG:** add in parsing of OP_MSG ([c310a83](https://github.com/mongodb-js/mongodb-core/commit/c310a83))
+* **OP_MSG:** adding class for translating OP_MSG from binary ([11e4132](https://github.com/mongodb-js/mongodb-core/commit/11e4132))
+* **OP_MSG:** adding OP_MSG implementation ([c5adfa3](https://github.com/mongodb-js/mongodb-core/commit/c5adfa3))
+* **op-msg:** add support for `OP_MSG` to command monitoring ([9124b67](https://github.com/mongodb-js/mongodb-core/commit/9124b67))
+* **sdam:** backport unified SDAM changes from `next` to `master` ([83d744c](https://github.com/mongodb-js/mongodb-core/commit/83d744c))
+* **topology-description:** always calculate commonWireVersion ([5c630ab](https://github.com/mongodb-js/mongodb-core/commit/5c630ab))
+* **transactions:** tack recovery token for sharded transactions ([e12ae70](https://github.com/mongodb-js/mongodb-core/commit/e12ae70))
+* add ability to pin server to transaction state machine ([da13e55](https://github.com/mongodb-js/mongodb-core/commit/da13e55))
+* update proxy selection to consider pinned server on session ([189e428](https://github.com/mongodb-js/mongodb-core/commit/189e428))
+* **txns:** support mongos pinning in unified topology ([78dab5d](https://github.com/mongodb-js/mongodb-core/commit/78dab5d))
+* **with-transaction:** provide helper for convenient txn api ([478d1e7](https://github.com/mongodb-js/mongodb-core/commit/478d1e7))
+* **withTransaction:** retry transaction commit on wtimeout ([2bc705c](https://github.com/mongodb-js/mongodb-core/commit/2bc705c))
+
+
+
 <a name="3.1.11"></a>
 ## [3.1.11](https://github.com/mongodb-js/mongodb-core/compare/v3.1.10...v3.1.11) (2019-01-16)
 
