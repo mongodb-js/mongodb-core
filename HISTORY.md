@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.1"></a>
+## [3.2.1](https://github.com/mongodb-js/mongodb-core/compare/v3.2.0...v3.2.1) (2019-03-21)
+
+
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/mongodb-js/mongodb-core/compare/v3.1.11...v3.2.0) (2019-03-21)
 
