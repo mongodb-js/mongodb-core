@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.2"></a>
+## [3.2.2](https://github.com/mongodb-js/mongodb-core/compare/v3.2.1...v3.2.2) (2019-03-22)
+
+
+### Bug Fixes
+
+* do not attempt to auth against an arbiter ([72bb011](https://github.com/mongodb-js/mongodb-core/commit/72bb011))
+* **connection:** do not leak a connection if initial handshak fails ([6cba222](https://github.com/mongodb-js/mongodb-core/commit/6cba222))
+
+
+
 <a name="3.2.1"></a>
 ## [3.2.1](https://github.com/mongodb-js/mongodb-core/compare/v3.2.0...v3.2.1) (2019-03-21)
 
