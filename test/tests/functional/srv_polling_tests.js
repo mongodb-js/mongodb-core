@@ -300,7 +300,7 @@ describe('Mongos SRV Polling', function() {
       expect(srvPoller.start).to.have.been.calledOnce;
     });
 
-    describe('withServer', function() {
+    describe('prose tests', function() {
       function srvAddresses(records) {
         return records.map(r => `${r.name}:${r.port}`);
       }
@@ -310,10 +310,11 @@ describe('Mongos SRV Polling', function() {
       });
 
       beforeEach(function() {
-        context.serverCounters = [0, 0, 0];
-        return Promise.all(context.serverCounters.map(() => mock.createServer())).then(servers => {
-          context.servers = servers;
-        });
+        return Promise.all(Array.from({ length: 4 }).map(() => mock.createServer())).then(
+          servers => {
+            context.servers = servers;
+          }
+        );
       });
 
       afterEach(function() {
@@ -328,40 +329,21 @@ describe('Mongos SRV Polling', function() {
         }
       });
 
-      it('will connect to the third server, and have a properly updated topology', function(done) {
-        this.timeout(10000);
-        const srvPoller = new FakeSrvPoller({ srvHost: SRV_HOST });
-        const recordSets = [
-          [srvRecord(context.servers[0]), srvRecord(context.servers[1])],
-          [srvRecord(context.servers[1]), srvRecord(context.servers[2])]
-        ];
-
-        const seedlist = recordSets[0].map(record => `${record.name}:${record.port}`).join(',');
-
-        context.servers.forEach((server, _idx) => {
-          const idx = _idx;
+      function runSrvPollerTest(recordSets, done) {
+        context.servers.forEach(server => {
           server.setMessageHandler(request => {
-            context.serverCounters[idx] += 1;
-
             const doc = request.document;
 
             if (doc.ismaster) {
               request.reply(Object.assign({}, MONGOS_DEFAULT_ISMASTER));
-              if (idx === 2) {
-                expect(topology.description).to.have.property('type', TopologyType.Sharded);
-                const servers = Array.from(topology.description.servers.keys());
-
-                expect(servers).to.deep.equal(srvAddresses(recordSets[1]));
-                return done();
-              }
             }
           });
         });
 
-        context.topology = new Topology(seedlist, {
-          srvPoller,
-          srvHost: SRV_HOST
-        });
+        const srvPoller = new FakeSrvPoller({ srvHost: SRV_HOST });
+        const seedlist = recordSets[0].map(record => `${record.name}:${record.port}`).join(',');
+
+        context.topology = new Topology(seedlist, { srvPoller, srvHost: SRV_HOST });
         const topology = context.topology;
 
         topology.connect({}, err => {
@@ -375,11 +357,76 @@ describe('Mongos SRV Polling', function() {
 
             expect(servers).to.deep.equal(srvAddresses(recordSets[0]));
 
+            topology.once('topologyDescriptionChanged', function() {
+              tryDone(done, function() {
+                const servers = Array.from(topology.description.servers.keys());
+
+                expect(servers).to.deep.equal(srvAddresses(recordSets[1]));
+              });
+            });
+
             srvPoller.trigger(recordSets[1]);
           } catch (e) {
             done(e);
           }
         });
+      }
+
+      // The addition of a new DNS record:
+      // _mongodb._tcp.test1.test.build.10gen.cc.  86400  IN SRV  27019  localhost.test.build.10gen.cc.
+      it('should handle the addition of a new DNS record', function(done) {
+        const recordSets = [
+          [srvRecord(context.servers[0]), srvRecord(context.servers[1])],
+          [
+            srvRecord(context.servers[0]),
+            srvRecord(context.servers[1]),
+            srvRecord(context.servers[2])
+          ]
+        ];
+        runSrvPollerTest(recordSets, done);
+      });
+
+      // The removal of an existing DNS record:
+      // _mongodb._tcp.test1.test.build.10gen.cc.  86400  IN SRV  27018  localhost.test.build.10gen.cc.
+      it('should handle the removal of an existing DNS record', function(done) {
+        const recordSets = [
+          [srvRecord(context.servers[0]), srvRecord(context.servers[1])],
+          [srvRecord(context.servers[0])]
+        ];
+        runSrvPollerTest(recordSets, done);
+      });
+
+      // The replacement of a DNS record:
+      // _mongodb._tcp.test1.test.build.10gen.cc.  86400  IN SRV  27018  localhost.test.build.10gen.cc.
+      // replace by:
+      // _mongodb._tcp.test1.test.build.10gen.cc.  86400  IN SRV  27019  localhost.test.build.10gen.cc.
+      it('should handle the replacement of a DNS record', function(done) {
+        const recordSets = [
+          [srvRecord(context.servers[0]), srvRecord(context.servers[1])],
+          [srvRecord(context.servers[0]), srvRecord(context.servers[2])]
+        ];
+        runSrvPollerTest(recordSets, done);
+      });
+
+      // The replacement of both existing DNS records with one new record:
+      // _mongodb._tcp.test1.test.build.10gen.cc.  86400  IN SRV  27019  localhost.test.build.10gen.cc.
+      it('should handle the replacement of both existing DNS records with one new record', function(done) {
+        const recordSets = [
+          [srvRecord(context.servers[0]), srvRecord(context.servers[1])],
+          [srvRecord(context.servers[2])]
+        ];
+        runSrvPollerTest(recordSets, done);
+      });
+
+      // The replacement of both existing DNS records with two new records:
+      // _mongodb._tcp.test1.test.build.10gen.cc.  86400  IN SRV  27019  localhost.test.build.10gen.cc.
+      // _mongodb._tcp.test1.test.build.10gen.cc.  86400  IN SRV  27020  localhost.test.build.10gen.cc.
+      it('should handle the replacement of both existing DNS records with two new records', function(done) {
+        const recordSets = [
+          [srvRecord(context.servers[0]), srvRecord(context.servers[1])],
+          [srvRecord(context.servers[2]), srvRecord(context.servers[3])]
+        ];
+        runSrvPollerTest(recordSets, done);
       });
     });
   });
