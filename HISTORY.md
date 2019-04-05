@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.3"></a>
+## [3.2.3](https://github.com/mongodb-js/mongodb-core/compare/v3.2.2...v3.2.3) (2019-04-05)
+
+
+### Bug Fixes
+
+* **uri_parser:** restore original compression parsing ([70a7d94](https://github.com/mongodb-js/mongodb-core/commit/70a7d94))
+* **uri_parser:** support URI Options spec tests ([c067dbc](https://github.com/mongodb-js/mongodb-core/commit/c067dbc))
+
+
+
 <a name="3.2.2"></a>
 ## [3.2.2](https://github.com/mongodb-js/mongodb-core/compare/v3.2.1...v3.2.2) (2019-03-22)
 
