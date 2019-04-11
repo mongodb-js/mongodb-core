@@ -45,7 +45,7 @@ describe('Mongos SRV Polling', function() {
   }
 
   function stubDns(err, records) {
-    context.sinon.stub(dns, 'resolveSrv').callsFake(function(srvString, callback) {
+    context.sinon.stub(dns, 'resolveSrv').callsFake(function(_srvAddress, callback) {
       process.nextTick(() => callback(err, records));
     });
   }
@@ -79,7 +79,7 @@ describe('Mongos SRV Polling', function() {
         poller.haMode = true;
         expect(poller).to.have.property('haMode', true);
 
-        poller.once('srvPolling', e => {
+        poller.once('srvRecordDiscovery', e => {
           tryDone(done, () => {
             expect(e)
               .to.be.an.instanceOf(SrvPollingEvent)
@@ -243,7 +243,7 @@ describe('Mongos SRV Polling', function() {
       start() {}
       stop() {}
       trigger(srvRecords) {
-        this.emit('srvPolling', new SrvPollingEvent(srvRecords));
+        this.emit('srvRecordDiscovery', new SrvPollingEvent(srvRecords));
       }
     }
 
@@ -263,7 +263,7 @@ describe('Mongos SRV Polling', function() {
         srvPoller
       });
 
-      expect(topology)
+      expect(topology.s)
         .to.have.property('srvPoller')
         .that.equals(srvPoller);
     });
