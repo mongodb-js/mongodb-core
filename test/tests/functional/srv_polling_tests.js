@@ -104,17 +104,6 @@ describe('Mongos SRV Polling', function() {
         expect(poller.schedule).to.have.been.calledOnce;
         expect(poller).to.have.property('haMode', true);
       });
-
-      // TODO: Once we figure out logging
-      it('should log the failure experienced');
-    });
-
-    describe('start', function() {
-      it('should only schedule if stopped');
-    });
-
-    describe('stop', function() {
-      it('should only stop if running');
     });
 
     describe('poll', function() {
