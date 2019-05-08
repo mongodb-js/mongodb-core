@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.4"></a>
+## [3.2.4](https://github.com/mongodb-js/mongodb-core/compare/v3.2.3...v3.2.4) (2019-05-08)
+
+
+### Bug Fixes
+
+* **authentication:** fix auth issue with BSON promoteBuffers: true ([bcb87ca](https://github.com/mongodb-js/mongodb-core/commit/bcb87ca))
+* **command_result:** return entire result in toJSON ([b958513](https://github.com/mongodb-js/mongodb-core/commit/b958513))
+* **connect:** ensure connection errors are MongoNetworkErrors ([380a386](https://github.com/mongodb-js/mongodb-core/commit/380a386))
+* **retryable-writes:** don't add `txnNumber` for standalone servers ([8489265](https://github.com/mongodb-js/mongodb-core/commit/8489265))
+* **transactions:** send recovery token on abortTransaction ([1fa5763](https://github.com/mongodb-js/mongodb-core/commit/1fa5763))
+
+
+
 <a name="3.2.3"></a>
 ## [3.2.3](https://github.com/mongodb-js/mongodb-core/compare/v3.2.2...v3.2.3) (2019-04-05)
 
