@@ -177,6 +177,20 @@ describe('Connection String', function() {
     );
   });
 
+  it('should not parse appname as an object when colon is present', function(done) {
+    parseConnectionString('mongodb://localhost/?appname=foo:bar:baz', (err, result) => {
+      try {
+        expect(err).to.not.exist;
+        expect(result)
+          .to.have.property('options')
+          .that.has.property('appname', 'foo:bar:baz');
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
+
   describe('validation', function() {
     it('should validate compression options', function(done) {
       parseConnectionString('mongodb://localhost/?zlibCompressionLevel=15', err => {
