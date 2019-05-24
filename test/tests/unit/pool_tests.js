@@ -5,6 +5,7 @@ const mock = require('mongodb-mock-server');
 const Server = require('../../../lib/topologies/server');
 const MongoWriteConcernError = require('../../../lib/error').MongoWriteConcernError;
 const sinon = require('sinon');
+const Socket = require('net').Socket;
 
 const test = {};
 describe('Pool (unit)', function() {
@@ -76,5 +77,65 @@ describe('Pool (unit)', function() {
     });
 
     client.connect();
+  });
+
+  it('should make sure to close connection if destroy is called mid-handshake', function(done) {
+    class Deferred {
+      constructor() {
+        this.promise = new Promise((resolve, reject) => {
+          this.resolve = resolve;
+          this.reject = reject;
+        });
+      }
+    }
+
+    function getActiveSockets() {
+      return new Set(process._getActiveHandles().filter(handle => handle instanceof Socket));
+    }
+
+    function diffSet(base, sub) {
+      const ret = new Set();
+      for (const item of base) {
+        if (!sub.has(item)) {
+          ret.add(item);
+        }
+      }
+
+      return ret;
+    }
+
+    const requestReceived = new Deferred();
+    const sendReply = new Deferred();
+
+    test.server.setMessageHandler(request => {
+      requestReceived.resolve();
+      const doc = request.document;
+      if (doc.ismaster) {
+        sendReply.promise.then(() => {
+          request.reply(Object.assign({}, mock.DEFAULT_ISMASTER));
+        });
+      }
+    });
+
+    const client = new Server(test.server.address());
+
+    const previouslyActiveSockets = getActiveSockets();
+    client.connect();
+
+    requestReceived.promise.then(() => {
+      client.destroy({}, () => {
+        sendReply.resolve();
+        setTimeout(() => {
+          const activeSockets = diffSet(getActiveSockets(), previouslyActiveSockets);
+          try {
+            expect(activeSockets.size).to.equal(0);
+            done();
+          } catch (e) {
+            console.dir(activeSockets, { depth: 0 });
+            done(e);
+          }
+        }, 50);
+      });
+    });
   });
 });
