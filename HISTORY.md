@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.7"></a>
+## [3.2.7](https://github.com/mongodb-js/mongodb-core/compare/v3.2.6...v3.2.7) (2019-06-04)
+
+
+### Bug Fixes
+
+* **pool:** clean up connections if pool is destroyed mid-handshake ([4bd7f1c](https://github.com/mongodb-js/mongodb-core/commit/4bd7f1c))
+* **server:** emit "first connect" error if initial connect fails due to ECONNREFUSED ([853bcfe](https://github.com/mongodb-js/mongodb-core/commit/853bcfe))
+
+
+
 <a name="3.2.6"></a>
 ## [3.2.6](https://github.com/mongodb-js/mongodb-core/compare/v3.2.4...v3.2.6) (2019-05-23)
 
