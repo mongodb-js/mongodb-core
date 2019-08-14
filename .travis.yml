@@ -35,6 +35,9 @@ jobs:
     - stage: tests
       node_js: 10
       env: MONGODB_VERSION=4.0.x
+    - stage: tests
+      node_js: 12
+      env: MONGODB_VERSION=4.0.x
 
     - stage: replicaset
       node_js: 4
